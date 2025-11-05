@@ -1,0 +1,139 @@
+{
+  "placeholderImages": [
+    {
+      "id": "course-1",
+      "description": "An abstract geometric pattern",
+      "imageUrl": "https://images.unsplash.com/photo-1565619624098-cf4168a7cd9d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxhYnN0cmFjdCUyMHBhdHRlcm58ZW58MHx8fHwxNzYyMjM0ODI1fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "abstract pattern"
+    },
+    {
+      "id": "course-2",
+      "description": "A modern office workspace",
+      "imageUrl": "https://images.unsplash.com/photo-1572521165329-b197f9ea3da6?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxvZmZpY2UlMjB3b3Jrc3BhY2V8ZW58MHx8fHwxNzYyMjU4OTIzfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "office workspace"
+    },
+    {
+      "id": "course-3",
+      "description": "A person coding on a laptop",
+      "imageUrl": "https://images.unsplash.com/photo-1629904888099-00285934292b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8cGVyc29uJTIwY29kaW5nfGVufDB8fHx8MTc2MjI5NjkzOHww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "person coding"
+    },
+    {
+      "id": "course-4",
+      "description": "A team collaborating around a table",
+      "imageUrl": "https://images.unsplash.com/photo-1622675363311-3e1904dc1885?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHx0ZWFtJTIwY29sbGFib3JhdGlvbnxlbnwwfHx8fDE3NjIyNzQ3Njd8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "team collaboration"
+    },
+    {
+      "id": "course-5",
+      "description": "A futuristic city skyline at night",
+      "imageUrl": "https://images.unsplash.com/photo-1553675559-5046b59a5ca5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxmdXR1cmlzdGljJTIwY2l0eXxlbnwwfHx8fDE3NjIyOTgzNDl8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "futuristic city"
+    },
+    {
+      "id": "course-6",
+      "description": "A lightbulb representing a new idea",
+      "imageUrl": "https://images.unsplash.com/photo-1519936965587-5aa6cd16e48c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxpZGVhJTIwbGlnaHRidWxifGVufDB8fHx8MTc2MjMzNjUxOHww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "idea lightbulb"
+    },
+    {
+      "id": "user-avatar",
+      "description": "A profile picture of a person",
+      "imageUrl": "https://images.unsplash.com/photo-1590086782792-42dd2350140d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxwZXJzb24lMjBwb3J0cmFpdHxlbnwwfHx8fDE3NjIyODA1NDl8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "person portrait"
+    },
+    {
+      "id": "class-1",
+      "description": "People in a classroom setting",
+      "imageUrl": "https://images.unsplash.com/photo-1758270704925-fa59d93119c1?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxjbGFzc3Jvb20lMjBzZXR0aW5nfGVufDB8fHx8MTc2MjM0ODY5Nnww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "classroom setting"
+    },
+    {
+      "id": "class-2",
+      "description": "A student raising their hand in class",
+      "imageUrl": "https://images.unsplash.com/photo-1603808373454-c7b15169f781?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxzdHVkZW50JTIwaGFuZHxlbnwwfHx8fDE3NjIzNDg2OTd8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "student hand"
+    },
+    {
+      "id": "class-3",
+      "description": "A library with many books",
+      "imageUrl": "https://images.unsplash.com/photo-1579370318443-8da816457e3d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxsaWJyYXJ5JTIwYm9va3N8ZW58MHx8fHwxNzYyMjc3Mzc3fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "library books"
+    },
+    {
+      "id": "class-4",
+      "description": "Students working on laptops",
+      "imageUrl": "https://images.unsplash.com/photo-1604177091072-b7b677a077f6?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxzdHVkZW50cyUyMGxhcHRvcHN8ZW58MHx8fHwxNzYyMzQ4Njk3fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "students laptops"
+    },
+    {
+      "id": "class-5",
+      "description": "A graduation ceremony",
+      "imageUrl": "https://images.unsplash.com/photo-1627556704283-452301a45fd0?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxncmFkdWF0aW9uJTIwY2VyZW1vbnl8ZW58MHx8fHwxNzYyMjY3OTE0fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "graduation ceremony"
+    },
+    {
+      "id": "class-6",
+      "description": "A teacher at a whiteboard",
+      "imageUrl": "https://images.unsplash.com/photo-1761208663994-5d8aac0f9276?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHx0ZWFjaGVyJTIwd2hpdGVib2FyZHxlbnwwfHx8fDE3NjIzNDg2OTd8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "teacher whiteboard"
+    },
+    {
+      "id": "class-7",
+      "description": "A science laboratory",
+      "imageUrl": "https://images.unsplash.com/photo-1518152006812-edab29b069ac?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxzY2llbmNlJTIwbGFifGVufDB8fHx8MTc2MjI4NjI3N3ww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "science lab"
+    },
+    {
+      "id": "class-8",
+      "description": "An art class with easels",
+      "imageUrl": "https://images.unsplash.com/photo-1609174112693-52fdcebffd89?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxhcnQlMjBjbGFzc3xlbnwwfHx8fDE3NjIzNDg2OTd8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "art class"
+    },
+    {
+      "id": "class-banner-1",
+      "imageUrl": "https://images.unsplash.com/photo-1600023062179-6c6b954698cd?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxhbmNpZW50JTIwcnVpbnN8ZW58MHx8fHwxNzYyMzIxNzI5fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "ancient ruins"
+    },
+    {
+      "id": "lesson-1-1",
+      "imageUrl": "https://images.unsplash.com/photo-1529159942819-334f07de4fe5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHx3aGVhdCUyMGZpZWxkfGVufDB8fHx8MTc2MjMyNDczNHww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "wheat field"
+    },
+    {
+      "id": "lesson-1-2",
+      "imageUrl": "https://images.unsplash.com/photo-1730198193695-bfaa87c6d0aa?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxjdW5laWZvcm0lMjB0YWJsZXR8ZW58MHx8fHwxNzYyMzQ5Njc2fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "cuneiform tablet"
+    },
+    {
+      "id": "lesson-2-1",
+      "imageUrl": "https://images.unsplash.com/photo-1680356217112-dad9300ce49d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxuaWxlJTIwcml2ZXJ8ZW58MHx8fHwxNzYyMzQ5Njc2fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "nile river"
+    },
+    {
+      "id": "lesson-2-2",
+      "imageUrl": "https://images.unsplash.com/photo-1568322445389-f64ac2515020?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxnaXphJTIwcHlyYW1pZHN8ZW58MHx8fHwxNzYyMjgwMjU2fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "giza pyramids"
+    },
+    {
+      "id": "lesson-2-3",
+      "imageUrl": "https://images.unsplash.com/photo-1742496462387-a7bafd35cc0d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxoaWVyb2dseXBoaWNzJTIwd2FsbHxlbnwwfHx8fDE3NjIzNDk2NzZ8MA&ixlibrb-4.1.0&q=80&w=1080",
+      "imageHint": "hieroglyphics wall"
+    },
+    {
+      "id": "lesson-2-4",
+      "imageUrl": "https://images.unsplash.com/photo-1616420283293-07018a4692d3?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxlZ3lwdGlhbiUyMGdvZHN8ZW58MHx8fHwxNzYyMzQ5Njc2fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "egyptian gods"
+    },
+    {
+      "id": "lesson-banner-1-1",
+      "imageUrl": "https://images.unsplash.com/photo-1600023062179-6c6b954698cd?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxhbmNpZW50JTIwcnVpbnN8ZW58MHx8fHwxNzYyMzIxNzI5fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "babylon ruins"
+    },
+    {
+      "id": "lesson-banner-1-2",
+      "imageUrl": "https://images.unsplash.com/photo-1600023062179-6c6b954698cd?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxhbmNpZW50JTIwcnVpbnN8ZW58MHx8fHwxNzYyMzIxNzI5fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "sumerian tablet"
+    }
+  ]
+}
