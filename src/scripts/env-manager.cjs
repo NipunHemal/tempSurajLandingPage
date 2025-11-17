@@ -10,7 +10,7 @@ const API_URL = "https://script.google.com/macros/s/AKfycbyRjbI2zo_HfRhSAnXcUGah
 const ABSOLUTE_PATH = path.resolve(__dirname, '../');
 // List of env files to manage
 const ENV_FILES_CONFIG = [
-    { name: 'elight-lms-admin', path: path.join(ABSOLUTE_PATH, "../",'.env') },
+    { name: 'elight-lms-web', path: path.join(ABSOLUTE_PATH, "../",'.env') },
 ];
 // -----------------------------------------------------
 
