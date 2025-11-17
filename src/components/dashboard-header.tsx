@@ -14,8 +14,13 @@ import { Button } from './ui/button';
 import { LifeBuoy, LogOut, Settings, User } from 'lucide-react';
 import React from 'react';
 import { ThemeToggle } from './theme-toggle';
+import Link from 'next/link';
+import { useAuthStore } from '@/store/auth.store';
+import { useLogout } from '@/service/query/useAuth';
 
 export default function DashboardHeader({ title, children }: { title: string, children?: React.ReactNode }) {
+  const { user } = useAuthStore();
+  const { mutate: logout } = useLogout();
   return (
     <header className="sticky top-0 z-10 flex h-16 items-center justify-between border-b bg-background/80 px-6 backdrop-blur-sm">
       <div className="flex items-center gap-2">
@@ -34,16 +39,22 @@ export default function DashboardHeader({ title, children }: { title: string, ch
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" size="icon" className="rounded-full">
               <Avatar>
-                <AvatarFallback>AD</AvatarFallback>
+                <AvatarImage src={user?.student?.profilePicture || ''} />
+                <AvatarFallback>
+                  {user?.student?.firstName?.[0] || 'A'}
+                  {user?.student?.lastName?.[0] || 'D'}
+                </AvatarFallback>
               </Avatar>
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>My Account</DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
-              <User className="mr-2" />
-              Profile
+            <DropdownMenuItem asChild>
+              <Link href="/dashboard/profile">
+                <User className="mr-2" />
+                Profile
+              </Link>
             </DropdownMenuItem>
             <DropdownMenuItem>
               <Settings className="mr-2" />
@@ -54,7 +65,7 @@ export default function DashboardHeader({ title, children }: { title: string, ch
               Support
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
+            <DropdownMenuItem onClick={() => logout()}>
               <LogOut className="mr-2" />
               Log out
             </DropdownMenuItem>

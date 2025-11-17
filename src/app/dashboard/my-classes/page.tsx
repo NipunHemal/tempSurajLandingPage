@@ -79,7 +79,7 @@ export default function MyClassesPage() {
               <path d="M2 15L12 21L22 15" />
               <path d="M2 9L12 15L22 9" />
             </svg>
-            <span className="font-headline">LMS</span>
+            <span className="font-headline">ELIGHT LMS</span>
           </div>
         </SidebarHeader>
         <SidebarContent className="p-2">
@@ -134,9 +134,14 @@ export default function MyClassesPage() {
                 </SidebarMenuButton>
             </SidebarMenuItem>
             <SidebarMenuItem>
-                <SidebarMenuButton tooltip="Profile">
-                    <User />
-                    Profile
+                <SidebarMenuButton 
+                  asChild
+                  isActive={pathname === '/dashboard/profile'}
+                  tooltip="Profile">
+                    <Link href="/dashboard/profile">
+                        <User />
+                        Profile
+                    </Link>
                 </SidebarMenuButton>
             </SidebarMenuItem>
             <SidebarMenuItem>
