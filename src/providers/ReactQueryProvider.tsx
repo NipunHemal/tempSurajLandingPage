@@ -7,6 +7,8 @@ import { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import Cookies from "js-cookie";
 import { Loader2 } from "lucide-react";
+import { useGetMeta } from "@/service/query/useMeta";
+import { useMetaStore } from "@/store/meta.store";
 
 export const ReactQueryProvider = ({
   children,
@@ -15,7 +17,9 @@ export const ReactQueryProvider = ({
 }) => {
   return (
     <QueryClientProvider client={queryClient}>
-      <AuthInitializer>{children}</AuthInitializer>
+      <AuthInitializer>
+        <MetaInitializer>{children}</MetaInitializer>
+      </AuthInitializer>
     </QueryClientProvider>
   );
 };
@@ -47,21 +51,35 @@ const AuthInitializer = ({ children }: { children: React.ReactNode }) => {
     }
   }, [userProfile, isLoading, isSuccess, isError, setUser, setLoading, router, pathname]);
 
-  const hasToken = !!Cookies.get("accesstoken");
+  const hasToken = isClient ? !!Cookies.get("accesstoken") : false;
   const isAuthPage = ['/login', '/register', '/forgot-password', '/reset-password'].some(p => pathname.startsWith(p));
   const isPublicPage = pathname === '/' || isAuthPage;
 
   if (!isClient) {
-    return null; // or a basic skeleton
+    return null; 
   }
-
+  
   if (isLoading && hasToken && !isPublicPage) {
     return (
       <div className="flex h-screen w-full items-center justify-center">
-      oshan  <Loader2 className="h-8 w-8 animate-spin" />
+        <Loader2 className="h-8 w-8 animate-spin" />
       </div>
     );
   }
+
+  return <>{children}</>;
+};
+
+const MetaInitializer = ({ children }: { children: React.ReactNode }) => {
+  const { data: metaData, isLoading, isSuccess } = useGetMeta();
+  const { setMeta, setLoading } = useMetaStore();
+
+  useEffect(() => {
+    setLoading(isLoading);
+    if (isSuccess && metaData?.data) {
+      setMeta(metaData.data);
+    }
+  }, [metaData, isLoading, isSuccess, setMeta, setLoading]);
 
   return <>{children}</>;
 };

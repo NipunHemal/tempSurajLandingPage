@@ -19,5 +19,8 @@ export const ENDPOINTS = {
   },
   institutes: {
     getAll: `/institutes`,
-  }
+  },
+  meta: {
+    get: `/meta`,
+  },
 };
