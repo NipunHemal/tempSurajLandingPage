@@ -59,7 +59,7 @@ const profileFormSchema = z.object({
   whatsappNumber: z.string().optional(),
   phoneNumber: z.string().min(10, { message: 'Phone number must be at least 10 digits.' }),
   year: z.coerce.number().min(1900).max(new Date().getFullYear() + 5).optional(),
-  nic: z.string().min(10, { message: 'NIC must be at least 10 characters.' }).optional(),
+  nic: z.string().optional(),
   profilePictureUploadId: z.string().optional(),
   nicPicUploadId: z.string().optional(),
 });
@@ -96,7 +96,7 @@ export default function CompleteProfilePage() {
   }, [meta]);
 
 
-  const form = useForm<ProfileFormValues>({
+  const form = useForm<z.infer<typeof profileFormSchema>>({
     resolver: zodResolver(profileFormSchema),
     defaultValues: {
         firstName: '',
@@ -136,7 +136,7 @@ export default function CompleteProfilePage() {
     }
   };
 
-  function onProfileSubmit(data: ProfileFormValues) {
+  function onProfileSubmit(data: z.infer<typeof profileFormSchema>) {
     const payload = {
         ...data,
         dob: format(data.dob, 'yyyy-MM-dd'),
@@ -286,7 +286,7 @@ export default function CompleteProfilePage() {
               <form onSubmit={form.handleSubmit(onProfileSubmit)} className="space-y-8">
                 
                 <div className="grid grid-cols-1 items-start gap-6 md:grid-cols-2">
-                  <div className="col-span-full flex justify-center">
+                  <div className="md:col-span-2 flex justify-center">
                     {dynamicFields.find(f => f.fieldName === 'profilePicture') && renderField(dynamicFields.find(f => f.fieldName === 'profilePicture')!)}
                   </div>
                   

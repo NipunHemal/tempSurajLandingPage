@@ -3,7 +3,7 @@ import axiosClient from '../axios.client';
 import { ENDPOINTS } from '../endpoints';
 
 export const updateStudentProfile = async (
-  profileData: UpdateStudentProfileData
+  profileData: any // Allow any properties from the form
 ) => {
   const response = await axiosClient.put(
     ENDPOINTS.students.profile,
