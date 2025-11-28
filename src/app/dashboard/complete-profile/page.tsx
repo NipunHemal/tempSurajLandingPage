@@ -50,6 +50,7 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useMetaStore } from '@/store/meta.store';
 import { Field } from '@/types/api-meta-types';
+import { Textarea } from '@/components/ui/textarea';
 
 const profileFormSchema = z.object({
   firstName: z.string().min(2, { message: 'First name must be at least 2 characters.' }),
@@ -58,10 +59,19 @@ const profileFormSchema = z.object({
   gender: z.enum(['MALE', 'FEMALE', 'OTHER'], { required_error: 'Please select a gender.' }),
   whatsappNumber: z.string().optional(),
   phoneNumber: z.string().min(10, { message: 'Phone number must be at least 10 digits.' }),
-  year: z.coerce.number().min(1900).max(new Date().getFullYear() + 5).optional(),
-  nic: z.string().optional(),
   profilePictureUploadId: z.string().optional(),
   nicPicUploadId: z.string().optional(),
+  year: z.coerce.number().optional(),
+  nic: z.string().optional(),
+  alYear: z.coerce.number().optional(),
+  olYear: z.coerce.number().optional(),
+  stream: z.string().optional(),
+  medium: z.string().optional(),
+  school: z.string().optional(),
+  telegramNumber: z.string().optional(),
+  shySelect: z.string().optional(),
+  postalcode: z.string().optional(),
+  homeAddress: z.string().optional(),
 });
 
 type ProfileFormValues = z.infer<typeof profileFormSchema>;
@@ -90,9 +100,9 @@ export default function CompleteProfilePage() {
   const { meta } = useMetaStore();
   
   const dynamicFields = useMemo(() => {
-    return meta?.settings.STUDENT_PROFILE.fields.filter(
-      field => field.isEnabled && !permanentFields.includes(field.fieldName)
-    ) || [];
+    if (!meta) return [];
+    return meta.settings.STUDENT_PROFILE.fields
+      .filter(field => field.isEnabled && !permanentFields.includes(field.fieldName));
   }, [meta]);
 
 
@@ -104,7 +114,6 @@ export default function CompleteProfilePage() {
         whatsappNumber: '',
         phoneNumber: '',
         nic: '',
-        year: new Date().getFullYear(),
         gender: undefined,
     }
   });
@@ -145,17 +154,53 @@ export default function CompleteProfilePage() {
   }
 
   const isSubmitting = form.formState.isSubmitting || isUploading || isUpdatingProfile;
+  
+  const toTitleCase = (str: string) => {
+    return str.replace(/([A-Z])/g, ' $1').replace(/^./, (s) => s.toUpperCase());
+  }
 
   const renderField = (fieldConfig: Field) => {
-    switch (fieldConfig.fieldName) {
+    const fieldName = fieldConfig.fieldName as keyof ProfileFormValues;
+    const label = toTitleCase(fieldName) + (fieldConfig.required ? ' *' : '');
+
+    if (fieldConfig.enum) {
+        return (
+            <FormField
+                key={fieldName}
+                control={form.control}
+                name={fieldName}
+                render={({ field }) => (
+                    <FormItem>
+                        <FormLabel>{label}</FormLabel>
+                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                            <FormControl>
+                                <SelectTrigger>
+                                    <SelectValue placeholder={`Select a ${toTitleCase(fieldName)}`} />
+                                </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                                {fieldConfig.enum?.map(option => (
+                                    <SelectItem key={option} value={option}>{option}</SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                        <FormMessage />
+                    </FormItem>
+                )}
+            />
+        )
+    }
+
+    switch (fieldName) {
       case 'profilePicture':
         return (
            <FormField
-                key={fieldConfig.fieldName}
+                key={fieldName}
                 control={form.control}
                 name="profilePictureUploadId"
                 render={({ field }) => (
-                    <FormItem className="flex flex-col items-center gap-6">
+                    <FormItem className="flex flex-col items-center">
+                        <FormLabel>Profile Picture</FormLabel>
                         <FormControl>
                             <div>
                                 <input
@@ -185,66 +230,15 @@ export default function CompleteProfilePage() {
                 )}
             />
         );
-      case 'whatsappNumber':
-        return (
-          <FormField
-            key={fieldConfig.fieldName}
-            control={form.control}
-            name="whatsappNumber"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>WhatsApp Number {fieldConfig.required && '*'} (Optional)</FormLabel>
-                <FormControl>
-                  <Input placeholder="07xxxxxxxx" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        );
-      case 'year':
-        return (
-          <FormField
-            key={fieldConfig.fieldName}
-            control={form.control}
-            name="year"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>A/L Year {fieldConfig.required && '*'}</FormLabel>
-                <FormControl>
-                  <Input type="number" placeholder="e.g., 2025" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        );
-      case 'nic':
-        return (
-          <FormField
-            key={fieldConfig.fieldName}
-            control={form.control}
-            name="nic"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>NIC {fieldConfig.required && '*'}</FormLabel>
-                <FormControl>
-                  <Input placeholder="Your National ID Card number" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        );
       case 'nicPic':
         return (
             <FormField
-                key={fieldConfig.fieldName}
+                key={fieldName}
                 control={form.control}
                 name="nicPicUploadId"
                 render={({ field }) => (
                     <FormItem className="col-span-full">
-                        <FormLabel>NIC Image {fieldConfig.required && '*'}</FormLabel>
+                        <FormLabel>{label}</FormLabel>
                         <FormControl>
                             <div>
                             <input
@@ -270,8 +264,40 @@ export default function CompleteProfilePage() {
                 )}
             />
         );
+      case 'homeAddress':
+          return (
+              <FormField
+                  key={fieldName}
+                  control={form.control}
+                  name={fieldName}
+                  render={({ field }) => (
+                      <FormItem>
+                          <FormLabel>{label}</FormLabel>
+                          <FormControl>
+                              <Textarea placeholder={`Your ${toTitleCase(fieldName)}`} {...field} />
+                          </FormControl>
+                          <FormMessage />
+                      </FormItem>
+                  )}
+              />
+          );
       default:
-        return null;
+        return (
+            <FormField
+                key={fieldName}
+                control={form.control}
+                name={fieldName}
+                render={({ field }) => (
+                    <FormItem>
+                        <FormLabel>{label}</FormLabel>
+                        <FormControl>
+                            <Input placeholder={`Your ${toTitleCase(fieldName)}`} {...field} />
+                        </FormControl>
+                        <FormMessage />
+                    </FormItem>
+                )}
+            />
+        );
     }
   };
 
@@ -284,117 +310,118 @@ export default function CompleteProfilePage() {
             <p className="mb-8 text-center text-muted-foreground">Please fill in your details to continue.</p>
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onProfileSubmit)} className="space-y-8">
-                
-                <div className="grid grid-cols-1 items-start gap-6 md:grid-cols-2">
-                  <div className="md:col-span-2 flex justify-center">
-                    {dynamicFields.find(f => f.fieldName === 'profilePicture') && renderField(dynamicFields.find(f => f.fieldName === 'profilePicture')!)}
-                  </div>
-                  
-                  <FormField
-                    control={form.control}
-                    name="firstName"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>First Name</FormLabel>
-                        <FormControl>
-                          <Input placeholder="John" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="lastName"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Last Name</FormLabel>
-                        <FormControl>
-                          <Input placeholder="Doe" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="dob"
-                    render={({ field }) => (
-                      <FormItem className="flex flex-col">
-                        <FormLabel>Date of Birth</FormLabel>
-                        <Popover>
-                          <PopoverTrigger asChild>
-                            <FormControl>
-                              <Button
-                                variant={'outline'}
-                                className={cn(
-                                  'pl-3 text-left font-normal',
-                                  !field.value && 'text-muted-foreground'
-                                )}
-                              >
-                                {field.value ? (
-                                  format(field.value, 'PPP')
-                                ) : (
-                                  <span>Pick a date</span>
-                                )}
-                                <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                              </Button>
-                            </FormControl>
-                          </PopoverTrigger>
-                          <PopoverContent className="w-auto p-0" align="start">
-                            <Calendar
-                              mode="single"
-                              selected={field.value}
-                              onSelect={field.onChange}
-                              disabled={(date) =>
-                                date > new Date() || date < new Date('1900-01-01')
-                              }
-                              initialFocus
-                            />
-                          </PopoverContent>
-                        </Popover>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="gender"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Gender</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <div className="grid grid-cols-1 gap-x-6 gap-y-8 md:grid-cols-2">
+                    {dynamicFields.find(f => f.fieldName === 'profilePicture') && 
+                        <div className="md:col-span-2 flex justify-center">
+                            {renderField(dynamicFields.find(f => f.fieldName === 'profilePicture')!)}
+                        </div>
+                    }
+                    
+                    <FormField
+                      control={form.control}
+                      name="firstName"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>First Name *</FormLabel>
                           <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Select a gender" />
-                            </SelectTrigger>
+                            <Input placeholder="John" {...field} />
                           </FormControl>
-                          <SelectContent>
-                            <SelectItem value="MALE">Male</SelectItem>
-                            <SelectItem value="FEMALE">Female</SelectItem>
-                            <SelectItem value="OTHER">Other</SelectItem>
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="phoneNumber"
-                    render={({ field }) => (
-                      <FormItem className='md:col-span-2'>
-                        <FormLabel>Phone Number</FormLabel>
-                        <FormControl>
-                          <Input placeholder="07xxxxxxxx" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  
-                  {dynamicFields.filter(f => f.fieldName !== 'profilePicture').map(renderField)}
-                </div>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="lastName"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Last Name *</FormLabel>
+                          <FormControl>
+                            <Input placeholder="Doe" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="dob"
+                      render={({ field }) => (
+                        <FormItem className="flex flex-col">
+                          <FormLabel>Date of Birth *</FormLabel>
+                          <Popover>
+                            <PopoverTrigger asChild>
+                              <FormControl>
+                                <Button
+                                  variant={'outline'}
+                                  className={cn(
+                                    'pl-3 text-left font-normal',
+                                    !field.value && 'text-muted-foreground'
+                                  )}
+                                >
+                                  {field.value ? (
+                                    format(field.value, 'PPP')
+                                  ) : (
+                                    <span>Pick a date</span>
+                                  )}
+                                  <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                </Button>
+                              </FormControl>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-auto p-0" align="start">
+                              <Calendar
+                                mode="single"
+                                selected={field.value}
+                                onSelect={field.onChange}
+                                disabled={(date) =>
+                                  date > new Date() || date < new Date('1900-01-01')
+                                }
+                                initialFocus
+                              />
+                            </PopoverContent>
+                          </Popover>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="gender"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Gender *</FormLabel>
+                          <Select onValueChange={field.onChange} defaultValue={field.value}>
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select a gender" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              <SelectItem value="MALE">Male</SelectItem>
+                              <SelectItem value="FEMALE">Female</SelectItem>
+                              <SelectItem value="OTHER">Other</SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="phoneNumber"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Phone Number *</FormLabel>
+                          <FormControl>
+                            <Input placeholder="07xxxxxxxx" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    
+                    {dynamicFields.filter(f => f.fieldName !== 'profilePicture').map(renderField)}
+                  </div>
                 
                 <Button type="submit" className="w-full" disabled={isSubmitting}>
                   {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
@@ -515,5 +542,7 @@ function InstituteSelector() {
     </div>
   );
 }
+
+    
 
     
