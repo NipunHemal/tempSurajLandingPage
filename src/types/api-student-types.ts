@@ -6,8 +6,8 @@ export interface UpdateStudentProfileData {
   gender: 'MALE' | 'FEMALE' | 'OTHER';
   whatsappNumber?: string;
   phoneNumber: string;
-  year: number;
-  nic: string;
+  year?: number;
+  nic?: string;
   nicPicUploadId?: string;
 }
 

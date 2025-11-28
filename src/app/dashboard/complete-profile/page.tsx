@@ -39,7 +39,7 @@ import {
 } from '@/components/ui/sheet';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useMemo } from 'react';
 import { useUploadImage } from '@/service/query/useUpload';
 import { toast } from 'sonner';
 import Image from 'next/image';
@@ -48,6 +48,8 @@ import { useGetInstitutes } from '@/service/query/useInstitute';
 import { Institute } from '@/types/api-institute-types';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { useMetaStore } from '@/store/meta.store';
+import { Field } from '@/types/api-meta-types';
 
 const profileFormSchema = z.object({
   firstName: z.string().min(2, { message: 'First name must be at least 2 characters.' }),
@@ -56,13 +58,15 @@ const profileFormSchema = z.object({
   gender: z.enum(['MALE', 'FEMALE', 'OTHER'], { required_error: 'Please select a gender.' }),
   whatsappNumber: z.string().optional(),
   phoneNumber: z.string().min(10, { message: 'Phone number must be at least 10 digits.' }),
-  year: z.coerce.number().min(1900).max(new Date().getFullYear() + 5),
-  nic: z.string().min(10, { message: 'NIC must be at least 10 characters.' }),
+  year: z.coerce.number().min(1900).max(new Date().getFullYear() + 5).optional(),
+  nic: z.string().min(10, { message: 'NIC must be at least 10 characters.' }).optional(),
   profilePictureUploadId: z.string().optional(),
   nicPicUploadId: z.string().optional(),
 });
 
 type ProfileFormValues = z.infer<typeof profileFormSchema>;
+
+const permanentFields = ['firstName', 'lastName', 'dob', 'gender', 'phoneNumber'];
 
 export default function CompleteProfilePage() {
   const router = useRouter();
@@ -82,6 +86,15 @@ export default function CompleteProfilePage() {
       setStep(2);
     }
   });
+  
+  const { meta } = useMetaStore();
+  
+  const dynamicFields = useMemo(() => {
+    return meta?.settings.STUDENT_PROFILE.fields.filter(
+      field => field.isEnabled && !permanentFields.includes(field.fieldName)
+    ) || [];
+  }, [meta]);
+
 
   const form = useForm<ProfileFormValues>({
     resolver: zodResolver(profileFormSchema),
@@ -133,6 +146,135 @@ export default function CompleteProfilePage() {
 
   const isSubmitting = form.formState.isSubmitting || isUploading || isUpdatingProfile;
 
+  const renderField = (fieldConfig: Field) => {
+    switch (fieldConfig.fieldName) {
+      case 'profilePicture':
+        return (
+           <FormField
+                key={fieldConfig.fieldName}
+                control={form.control}
+                name="profilePictureUploadId"
+                render={({ field }) => (
+                    <FormItem className="flex flex-col items-center gap-6 col-span-full">
+                        <FormControl>
+                            <div>
+                                <input
+                                    type="file"
+                                    ref={profilePicInputRef}
+                                    className="hidden"
+                                    accept="image/*"
+                                    onChange={(e) => handleFileChange(e, 'profile', 'profilePictureUploadId', setProfilePicPreview)}
+                                />
+                                <div className="relative">
+                                    <Avatar className="h-24 w-24 cursor-pointer" onClick={() => profilePicInputRef.current?.click()}>
+                                        <AvatarImage src={profilePicPreview || ''} alt="Profile Picture" />
+                                        <AvatarFallback className="text-3xl">
+                                            <Upload />
+                                        </AvatarFallback>
+                                    </Avatar>
+                                    {isUploading && form.watch('profilePictureUploadId') === undefined && (
+                                        <div className="absolute inset-0 flex items-center justify-center rounded-full bg-black/50">
+                                            <Loader2 className="animate-spin text-white" />
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        </FormControl>
+                        <FormMessage />
+                    </FormItem>
+                )}
+            />
+        );
+      case 'whatsappNumber':
+        return (
+          <FormField
+            key={fieldConfig.fieldName}
+            control={form.control}
+            name="whatsappNumber"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>WhatsApp Number {fieldConfig.required && '*'} (Optional)</FormLabel>
+                <FormControl>
+                  <Input placeholder="07xxxxxxxx" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        );
+      case 'year':
+        return (
+          <FormField
+            key={fieldConfig.fieldName}
+            control={form.control}
+            name="year"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>A/L Year {fieldConfig.required && '*'}</FormLabel>
+                <FormControl>
+                  <Input type="number" placeholder="e.g., 2025" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        );
+      case 'nic':
+        return (
+          <FormField
+            key={fieldConfig.fieldName}
+            control={form.control}
+            name="nic"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>NIC {fieldConfig.required && '*'}</FormLabel>
+                <FormControl>
+                  <Input placeholder="Your National ID Card number" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        );
+      case 'nicPic':
+        return (
+            <FormField
+                key={fieldConfig.fieldName}
+                control={form.control}
+                name="nicPicUploadId"
+                render={({ field }) => (
+                    <FormItem className="col-span-full">
+                        <FormLabel>NIC Image {fieldConfig.required && '*'}</FormLabel>
+                        <FormControl>
+                            <div>
+                            <input
+                                type="file"
+                                ref={nicPicInputRef}
+                                className="hidden"
+                                accept="image/*"
+                                onChange={(e) => handleFileChange(e, 'nic', 'nicPicUploadId', setNicPicPreview)}
+                            />
+                            <Button type="button" variant="outline" onClick={() => nicPicInputRef.current?.click()} className="w-full">
+                                <Upload className="mr-2 h-4 w-4" />
+                                {nicPicPreview ? 'Change NIC Image' : 'Upload NIC Image'}
+                            </Button>
+                            </div>
+                        </FormControl>
+                        {nicPicPreview && (
+                            <div className="relative mt-4 h-48 w-full">
+                                <Image src={nicPicPreview} alt="NIC Preview" layout="fill" objectFit="contain" className="rounded-md border"/>
+                            </div>
+                        )}
+                        <FormMessage />
+                    </FormItem>
+                )}
+            />
+        );
+      default:
+        return null;
+    }
+  };
+
   return (
     <div className="flex min-h-screen w-full items-center justify-center bg-background p-4 sm:p-6 lg:p-8">
       <div className="w-full max-w-4xl rounded-lg border bg-card p-6 shadow-sm">
@@ -142,43 +284,10 @@ export default function CompleteProfilePage() {
             <p className="mb-8 text-center text-muted-foreground">Please fill in your details to continue.</p>
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onProfileSubmit)} className="space-y-8">
-                <div className="flex flex-col items-center gap-6">
-                    <FormField
-                        control={form.control}
-                        name="profilePictureUploadId"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormControl>
-                                    <div>
-                                        <input
-                                            type="file"
-                                            ref={profilePicInputRef}
-                                            className="hidden"
-                                            accept="image/*"
-                                            onChange={(e) => handleFileChange(e, 'profile', 'profilePictureUploadId', setProfilePicPreview)}
-                                        />
-                                        <div className="relative">
-                                            <Avatar className="h-24 w-24 cursor-pointer" onClick={() => profilePicInputRef.current?.click()}>
-                                                <AvatarImage src={profilePicPreview || ''} alt="Profile Picture" />
-                                                <AvatarFallback className="text-3xl">
-                                                    <Upload />
-                                                </AvatarFallback>
-                                            </Avatar>
-                                            {isUploading && form.watch('profilePictureUploadId') === undefined && (
-                                                <div className="absolute inset-0 flex items-center justify-center rounded-full bg-black/50">
-                                                    <Loader2 className="animate-spin text-white" />
-                                                </div>
-                                            )}
-                                        </div>
-                                    </div>
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
-                </div>
-
+                
                 <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+                  {dynamicFields.find(f => f.fieldName === 'profilePicture') && renderField(dynamicFields.find(f => f.fieldName === 'profilePicture')!)}
+                  
                   <FormField
                     control={form.control}
                     name="firstName"
@@ -281,78 +390,10 @@ export default function CompleteProfilePage() {
                       </FormItem>
                     )}
                   />
-                  <FormField
-                    control={form.control}
-                    name="whatsappNumber"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>WhatsApp Number (Optional)</FormLabel>
-                        <FormControl>
-                          <Input placeholder="07xxxxxxxx" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="year"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>A/L Year</FormLabel>
-                        <FormControl>
-                          <Input type="number" placeholder="e.g., 2025" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="nic"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>NIC</FormLabel>
-                        <FormControl>
-                          <Input placeholder="Your National ID Card number" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                  
+                  {dynamicFields.map(renderField)}
                 </div>
                 
-                <FormField
-                    control={form.control}
-                    name="nicPicUploadId"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>NIC Image</FormLabel>
-                            <FormControl>
-                                <div>
-                                <input
-                                    type="file"
-                                    ref={nicPicInputRef}
-                                    className="hidden"
-                                    accept="image/*"
-                                    onChange={(e) => handleFileChange(e, 'nic', 'nicPicUploadId', setNicPicPreview)}
-                                />
-                                <Button type="button" variant="outline" onClick={() => nicPicInputRef.current?.click()} className="w-full">
-                                    <Upload className="mr-2 h-4 w-4" />
-                                    {nicPicPreview ? 'Change NIC Image' : 'Upload NIC Image'}
-                                </Button>
-                                </div>
-                            </FormControl>
-                            {nicPicPreview && (
-                                <div className="relative mt-4 h-48 w-full">
-                                    <Image src={nicPicPreview} alt="NIC Preview" layout="fill" objectFit="contain" className="rounded-md border"/>
-                                </div>
-                            )}
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
-
                 <Button type="submit" className="w-full" disabled={isSubmitting}>
                   {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                   {isSubmitting ? 'Saving...' : 'Save and Continue'}
@@ -472,5 +513,3 @@ function InstituteSelector() {
     </div>
   );
 }
-
-    
