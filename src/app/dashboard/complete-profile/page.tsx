@@ -155,7 +155,7 @@ export default function CompleteProfilePage() {
                 control={form.control}
                 name="profilePictureUploadId"
                 render={({ field }) => (
-                    <FormItem className="flex flex-col items-center gap-6 col-span-full">
+                    <FormItem className="flex flex-col items-center gap-6">
                         <FormControl>
                             <div>
                                 <input
@@ -285,8 +285,10 @@ export default function CompleteProfilePage() {
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onProfileSubmit)} className="space-y-8">
                 
-                <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-                  {dynamicFields.find(f => f.fieldName === 'profilePicture') && renderField(dynamicFields.find(f => f.fieldName === 'profilePicture')!)}
+                <div className="grid grid-cols-1 items-start gap-6 md:grid-cols-2">
+                  <div className="col-span-full flex justify-center">
+                    {dynamicFields.find(f => f.fieldName === 'profilePicture') && renderField(dynamicFields.find(f => f.fieldName === 'profilePicture')!)}
+                  </div>
                   
                   <FormField
                     control={form.control}
@@ -381,7 +383,7 @@ export default function CompleteProfilePage() {
                     control={form.control}
                     name="phoneNumber"
                     render={({ field }) => (
-                      <FormItem>
+                      <FormItem className='md:col-span-2'>
                         <FormLabel>Phone Number</FormLabel>
                         <FormControl>
                           <Input placeholder="07xxxxxxxx" {...field} />
@@ -391,7 +393,7 @@ export default function CompleteProfilePage() {
                     )}
                   />
                   
-                  {dynamicFields.map(renderField)}
+                  {dynamicFields.filter(f => f.fieldName !== 'profilePicture').map(renderField)}
                 </div>
                 
                 <Button type="submit" className="w-full" disabled={isSubmitting}>
@@ -513,3 +515,5 @@ function InstituteSelector() {
     </div>
   );
 }
+
+    
