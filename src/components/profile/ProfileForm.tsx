@@ -26,7 +26,7 @@ export function ProfileForm() {
   const router = useRouter();
   const { mutate: updateProfile, isPending: isUpdatingProfile } = useUpdateStudentProfile({
     onSuccess: () => {
-      router.push('/dashboard/complete-profile?step=2', { scroll: false });
+      router.push('/complete-profile?step=2', { scroll: false });
     },
   });
 

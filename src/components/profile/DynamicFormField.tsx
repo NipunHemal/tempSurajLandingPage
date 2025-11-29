@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useRef, useState } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import { Control, ControllerRenderProps, FieldValues, UseFormReturn, useForm } from 'react-hook-form';
 import * as z from 'zod';
 import { FormField as ShadcnFormField, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form';
@@ -23,6 +23,8 @@ export const profileFormSchema = z.object({
   dob: z.date({ required_error: 'A date of birth is required.' }),
   gender: z.enum(['MALE', 'FEMALE', 'OTHER'], { required_error: 'Please select a gender.' }),
   phoneNumber: z.string().min(10, { message: 'Phone number must be at least 10 digits.' }),
+  profilePicture: z.string().optional(),
+  nicPic: z.string().optional(),
   profilePictureUploadId: z.string().optional(),
   nicPicUploadId: z.string().optional(),
   year: z.coerce.number().optional(),
@@ -61,10 +63,16 @@ export function DynamicFormField({ control, fieldConfig, form }: DynamicFormFiel
   const fieldName = fieldConfig.fieldName as keyof ProfileFormValues;
   const label = fieldConfig.fieldName.replace(/([A-Z])/g, ' $1').replace(/^./, (s) => s.toUpperCase()) + (fieldConfig.required ? ' *' : '');
 
+  const existingImageValue = form.watch(fieldName);
   const [preview, setPreview] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { mutate: uploadImage, isPending: isUploading } = useUploadImage();
-  const formValue = form.watch(fieldName);
+  
+  useEffect(() => {
+    if (typeof existingImageValue === 'string') {
+      setPreview(existingImageValue);
+    }
+  }, [existingImageValue]);
 
   const handleFileChange = (
     event: React.ChangeEvent<HTMLInputElement>,
@@ -127,7 +135,7 @@ export function DynamicFormField({ control, fieldConfig, form }: DynamicFormFiel
                   <Upload />
                 </AvatarFallback>
               </Avatar>
-              {isUploading && !formValue && (
+              {isUploading && (
                 <div className="absolute inset-0 flex items-center justify-center rounded-full bg-black/50">
                   <Loader2 className="animate-spin text-white" />
                 </div>

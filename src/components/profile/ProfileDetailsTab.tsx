@@ -64,7 +64,7 @@ export function ProfileDetailsTab() {
   });
 
   useEffect(() => {
-    if (user) {
+    if (user?.student) {
       form.reset({
         firstName: user.student.firstName || '',
         lastName: user.student.lastName || '',
@@ -72,8 +72,12 @@ export function ProfileDetailsTab() {
         gender: user.student.gender as 'MALE' | 'FEMALE' | 'OTHER' | undefined,
         phoneNumber: user.phoneNumber || '',
         whatsappNumber: user.whatsappNumber || '',
-        year: user.student.year ? parseInt(user.student.year, 10) : undefined,
-        // ... set other fields from user object as needed
+        year: user.student.year ? Number(user.student.year) : undefined,
+        nic: user.student.nic || '',
+        homeAddress: user.student.homeAddress || '',
+        profilePicture: user.student.profilePicture || '',
+        nicPic: user.student.nicPic || '',
+        // Set other fields from the user object as they are added to the schema
       });
     }
   }, [user, form]);
@@ -82,6 +86,10 @@ export function ProfileDetailsTab() {
     const payload: Record<string, any> = {};
     for (const key in data) {
       const value = data[key as keyof typeof data];
+      
+      // We don't want to submit the preview URL, only the upload ID
+      if (key === 'profilePicture' || key === 'nicPic' || key === 'instituteCardImage') continue;
+
       if (value !== undefined && value !== null && value !== '') {
          if (key === 'dob' && value instanceof Date) {
           payload[key] = format(value, 'yyyy-MM-dd');

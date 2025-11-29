@@ -1,3 +1,4 @@
+
 import { Institute } from "./api-institute-types";
 
 export interface LoginData {
@@ -43,6 +44,7 @@ export interface StudentData {
   year: string | null;
   nic: string | null;
   nicPic: string | null;
+  homeAddress: string | null;
   registerCode: string | null;
   isProfileCompleted: boolean;
   approvalStatus: string;
