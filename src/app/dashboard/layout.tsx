@@ -16,7 +16,6 @@ import {
   SidebarMenuItem,
   SidebarProvider,
 } from '@/components/ui/sidebar';
-import DashboardHeader from '@/components/dashboard-header';
 import { mainNav, footerNav } from '@/constants/dashboard-nav';
 
 export default function DashboardLayout({
@@ -54,7 +53,7 @@ export default function DashboardLayout({
               <SidebarMenuItem key={index}>
                 <SidebarMenuButton
                   asChild
-                  isActive={item.href && pathname.startsWith(item.href)}
+                  isActive={!!(item.href && pathname.startsWith(item.href))} 
                   tooltip={item.tooltip}
                 >
                   <Link href={item.href || '#'}>

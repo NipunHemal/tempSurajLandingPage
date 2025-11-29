@@ -10,7 +10,16 @@ import {
   User,
 } from 'lucide-react';
 
-export const mainNav = [
+type NavItem = {
+  href?: string
+  label: string
+  icon: React.FC
+  tooltip: string
+  badge?: string
+};
+
+
+export const mainNav: NavItem[] = [
   {
     href: '/dashboard',
     label: 'Dashboard',
