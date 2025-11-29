@@ -11,7 +11,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import Image from 'next/image';
-import { Loader2, Upload } from 'lucide-react';
+import { Loader2, Upload, Pencil } from 'lucide-react';
 import { useUploadImage } from '@/service/query/useUpload';
 import { toast } from 'sonner';
 import type { Field } from '@/types/api-meta-types';
@@ -100,7 +100,7 @@ export function DynamicFormField({ control, fieldConfig, form }: DynamicFormFiel
   const renderField = (rhfProps: ControllerRenderProps<ProfileFormValues, keyof ProfileFormValues>) => {
     if (fieldConfig.enum) {
       return (
-        <Select onValueChange={rhfProps.onChange} defaultValue={rhfProps.value as string | undefined}>
+        <Select onValueChange={rhfProps.onChange} value={rhfProps.value as string | undefined} defaultValue={rhfProps.value as string | undefined}>
           <FormControl>
             <SelectTrigger>
               <SelectValue placeholder={`Select a ${label.replace(' *', '')}`} />
@@ -128,13 +128,16 @@ export function DynamicFormField({ control, fieldConfig, form }: DynamicFormFiel
               accept="image/*"
               onChange={(e) => handleFileChange(e, 'profile', 'profilePictureUploadId')}
             />
-            <div className="relative">
+            <div className="relative group">
               <Avatar className="h-24 w-24 cursor-pointer" onClick={() => fileInputRef.current?.click()}>
                 <AvatarImage src={preview || ''} alt="Profile Picture" />
                 <AvatarFallback className="text-3xl">
                   <Upload />
                 </AvatarFallback>
               </Avatar>
+              <div className="absolute inset-0 flex items-center justify-center rounded-full bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer" onClick={() => fileInputRef.current?.click()}>
+                 <Pencil className="text-white" />
+              </div>
               {isUploading && (
                 <div className="absolute inset-0 flex items-center justify-center rounded-full bg-black/50">
                   <Loader2 className="animate-spin text-white" />

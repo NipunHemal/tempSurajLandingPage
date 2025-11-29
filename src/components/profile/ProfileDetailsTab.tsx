@@ -80,7 +80,7 @@ export function ProfileDetailsTab() {
         // Set other fields from the user object as they are added to the schema
       });
     }
-  }, [user, form]);
+  }, [user, form.reset]);
 
   function onProfileSubmit(data: ProfileFormValues) {
     const payload: Record<string, any> = {};
@@ -187,7 +187,7 @@ export function ProfileDetailsTab() {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Gender *</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
+                    <Select onValueChange={field.onChange} value={field.value} defaultValue={field.value}>
                       <FormControl>
                         <SelectTrigger>
                           <SelectValue placeholder="Select a gender" />

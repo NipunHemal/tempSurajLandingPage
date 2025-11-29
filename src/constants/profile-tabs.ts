@@ -3,12 +3,12 @@ import { User, BarChart3, CreditCard, FileText } from 'lucide-react';
 export const profileTabs = [
   {
     value: 'details',
-    label: 'Profile Details',
+    label: 'Profile',
     icon: User,
   },
   {
     value: 'progress',
-    label: 'My Progress',
+    label: 'Progress',
     icon: BarChart3,
   },
   {
@@ -18,7 +18,7 @@ export const profileTabs = [
   },
   {
     value: 'exams',
-    label: 'My Exams',
+    label: 'Exams',
     icon: FileText,
   },
 ];
