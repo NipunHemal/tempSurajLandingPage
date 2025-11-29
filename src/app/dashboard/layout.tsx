@@ -1,16 +1,6 @@
 
 'use client';
 
-import {
-  Book,
-  BookMarked,
-  BookOpen,
-  LayoutDashboard,
-  LifeBuoy,
-  Megaphone,
-  BarChart3,
-  User,
-} from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
@@ -26,6 +16,8 @@ import {
   SidebarMenuItem,
   SidebarProvider,
 } from '@/components/ui/sidebar';
+import DashboardHeader from '@/components/dashboard-header';
+import { mainNav, footerNav } from '@/constants/dashboard-nav';
 
 export default function DashboardLayout({
   children,
@@ -58,88 +50,41 @@ export default function DashboardLayout({
         </SidebarHeader>
         <SidebarContent className="p-2">
           <SidebarMenu>
-            <SidebarMenuItem>
-              <SidebarMenuButton
-                asChild
-                isActive={pathname === '/dashboard'}
-                tooltip="Dashboard"
-              >
-                <Link href="/dashboard">
-                  <LayoutDashboard />
-                  Dashboard
-                </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-            <SidebarMenuItem>
-              <SidebarMenuButton
-                asChild
-                isActive={pathname.startsWith('/dashboard/class')}
-                tooltip="Classes"
-              >
-                <Link href="/dashboard/class">
-                  <BookOpen />
-                  Classes
-                </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-            <SidebarMenuItem>
-              <SidebarMenuButton tooltip="Lesson">
-                <Book />
-                Lesson
-              </SidebarMenuButton>
-              <SidebarMenuBadge className="h-5 w-5 justify-center rounded-full bg-destructive text-destructive-foreground">3</SidebarMenuBadge>
-            </SidebarMenuItem>
-            <SidebarMenuItem>
-              <SidebarMenuButton
-                asChild
-                isActive={pathname === '/dashboard/my-classes'}
-                tooltip="My Classes"
-              >
-                <Link href="/dashboard/my-classes">
-                  <BookMarked />
-                  My Classes
-                </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-            <SidebarMenuItem>
-                <SidebarMenuButton tooltip="Progress">
-                    <BarChart3 />
-                    Progress
-                </SidebarMenuButton>
-            </SidebarMenuItem>
-            <SidebarMenuItem>
-                <SidebarMenuButton 
+            {mainNav.map((item, index) => (
+              <SidebarMenuItem key={index}>
+                <SidebarMenuButton
                   asChild
-                  isActive={pathname === '/dashboard/profile'}
-                  tooltip="Profile">
-                    <Link href="/dashboard/profile">
-                        <User />
-                        Profile
-                    </Link>
+                  isActive={item.href && pathname.startsWith(item.href)}
+                  tooltip={item.tooltip}
+                >
+                  <Link href={item.href || '#'}>
+                    <item.icon />
+                    {item.label}
+                  </Link>
                 </SidebarMenuButton>
-            </SidebarMenuItem>
-            <SidebarMenuItem>
-                <SidebarMenuButton tooltip="Announcements">
-                    <Megaphone />
-                    Announcements
-                </SidebarMenuButton>
-            </SidebarMenuItem>
+                {item.badge && (
+                   <SidebarMenuBadge className="h-5 w-5 justify-center rounded-full bg-destructive text-destructive-foreground">
+                    {item.badge}
+                  </SidebarMenuBadge>
+                )}
+              </SidebarMenuItem>
+            ))}
           </SidebarMenu>
         </SidebarContent>
         <SidebarFooter className="p-2">
           <SidebarMenu>
-            <SidebarMenuItem>
-              <SidebarMenuButton tooltip="Help">
-                <LifeBuoy />
-                Help
-              </SidebarMenuButton>
-            </SidebarMenuItem>
+            {footerNav.map((item, index) => (
+              <SidebarMenuItem key={index}>
+                <SidebarMenuButton tooltip={item.tooltip}>
+                  <item.icon />
+                  {item.label}
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            ))}
           </SidebarMenu>
         </SidebarFooter>
       </Sidebar>
-      <SidebarInset>
-        {children}
-      </SidebarInset>
+      <SidebarInset>{children}</SidebarInset>
     </SidebarProvider>
   );
 }

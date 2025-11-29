@@ -39,12 +39,12 @@ const AuthInitializer = ({ children }: { children: React.ReactNode }) => {
     setLoading(isLoading);
     if (isSuccess && userProfile?.data) {
       setUser(userProfile.data);
-      if (
-        !userProfile.data.student.isProfileCompleted &&
-        pathname !== "/dashboard/complete-profile"
-      ) {
-        router.replace("/dashboard/complete-profile");
-      }
+      // if (
+      //   !userProfile.data.student.isProfileCompleted &&
+      //   pathname !== "/dashboard/complete-profile"
+      // ) {
+      //   router.replace("/dashboard/complete-profile");
+      // }
     }
     if (isError) {
       setUser(null);
