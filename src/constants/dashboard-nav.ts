@@ -6,18 +6,16 @@ import {
   LayoutDashboard,
   LifeBuoy,
   Megaphone,
-  BarChart3,
   User,
 } from 'lucide-react';
 
 type NavItem = {
-  href?: string
-  label: string
-  icon: React.FC
-  tooltip: string
-  badge?: string
+  href?: string;
+  label: string;
+  icon: React.FC<any>;
+  tooltip: string;
+  badge?: string;
 };
-
 
 export const mainNav: NavItem[] = [
   {
@@ -33,21 +31,10 @@ export const mainNav: NavItem[] = [
     tooltip: 'Classes',
   },
   {
-    label: 'Lesson',
-    icon: Book,
-    tooltip: 'Lesson',
-    badge: '3',
-  },
-  {
     href: '/dashboard/my-classes',
     label: 'My Classes',
     icon: BookMarked,
     tooltip: 'My Classes',
-  },
-  {
-    label: 'Progress',
-    icon: BarChart3,
-    tooltip: 'Progress',
   },
   {
     href: '/dashboard/profile',
@@ -56,13 +43,14 @@ export const mainNav: NavItem[] = [
     tooltip: 'Profile',
   },
   {
-    label: 'Announcements',
+    href: '/dashboard/announcements',
+    label: 'Announce',
     icon: Megaphone,
     tooltip: 'Announcements',
   },
 ];
 
-export const footerNav = [
+export const footerNav: NavItem[] = [
   {
     href: '/dashboard/help',
     label: 'Help',

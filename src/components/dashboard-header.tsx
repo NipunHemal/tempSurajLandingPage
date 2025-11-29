@@ -1,3 +1,4 @@
+
 'use client';
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -25,7 +26,7 @@ export default function DashboardHeader({ title, children }: { title?: string, c
   return (
     <header className="sticky top-0 z-10 flex h-16 items-center justify-between border-b bg-background/80 px-6 backdrop-blur-sm">
       <div className="flex items-center gap-2">
-        <SidebarTrigger className="md:hidden" />
+        <SidebarTrigger className="hidden md:flex" />
         <div>
           {children}
           {title && <h1 className="font-headline text-2xl font-semibold tracking-tight">

@@ -17,6 +17,8 @@ import {
   SidebarProvider,
 } from '@/components/ui/sidebar';
 import { mainNav, footerNav } from '@/constants/dashboard-nav';
+import BottomNavBar from '@/components/BottomNavBar';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 export default function DashboardLayout({
   children,
@@ -24,6 +26,7 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
+  const isMobile = useIsMobile();
 
   return (
     <SidebarProvider defaultOpen>
@@ -53,7 +56,7 @@ export default function DashboardLayout({
               <SidebarMenuItem key={index}>
                 <SidebarMenuButton
                   asChild
-                  isActive={!!(item.href && pathname.startsWith(item.href))} 
+                  isActive={!!(item.href && pathname.startsWith(item.href))}
                   tooltip={item.tooltip}
                 >
                   <Link href={item.href || '#'}>
@@ -74,16 +77,23 @@ export default function DashboardLayout({
           <SidebarMenu>
             {footerNav.map((item, index) => (
               <SidebarMenuItem key={index}>
-                <SidebarMenuButton tooltip={item.tooltip}>
-                  <item.icon />
-                  {item.label}
+                 <SidebarMenuButton
+                  asChild
+                  isActive={!!(item.href && pathname.startsWith(item.href))} 
+                  tooltip={item.tooltip}
+                >
+                  <Link href={item.href || '#'}>
+                    <item.icon />
+                    {item.label}
+                  </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
             ))}
           </SidebarMenu>
         </SidebarFooter>
       </Sidebar>
-      <SidebarInset>{children}</SidebarInset>
+      <SidebarInset className={isMobile ? 'pb-20' : ''}>{children}</SidebarInset>
+      {isMobile && <BottomNavBar />}
     </SidebarProvider>
   );
 }
