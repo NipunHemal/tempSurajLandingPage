@@ -26,7 +26,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Calendar } from '@/components/ui/calendar';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { CalendarIcon, CheckCircle, Loader2, Upload, Building } from 'lucide-react';
@@ -100,8 +100,12 @@ export default function CompleteProfilePage() {
   
   const [profilePicPreview, setProfilePicPreview] = useState<string | null>(null);
   const [nicPicPreview, setNicPicPreview] = useState<string | null>(null);
+  const [instituteCardImagePreview, setInstituteCardImagePreview] = useState<string | null>(null);
+
   const profilePicInputRef = useRef<HTMLInputElement>(null);
   const nicPicInputRef = useRef<HTMLInputElement>(null);
+  const instituteCardImageInputRef = useRef<HTMLInputElement>(null);
+
   
   const { mutate: uploadImage, isPending: isUploading } = useUploadImage();
   const { mutate: updateProfile, isPending: isUpdatingProfile } = useUpdateStudentProfile({
@@ -119,7 +123,7 @@ export default function CompleteProfilePage() {
     const allDynamicFields = meta.settings.STUDENT_PROFILE.fields
       .filter(field => field.isEnabled && !permanentFields.includes(field.fieldName));
 
-    const personalAndAcademicFields = allDynamicFields.filter(f => ['profilePicture', 'year', 'nic', 'nicPic', 'alYear', 'olYear', 'stream', 'medium', 'school', 'shySelect'].includes(f.fieldName));
+    const personalAndAcademicFields = allDynamicFields.filter(f => ['profilePicture', 'year', 'nic', 'nicPic', 'alYear', 'olYear', 'stream', 'medium', 'school', 'shySelect', 'instituteNumber', 'instituteCardImage'].includes(f.fieldName));
     const contactFields = allDynamicFields.filter(f => ['whatsappNumber', 'telegramNumber'].includes(f.fieldName));
     const addressFields = allDynamicFields.filter(f => ['homeAddress', 'deliveryAddress', 'postalcode', 'city', 'district', 'province', 'country'].includes(f.fieldName));
     const guardianFields = allDynamicFields.filter(f => ['guardianName', 'relationship', 'guardianContactNumber'].includes(f.fieldName));
@@ -148,8 +152,8 @@ export default function CompleteProfilePage() {
 
   const handleFileChange = (
     event: React.ChangeEvent<HTMLInputElement>,
-    type: 'profile' | 'nic',
-    field: 'profilePictureUploadId' | 'nicPicUploadId',
+    type: 'profile' | 'nic' | 'class',
+    field: 'profilePictureUploadId' | 'nicPicUploadId' | 'instituteCardImage',
     setPreview: (url: string | null) => void
   ) => {
     const file = event.target.files?.[0];
@@ -158,7 +162,7 @@ export default function CompleteProfilePage() {
       uploadImage({ image: file, type }, {
         onSuccess: (data) => {
           form.setValue(field, data.data.uploadId);
-          toast.success(`${type === 'profile' ? 'Profile picture' : 'NIC image'} uploaded!`);
+          toast.success(`${type === 'profile' ? 'Profile picture' : type === 'nic' ? 'NIC image' : 'Institute card image'} uploaded!`);
         },
         onError: () => {
           setPreview(null);
@@ -192,7 +196,7 @@ export default function CompleteProfilePage() {
     const fieldName = fieldConfig.fieldName as keyof ProfileFormValues;
     const label = toTitleCase(fieldName) + (fieldConfig.required ? ' *' : '');
 
-    if (fieldConfig.enum) {
+    if (fieldConfig.enum && fieldName !== 'shySelect') {
         return (
             <FormField
                 key={fieldName}
@@ -286,6 +290,40 @@ export default function CompleteProfilePage() {
                         {nicPicPreview && (
                             <div className="relative mt-4 h-48 w-full">
                                 <Image src={nicPicPreview} alt="NIC Preview" layout="fill" objectFit="contain" className="rounded-md border"/>
+                            </div>
+                        )}
+                        <FormMessage />
+                    </FormItem>
+                )}
+            />
+        );
+       case 'instituteCardImage':
+        return (
+            <FormField
+                key={fieldName}
+                control={form.control}
+                name="instituteCardImage"
+                render={({ field }) => (
+                    <FormItem className="col-span-full">
+                        <FormLabel>{label}</FormLabel>
+                        <FormControl>
+                            <div>
+                            <input
+                                type="file"
+                                ref={instituteCardImageInputRef}
+                                className="hidden"
+                                accept="image/*"
+                                onChange={(e) => handleFileChange(e, 'class', 'instituteCardImage', setInstituteCardImagePreview)}
+                            />
+                            <Button type="button" variant="outline" onClick={() => instituteCardImageInputRef.current?.click()} className="w-full">
+                                <Upload className="mr-2 h-4 w-4" />
+                                {instituteCardImagePreview ? 'Change Institute Card Image' : 'Upload Institute Card Image'}
+                            </Button>
+                            </div>
+                        </FormControl>
+                        {instituteCardImagePreview && (
+                            <div className="relative mt-4 h-48 w-full">
+                                <Image src={instituteCardImagePreview} alt="Institute Card Preview" layout="fill" objectFit="contain" className="rounded-md border"/>
                             </div>
                         )}
                         <FormMessage />
@@ -442,7 +480,7 @@ export default function CompleteProfilePage() {
                             </FormItem>
                           )}
                         />
-                        {personalAndAcademicFields.filter(f => f.fieldName !== 'profilePicture').map(renderField)}
+                        {personalAndAcademicFields.filter(f => !['profilePicture'].includes(f.fieldName)).map(renderField)}
                     </div>
                   </CardContent>
                 </Card>
@@ -615,5 +653,7 @@ function InstituteSelector() {
     </Card>
   );
 }
+
+    
 
     
