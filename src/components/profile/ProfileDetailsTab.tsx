@@ -14,27 +14,22 @@ import { Calendar } from '@/components/ui/calendar';
 import { CalendarIcon, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useUpdateStudentProfile } from '@/service/query/useStudent';
 import { useMetaStore } from '@/store/meta.store';
-import { useRouter } from 'next/navigation';
 import { DynamicFormField, profileFormSchema } from './DynamicFormField';
+import { useAuthStore } from '@/store/auth.store';
 
 type ProfileFormValues = z.infer<typeof profileFormSchema>;
 
-export function ProfileForm() {
-  const router = useRouter();
-  const { mutate: updateProfile, isPending: isUpdatingProfile } = useUpdateStudentProfile({
-    onSuccess: () => {
-      router.push('/dashboard/complete-profile?step=2', { scroll: false });
-    },
-  });
-
+export function ProfileDetailsTab() {
+  const { user } = useAuthStore();
+  const { mutate: updateProfile, isPending: isUpdatingProfile } = useUpdateStudentProfile();
   const { meta } = useMetaStore();
 
   const { personalAndAcademicFields, contactFields, addressFields, guardianFields } = useMemo(() => {
     if (!meta) return { personalAndAcademicFields: [], contactFields: [], addressFields: [], guardianFields: [] };
-
+    
     const permanentFields = ['firstName', 'lastName', 'dob', 'gender', 'phoneNumber'];
     const allDynamicFields = meta.settings.STUDENT_PROFILE.fields.filter(
       (field) => field.isEnabled && !permanentFields.includes(field.fieldName)
@@ -53,7 +48,7 @@ export function ProfileForm() {
 
     return { personalAndAcademicFields, contactFields, addressFields, guardianFields };
   }, [meta]);
-
+  
   const form = useForm<ProfileFormValues>({
     resolver: zodResolver(profileFormSchema),
     defaultValues: {
@@ -68,12 +63,27 @@ export function ProfileForm() {
     },
   });
 
+  useEffect(() => {
+    if (user) {
+      form.reset({
+        firstName: user.student.firstName || '',
+        lastName: user.student.lastName || '',
+        dob: user.student.dob ? new Date(user.student.dob) : undefined,
+        gender: user.student.gender as 'MALE' | 'FEMALE' | 'OTHER' | undefined,
+        phoneNumber: user.phoneNumber || '',
+        whatsappNumber: user.whatsappNumber || '',
+        year: user.student.year ? parseInt(user.student.year, 10) : undefined,
+        // ... set other fields from user object as needed
+      });
+    }
+  }, [user, form]);
+
   function onProfileSubmit(data: ProfileFormValues) {
     const payload: Record<string, any> = {};
     for (const key in data) {
       const value = data[key as keyof typeof data];
       if (value !== undefined && value !== null && value !== '') {
-        if (key === 'dob' && value instanceof Date) {
+         if (key === 'dob' && value instanceof Date) {
           payload[key] = format(value, 'yyyy-MM-dd');
         } else {
           payload[key] = value;
@@ -248,7 +258,7 @@ export function ProfileForm() {
 
         <Button type="submit" className="w-full" disabled={isSubmitting}>
           {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          {isSubmitting ? 'Saving...' : 'Save and Continue'}
+          {isSubmitting ? 'Saving...' : 'Save Changes'}
         </Button>
       </form>
     </Form>
