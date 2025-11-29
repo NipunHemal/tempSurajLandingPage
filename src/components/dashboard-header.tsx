@@ -1,4 +1,3 @@
-
 'use client';
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -13,7 +12,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Button } from './ui/button';
-import { LifeBuoy, LogOut, Settings, User } from 'lucide-react';
+import { LifeBuoy, LogOut, User } from 'lucide-react';
 import React from 'react';
 import { ThemeToggle } from './theme-toggle';
 import Link from 'next/link';
@@ -58,13 +57,11 @@ export default function DashboardHeader({ title, children }: { title?: string, c
                 Profile
               </Link>
             </DropdownMenuItem>
-            <DropdownMenuItem>
-              <Settings className="mr-2" />
-              Settings
-            </DropdownMenuItem>
-            <DropdownMenuItem>
-              <LifeBuoy className="mr-2" />
-              Support
+            <DropdownMenuItem asChild>
+              <Link href="/dashboard/help">
+                <LifeBuoy className="mr-2" />
+                Help
+              </Link>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={() => logout()}>

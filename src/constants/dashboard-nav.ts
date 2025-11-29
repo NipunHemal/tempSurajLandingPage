@@ -64,6 +64,7 @@ export const mainNav: NavItem[] = [
 
 export const footerNav = [
   {
+    href: '/dashboard/help',
     label: 'Help',
     icon: LifeBuoy,
     tooltip: 'Help',
