@@ -72,7 +72,7 @@ const profileFormSchema = z.object({
   school: z.string().optional(),
   whatsappNumber: z.string().optional(),
   telegramNumber: z.string().optional(),
-  shySelect: z.string().optional(),
+  shySelect: z.coerce.number().optional(),
   postalcode: z.string().optional(),
   homeAddress: z.string().optional(),
   deliveryAddress: z.string().optional(),
@@ -196,7 +196,7 @@ export default function CompleteProfilePage() {
     const fieldName = fieldConfig.fieldName as keyof ProfileFormValues;
     const label = toTitleCase(fieldName) + (fieldConfig.required ? ' *' : '');
 
-    if (fieldConfig.enum && fieldName !== 'shySelect') {
+    if (fieldConfig.enum) {
         return (
             <FormField
                 key={fieldName}
@@ -480,17 +480,6 @@ export default function CompleteProfilePage() {
                             </FormItem>
                           )}
                         />
-                        {personalAndAcademicFields.filter(f => !['profilePicture'].includes(f.fieldName)).map(renderField)}
-                    </div>
-                  </CardContent>
-                </Card>
-                
-                {(contactFields.length > 0) && (
-                  <Card>
-                    <CardHeader>
-                      <CardTitle>Contact Information</CardTitle>
-                    </CardHeader>
-                    <CardContent className="grid grid-cols-1 gap-x-6 gap-y-8 md:grid-cols-2">
                         <FormField
                           control={form.control}
                           name="phoneNumber"
@@ -504,6 +493,17 @@ export default function CompleteProfilePage() {
                             </FormItem>
                           )}
                         />
+                        {personalAndAcademicFields.filter(f => !['profilePicture'].includes(f.fieldName)).map(renderField)}
+                    </div>
+                  </CardContent>
+                </Card>
+                
+                {(contactFields.length > 0) && (
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Contact Information</CardTitle>
+                    </CardHeader>
+                    <CardContent className="grid grid-cols-1 gap-x-6 gap-y-8 md:grid-cols-2">
                         {contactFields.map(renderField)}
                     </CardContent>
                   </Card>
@@ -653,6 +653,8 @@ function InstituteSelector() {
     </Card>
   );
 }
+
+    
 
     
 
