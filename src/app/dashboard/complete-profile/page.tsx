@@ -141,6 +141,8 @@ export default function CompleteProfilePage() {
         phoneNumber: '',
         nic: '',
         gender: undefined,
+        stream: undefined,
+        medium: undefined,
     }
   });
   
@@ -342,7 +344,7 @@ export default function CompleteProfilePage() {
                       <FormItem className="col-span-full">
                           <FormLabel>{label}</FormLabel>
                           <FormControl>
-                              <Textarea placeholder={`Your ${toTitleCase(fieldName)}`} {...field} />
+                              <Textarea placeholder={`Your ${toTitleCase(fieldName)}`} {...field} value={field.value ?? ''} />
                           </FormControl>
                           <FormMessage />
                       </FormItem>
@@ -359,7 +361,7 @@ export default function CompleteProfilePage() {
                     <FormItem>
                         <FormLabel>{label}</FormLabel>
                         <FormControl>
-                            <Input placeholder={`Your ${toTitleCase(fieldName)}`} {...field} value={field.value ?? ''} />
+                            <Input placeholder={`Your ${toTitleCase(fieldName)}`} {...field} value={field.value ?? ''} type={typeof form.getValues(fieldName) === 'number' ? 'number' : 'text'} />
                         </FormControl>
                         <FormMessage />
                     </FormItem>
@@ -568,81 +570,45 @@ function InstituteSelector() {
         <CardDescription>Choose your institute from the list below.</CardDescription>
       </CardHeader>
       <CardContent>
-        <Sheet>
-            <SheetTrigger asChild>
-              {selectedInstitute ? (
-                 <Card className="cursor-pointer transition-all hover:ring-2 hover:ring-primary/50">
-                  <CardContent className="flex items-center gap-6 p-4">
-                     <Image
-                      src={selectedInstitute.image}
-                      alt={selectedInstitute.name}
-                      width={120}
-                      height={80}
-                      className="aspect-[3/2] rounded-md object-cover"
+        {isLoadingInstitutes ? (
+          <div className="flex justify-center py-10">
+            <Loader2 className="h-8 w-8 animate-spin" />
+          </div>
+        ) : (
+          <ScrollArea className="h-[60vh]">
+            <div className="grid grid-cols-1 gap-4 p-1 sm:grid-cols-2 lg:grid-cols-3">
+              {institutes.map((institute: Institute) => (
+                <Card
+                  key={institute.id}
+                  className={cn(
+                    "cursor-pointer transition-all hover:shadow-md",
+                    selectedInstitute?.id === institute.id && "ring-2 ring-primary"
+                  )}
+                  onClick={() => setSelectedInstitute(institute)}
+                >
+                  <CardContent className="relative flex flex-col items-center gap-4 p-4">
+                    <Image
+                      src={institute.image}
+                      alt={institute.name}
+                      width={160}
+                      height={120}
+                      className="aspect-[4/3] w-full rounded-md object-cover"
                     />
-                    <div className="flex-1">
-                      <h3 className="font-semibold text-lg">{selectedInstitute.name}</h3>
-                      <p className="text-sm text-muted-foreground">{selectedInstitute.location}</p>
+                    <div className="text-center">
+                      <h3 className="font-semibold">{institute.name}</h3>
+                      <p className="text-xs text-muted-foreground">{institute.location}</p>
                     </div>
-                    <Button variant="outline" size="sm">Change</Button>
+                    {selectedInstitute?.id === institute.id && (
+                        <div className="absolute right-2 top-2 rounded-full bg-primary p-1 text-primary-foreground">
+                            <CheckCircle className="h-4 w-4" />
+                        </div>
+                    )}
                   </CardContent>
                 </Card>
-              ) : (
-                <Card className="cursor-pointer border-dashed transition-all hover:border-primary">
-                  <CardContent className="flex flex-col items-center justify-center gap-2 p-8 text-center">
-                      <Building className="size-10 text-muted-foreground" />
-                      <p className="font-semibold">Select Institute</p>
-                      <p className="text-sm text-muted-foreground">Click here to choose your institute</p>
-                  </CardContent>
-                </Card>
-              )}
-            </SheetTrigger>
-            <SheetContent>
-              <SheetHeader>
-                <SheetTitle>Select an Institute</SheetTitle>
-              </SheetHeader>
-              {isLoadingInstitutes ? (
-                <div className="flex justify-center py-10">
-                  <Loader2 className="h-8 w-8 animate-spin" />
-                </div>
-              ) : (
-                <ScrollArea className="h-[calc(100vh-8rem)]">
-                  <div className="grid gap-4 py-4">
-                    {institutes.map((institute: Institute) => (
-                      <SheetClose asChild key={institute.id}>
-                        <Card
-                          className={cn(
-                            "cursor-pointer transition-all",
-                            selectedInstitute?.id === institute.id && "ring-2 ring-primary"
-                          )}
-                          onClick={() => setSelectedInstitute(institute)}
-                        >
-                          <CardContent className="relative flex items-center gap-4 p-3">
-                             <Image
-                              src={institute.image}
-                              alt={institute.name}
-                              width={80}
-                              height={60}
-                              className="aspect-[4/3] rounded-md object-cover"
-                            />
-                            <div className="flex-1">
-                              <h3 className="font-semibold">{institute.name}</h3>
-                              <p className="text-xs text-muted-foreground">{institute.location}</p>
-                            </div>
-                            {selectedInstitute?.id === institute.id && (
-                                <div className="absolute right-3 top-3 rounded-full bg-primary p-1 text-primary-foreground">
-                                    <CheckCircle className="h-4 w-4" />
-                                </div>
-                            )}
-                          </CardContent>
-                        </Card>
-                      </SheetClose>
-                    ))}
-                  </div>
-                </ScrollArea>
-              )}
-            </SheetContent>
-        </Sheet>
+              ))}
+            </div>
+          </ScrollArea>
+        )}
       </CardContent>
       <CardFooter>
         <Button onClick={handleAssign} className="w-full" disabled={isAssigning || !selectedInstitute}>
