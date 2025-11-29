@@ -61,7 +61,7 @@ const AuthInitializer = ({ children }: { children: React.ReactNode }) => {
   
   if (isLoading && hasToken && !isPublicPage) {
     return (
-      <div className="flex h-screen w-full items-center justify-center">
+      <div className="flex h-screen w-full items-center justify-center bg-background">
         <Loader2 className="h-8 w-8 animate-spin" />
       </div>
     );
