@@ -56,7 +56,7 @@ export default function ClassDetailPage() {
 
   return (
     <>
-      <DashboardHeader title="">
+      <DashboardHeader>
          <Breadcrumb>
             <BreadcrumbList>
               <BreadcrumbItem>

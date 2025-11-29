@@ -1,4 +1,6 @@
 
+'use client';
+
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import NotificationCenter from './notification-center';
 import { SidebarTrigger } from './ui/sidebar';
@@ -18,7 +20,7 @@ import Link from 'next/link';
 import { useAuthStore } from '@/store/auth.store';
 import { useLogout } from '@/service/query/useAuth';
 
-export default function DashboardHeader({ title, children }: { title: string, children?: React.ReactNode }) {
+export default function DashboardHeader({ title, children }: { title?: string, children?: React.ReactNode }) {
   const { user } = useAuthStore();
   const { mutate: logout } = useLogout();
   return (

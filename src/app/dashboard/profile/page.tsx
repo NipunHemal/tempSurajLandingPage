@@ -1,17 +1,13 @@
 
 'use client';
 
-import {
-  FileText,
-  CreditCard,
-  BarChart,
-  User
-} from 'lucide-react';
-
 import DashboardHeader from '@/components/dashboard-header';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { ProfileDetailsTab } from '@/components/profile/ProfileDetailsTab';
+import { ProgressTab } from '@/components/profile/ProgressTab';
+import { PaymentsTab } from '@/components/profile/PaymentsTab';
+import { ExamsTab } from '@/components/profile/ExamsTab';
+import { profileTabs } from '@/constants/profile-tabs';
 
 export default function ProfilePage() {
   return (
@@ -20,54 +16,23 @@ export default function ProfilePage() {
       <main className="p-6">
         <Tabs defaultValue="details" className="w-full">
           <TabsList className="mb-6 grid w-full grid-cols-4">
-            <TabsTrigger value="details">
-              <User className="mr-2" /> Profile Details
-            </TabsTrigger>
-            <TabsTrigger value="progress">
-              <BarChart className="mr-2" /> Progress
-            </TabsTrigger>
-            <TabsTrigger value="payments">
-              <CreditCard className="mr-2" /> Payments
-            </TabsTrigger>
-            <TabsTrigger value="exams">
-              <FileText className="mr-2" /> Exams
-            </TabsTrigger>
+            {profileTabs.map((tab) => (
+              <TabsTrigger key={tab.value} value={tab.value}>
+                <tab.icon className="mr-2" /> {tab.label}
+              </TabsTrigger>
+            ))}
           </TabsList>
           <TabsContent value="details">
             <ProfileDetailsTab />
           </TabsContent>
           <TabsContent value="progress">
-            <Card>
-              <CardHeader>
-                <CardTitle>Progress</CardTitle>
-                <CardDescription>Your academic progress will be shown here.</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <p>Coming soon...</p>
-              </CardContent>
-            </Card>
+            <ProgressTab />
           </TabsContent>
           <TabsContent value="payments">
-            <Card>
-              <CardHeader>
-                <CardTitle>Payments</CardTitle>
-                <CardDescription>Your payment history will be shown here.</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <p>Coming soon...</p>
-              </CardContent>
-            </Card>
+            <PaymentsTab />
           </TabsContent>
           <TabsContent value="exams">
-            <Card>
-              <CardHeader>
-                <CardTitle>Exams</CardTitle>
-                <CardDescription>Your exam results and schedules will be shown here.</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <p>Coming soon...</p>
-              </CardContent>
-            </Card>
+            <ExamsTab />
           </TabsContent>
         </Tabs>
       </main>

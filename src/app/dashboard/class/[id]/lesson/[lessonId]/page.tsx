@@ -105,7 +105,7 @@ export default function LessonDetailPage() {
 
   return (
     <>
-      <DashboardHeader title="">
+      <DashboardHeader>
         <Breadcrumb>
           <BreadcrumbList>
             <BreadcrumbItem>
