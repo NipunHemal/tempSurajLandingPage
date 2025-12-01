@@ -1,39 +1,28 @@
 
 'use client';
 
-import { Search } from 'lucide-react';
-import React, { useState, useMemo } from 'react';
+import { Search, Loader2 } from 'lucide-react';
+import React, { useState } from 'react';
+import { useDebounce } from 'use-debounce';
 
 import DashboardHeader from '@/components/dashboard-header';
-import { PlaceHolderImages } from '@/lib/placeholder-images';
 import ContentCard from '@/components/content-card';
-import { availableClasses } from '@/lib/class-data';
 import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
+import { useGetClasses } from '@/service/query/useClass';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 export default function ClassPage() {
-  const getImage = (id: string) =>
-    PlaceHolderImages.find(img => img.id === id);
-
   const [searchTerm, setSearchTerm] = useState('');
-  const [filterValue, setFilterValue] = useState('all');
+  const [debouncedSearchTerm] = useDebounce(searchTerm, 300);
 
-  const filteredClasses = useMemo(() => {
-    return availableClasses.filter(c => {
-      const matchesSearch = c.title
-        .toLowerCase()
-        .includes(searchTerm.toLowerCase());
-      const matchesFilter =
-        filterValue === 'all' || c.tags.includes(filterValue);
-      return matchesSearch && matchesFilter;
-    });
-  }, [searchTerm, filterValue]);
+  const {
+    data: classesResponse,
+    isLoading,
+    isError,
+    error,
+  } = useGetClasses({ search: debouncedSearchTerm });
 
-  const allTags = useMemo(() => {
-    const tags = new Set<string>();
-    availableClasses.forEach(c => c.tags.forEach(tag => tags.add(tag)));
-    return Array.from(tags);
-  }, []);
+  const classes = classesResponse?.data ?? [];
 
   return (
     <>
@@ -49,42 +38,39 @@ export default function ClassPage() {
               onChange={e => setSearchTerm(e.target.value)}
             />
           </div>
-          <div className="flex items-center gap-2">
-            <Button
-              variant={filterValue === 'all' ? 'default' : 'outline'}
-              onClick={() => setFilterValue('all')}
-            >
-              All
-            </Button>
-            {allTags.map(tag => (
-              <Button
-                key={tag}
-                variant={filterValue === tag ? 'default' : 'outline'}
-                onClick={() => setFilterValue(tag)}
-              >
-                {tag}
-              </Button>
-            ))}
-          </div>
+          {/* Tag-based filtering can be re-added if API supports it */}
         </div>
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
-          {filteredClasses.map(card => {
-            const image = getImage(card.imageId);
-            return (
+
+        {isLoading ? (
+          <div className="flex h-[50vh] items-center justify-center">
+            <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+          </div>
+        ) : isError ? (
+          <Alert variant="destructive">
+            <AlertTitle>Error</AlertTitle>
+            <AlertDescription>
+              {error?.message || 'Failed to load classes. Please try again later.'}
+            </AlertDescription>
+          </Alert>
+        ) : classes.length === 0 ? (
+          <div className="flex h-[50vh] items-center justify-center rounded-md border-2 border-dashed">
+            <p className="text-muted-foreground">No classes found.</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
+            {classes.map(card => (
               <ContentCard
                 key={card.id}
-                title={card.title}
+                title={card.name}
                 description={card.description}
-                tags={card.tags}
-                link={card.link}
-                imageUrl={image?.imageUrl ?? ''}
-                imageHint={image?.imageHint ?? ''}
-                paid={card.paid}
-                status={(card as any).status}
+                link={`/dashboard/class/${card.id}`}
+                imageUrl={card.image}
+                imageHint="class" // Generic hint for dynamic images
+                price={card.price}
               />
-            );
-          })}
-        </div>
+            ))}
+          </div>
+        )}
       </main>
     </>
   );

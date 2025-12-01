@@ -6,6 +6,7 @@ import {
   Card,
   CardContent,
   CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
@@ -14,12 +15,14 @@ import { Badge } from '@/components/ui/badge';
 type ContentCardProps = {
   imageUrl: string;
   imageHint: string;
-  tags: string[];
+  tags?: string[];
   title: string;
   description: string;
   link: string;
-  paid: boolean;
+  paid?: boolean;
   status?: 'free' | 'paid' | 'unpaid';
+  price?: number;
+  progress?: number;
 };
 
 export default function ContentCard({
@@ -29,44 +32,11 @@ export default function ContentCard({
   title,
   description,
   link,
-  paid,
-  status,
+  price,
+  progress,
 }: ContentCardProps) {
-  const getStatusBadge = () => {
-    if (!status) {
-      return (
-        <Badge 
-          className={`absolute right-2 top-2 ${paid ? 'bg-destructive text-destructive-foreground' : 'bg-primary text-primary-foreground'}`}
-        >
-          {paid ? 'Paid' : 'Free'}
-        </Badge>
-      );
-    }
-    
-    switch (status) {
-      case 'free':
-        return (
-          <Badge className="absolute right-2 top-2 bg-blue-500 text-white">
-            Free
-          </Badge>
-        );
-      case 'unpaid':
-        return (
-          <Badge className="absolute right-2 top-2 bg-destructive text-destructive-foreground">
-            Unpaid
-          </Badge>
-        );
-      case 'paid':
-        return (
-          <Badge className="absolute right-2 top-2 bg-green-500 text-white">
-            Paid
-          </Badge>
-        );
-      default:
-        return null;
-    }
-  };
-  
+  const isFree = price === 0;
+
   return (
     <Link href={link} className="flex h-full">
       <Card className="flex w-full flex-col overflow-hidden transition-all hover:shadow-lg">
@@ -79,28 +49,50 @@ export default function ContentCard({
             className="aspect-[3/2] w-full object-cover"
             data-ai-hint={imageHint}
           />
-           <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-           {getStatusBadge()}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+          <Badge
+            className={`absolute right-2 top-2 ${
+              isFree
+                ? 'bg-blue-500 text-white'
+                : 'bg-primary text-primary-foreground'
+            }`}
+          >
+            {isFree ? 'Free' : 'Paid'}
+          </Badge>
         </CardHeader>
         <CardContent className="flex flex-1 flex-col pt-6">
-          <div className="mb-2 flex flex-wrap gap-2">
-            {tags.map(tag => (
-              <Badge
-                key={tag}
-                variant={tag === 'New' ? 'default' : 'secondary'}
-                className={
-                  tag === 'New'
-                    ? 'bg-accent text-accent-foreground hover:bg-accent/80'
-                    : ''
-                }
-              >
-                {tag}
-              </Badge>
-            ))}
-          </div>
+          {tags && tags.length > 0 && (
+            <div className="mb-2 flex flex-wrap gap-2">
+              {tags.map(tag => (
+                <Badge
+                  key={tag}
+                  variant={tag === 'New' ? 'default' : 'secondary'}
+                  className={
+                    tag === 'New'
+                      ? 'bg-accent text-accent-foreground hover:bg-accent/80'
+                      : ''
+                  }
+                >
+                  {tag}
+                </Badge>
+              ))}
+            </div>
+          )}
           <CardTitle className="mb-2 font-headline text-xl">{title}</CardTitle>
           <CardDescription className="flex-1">{description}</CardDescription>
         </CardContent>
+        <CardFooter className="flex-col items-start gap-2 pt-4">
+          <div className="flex w-full items-center justify-between">
+            <span className="text-xl font-bold text-primary">
+              {isFree ? 'Free' : `Rs. ${price}`}
+            </span>
+            {progress !== undefined && (
+              <span className="text-sm font-medium text-muted-foreground">
+                {progress}% Complete
+              </span>
+            )}
+          </div>
+        </CardFooter>
       </Card>
     </Link>
   );
