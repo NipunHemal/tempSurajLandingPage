@@ -23,4 +23,10 @@ export const ENDPOINTS = {
   meta: {
     get: `/meta`,
   },
+  classes: {
+    getAll: `/classes`,
+  },
+  modules: {
+    getByClass: `/modules`,
+  },
 };
