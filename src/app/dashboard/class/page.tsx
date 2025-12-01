@@ -8,7 +8,7 @@ import { useDebounce } from 'use-debounce';
 import DashboardHeader from '@/components/dashboard-header';
 import ContentCard from '@/components/content-card';
 import { Input } from '@/components/ui/input';
-import { useGetClasses } from '@/service/query/class.service';
+import { useGetClasses } from '@/service/query/useClass';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 export default function ClassPage() {
@@ -38,7 +38,6 @@ export default function ClassPage() {
               onChange={e => setSearchTerm(e.target.value)}
             />
           </div>
-          {/* Tag-based filtering can be re-added if API supports it */}
         </div>
 
         {isLoading ? (
