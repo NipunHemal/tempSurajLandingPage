@@ -8,7 +8,7 @@ import { useDebounce } from 'use-debounce';
 import DashboardHeader from '@/components/dashboard-header';
 import ContentCard from '@/components/content-card';
 import { Input } from '@/components/ui/input';
-import { useGetClasses } from '@/service/query/useClass';
+import { useGetClasses } from '@/service/query/class.service';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 export default function ClassPage() {
