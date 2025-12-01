@@ -52,11 +52,16 @@ export default function DashboardLayout({
         </SidebarHeader>
         <SidebarContent className="p-2">
           <SidebarMenu>
-            {mainNav.map((item, index) => (
+            {mainNav.map((item, index) => {
+              const isActive = item.href === '/dashboard'
+                  ? pathname === item.href
+                  : !!(item.href && pathname.startsWith(item.href));
+              
+              return (
               <SidebarMenuItem key={index}>
                 <SidebarMenuButton
                   asChild
-                  isActive={!!(item.href && pathname.startsWith(item.href))}
+                  isActive={isActive}
                   tooltip={item.tooltip}
                 >
                   <Link href={item.href || '#'}>
@@ -70,7 +75,7 @@ export default function DashboardLayout({
                   </SidebarMenuBadge>
                 )}
               </SidebarMenuItem>
-            ))}
+            )})}
           </SidebarMenu>
         </SidebarContent>
         <SidebarFooter className="p-2">
