@@ -128,15 +128,15 @@ export function DynamicFormField({ control, fieldConfig, form }: DynamicFormFiel
               accept="image/*"
               onChange={(e) => handleFileChange(e, 'profile', 'profilePictureUploadId')}
             />
-            <div className="relative group">
-              <Avatar className="h-24 w-24 cursor-pointer" onClick={() => fileInputRef.current?.click()}>
+            <div className="relative group" onClick={() => fileInputRef.current?.click()}>
+              <Avatar className="h-24 w-24 cursor-pointer">
                 <AvatarImage src={preview || ''} alt="Profile Picture" />
                 <AvatarFallback className="text-3xl">
                   <Upload />
                 </AvatarFallback>
               </Avatar>
-              <div className="absolute inset-0 flex items-center justify-center rounded-full bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer" onClick={() => fileInputRef.current?.click()}>
-                 <Pencil className="text-white" />
+              <div className="absolute bottom-0 right-0 flex items-center justify-center w-8 h-8 bg-gray-800 rounded-full border-2 border-background cursor-pointer group-hover:bg-gray-700 transition-colors">
+                 <Pencil className="text-white w-4 h-4" />
               </div>
               {isUploading && (
                 <div className="absolute inset-0 flex items-center justify-center rounded-full bg-black/50">
