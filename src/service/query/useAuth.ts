@@ -31,10 +31,12 @@ export const useLogin = () => {
 };
 
 export const useRegisterStudent = () => {
+    const queryClient = useQueryClient();
     return useMutation({
         mutationFn: registerStudent,
         onSuccess: (response) => {
             toast.success(response.message || "Registration successful! Please login.");
+            queryClient.invalidateQueries({ queryKey: ["meta"] });
         },
         onError: (error: any) => {
             console.error("Registration failed:", error);
