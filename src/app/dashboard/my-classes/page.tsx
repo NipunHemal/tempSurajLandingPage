@@ -30,13 +30,13 @@ export default function MyClassesPage() {
       <DashboardHeader title="My Classes" />
       <main className="p-6">
         <div className="relative mb-8 h-48 w-full overflow-hidden rounded-lg">
-          <Image
+          {/* <Image
             src="https://images.unsplash.com/photo-1519681393784-d1202679a5ca?q=80&w=2070&auto=format&fit=crop"
             alt="Search background"
             fill
             className="object-cover"
             data-ai-hint="night sky"
-          />
+          /> */}
           <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 bg-black/50">
             <div className="relative w-full max-w-md">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-white/80" />
