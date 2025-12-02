@@ -10,31 +10,20 @@ import { PlaceHolderImages } from '@/lib/placeholder-images';
 import ContentCard from '@/components/content-card';
 import { myClasses } from '@/lib/class-data';
 import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
 
 export default function MyClassesPage() {
   const getImage = (id: string) =>
     PlaceHolderImages.find(img => img.id === id);
 
   const [searchTerm, setSearchTerm] = useState('');
-  const [filterValue, setFilterValue] = useState('all');
 
   const filteredClasses = useMemo(() => {
     return myClasses.filter(c => {
-      const matchesSearch = c.title
+      return c.title
         .toLowerCase()
         .includes(searchTerm.toLowerCase());
-      const matchesFilter =
-        filterValue === 'all' || c.tags.includes(filterValue);
-      return matchesSearch && matchesFilter;
     });
-  }, [searchTerm, filterValue]);
-
-  const allTags = useMemo(() => {
-    const tags = new Set<string>();
-    myClasses.forEach(c => c.tags.forEach(tag => tags.add(tag)));
-    return Array.from(tags);
-  }, []);
+  }, [searchTerm]);
 
   return (
     <>
@@ -58,25 +47,6 @@ export default function MyClassesPage() {
                 onChange={e => setSearchTerm(e.target.value)}
               />
             </div>
-            <div className="flex items-center gap-2">
-                <Button
-                  variant={filterValue === 'all' ? 'default' : 'outline'}
-                  onClick={() => setFilterValue('all')}
-                  className={filterValue !== 'all' ? 'border-white/50 bg-transparent text-white/80 hover:bg-white/10 hover:text-white' : ''}
-                >
-                  All
-                </Button>
-                {allTags.map(tag => (
-                  <Button
-                    key={tag}
-                    variant={filterValue === tag ? 'default' : 'outline'}
-                    onClick={() => setFilterValue(tag)}
-                    className={filterValue !== tag ? 'border-white/50 bg-transparent text-white/80 hover:bg-white/10 hover:text-white' : ''}
-                  >
-                    {tag}
-                  </Button>
-                ))}
-              </div>
           </div>
         </div>
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
