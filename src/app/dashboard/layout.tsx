@@ -21,17 +21,7 @@ import BottomNavBar from '@/components/BottomNavBar';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useAuthStore } from '@/store/auth.store';
 import { Hourglass } from 'lucide-react';
-
-function ApprovalBanner() {
-  return (
-    <div className="bg-muted px-4 py-3 text-foreground">
-      <p className="flex items-center justify-center text-sm">
-        <Hourglass className="mr-2 h-4 w-4 text-amber-500" />
-        Your account is currently under review. We will notify you once it has been approved.
-      </p>
-    </div>
-  );
-}
+import ApprovalBanner from '@/components/alerts/ApprovalBanner';
 
 export default function DashboardLayout({
   children,
