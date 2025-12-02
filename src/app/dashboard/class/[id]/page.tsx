@@ -1,9 +1,7 @@
 
 'use client';
 
-import {
-  AlertCircle,
-} from 'lucide-react';
+import { AlertCircle, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import Image from 'next/image';
@@ -24,82 +22,108 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent } from '@/components/ui/card';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
+import { useGetClassById } from '@/service/query/useClass';
 
 export default function ClassDetailPage() {
   const params = useParams();
   const id = params.id as string;
-  const details = (classDetails as any)[id];
+  const {
+    data: classResponse,
+    isLoading,
+    isError,
+    error,
+  } = useGetClassById(id);
 
-  if (!details) {
+  const details = classResponse?.data;
+  // TODO: Replace with API data for modules
+  const mockDetails = (classDetails as any)[id];
+
+  if (isLoading) {
     return (
-        <>
-            <DashboardHeader title="Class Not Found" />
-            <main className="flex flex-1 items-center justify-center">
-                <p>The class you are looking for does not exist.</p>
-            </main>
-        </>
+      <>
+        <DashboardHeader />
+        <main className="flex flex-1 items-center justify-center">
+          <Loader2 className="h-8 w-8 animate-spin" />
+        </main>
+      </>
     );
   }
 
-  const bannerImage = PlaceHolderImages.find(
-    img => img.id === details.bannerImageId
-  );
+  if (isError || !details) {
+    return (
+      <>
+        <DashboardHeader title="Class Not Found" />
+        <main className="p-6">
+          <Alert variant="destructive">
+            <AlertTitle>Error</AlertTitle>
+            <AlertDescription>
+              {error?.message ||
+                'The class you are looking for does not exist or could not be loaded.'}
+            </AlertDescription>
+          </Alert>
+        </main>
+      </>
+    );
+  }
+
   const getImage = (id: string) =>
     PlaceHolderImages.find(img => img.id === id);
-    
+
   const months = [
     'January', 'February', 'March', 'April', 'May', 'June',
     'July', 'August', 'September', 'October', 'November', 'December'
   ];
 
-  const allLessons = details.modules?.flatMap((module: any) => module.lessons) ?? [];
+  const allLessons = mockDetails?.modules?.flatMap((module: any) => module.lessons) ?? [];
+  const isEnrolled = details.enrollmentStatus === 'ENROLLED';
 
   return (
     <>
       <DashboardHeader>
-         <Breadcrumb>
-            <BreadcrumbList>
-              <BreadcrumbItem>
-                <BreadcrumbLink asChild>
-                  <Link href="/dashboard/class">Classes</Link>
-                </BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator />
-              <BreadcrumbItem>
-                <BreadcrumbPage>{details.title}</BreadcrumbPage>
-              </BreadcrumbItem>
-            </BreadcrumbList>
-          </Breadcrumb>
+        <Breadcrumb>
+          <BreadcrumbList>
+            <BreadcrumbItem>
+              <BreadcrumbLink asChild>
+                <Link href="/dashboard/class">Classes</Link>
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbPage>{details.name}</BreadcrumbPage>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
       </DashboardHeader>
       <main>
-        {bannerImage && (
-          <div className="relative h-64 w-full">
-            <Image
-              src={bannerImage.imageUrl}
-              alt={details.title}
-              fill
-              className="object-cover"
-              data-ai-hint={bannerImage.imageHint}
-            />
-          </div>
-        )}
+        <div className="relative h-64 w-full">
+          <Image
+            src={details.image}
+            alt={details.name}
+            fill
+            className="object-cover"
+            data-ai-hint="class details"
+          />
+        </div>
         <div className="p-6">
           <div className="mx-auto max-w-4xl">
             <h1 className="mb-2 font-headline text-4xl font-bold">
-              {details.title}
+              {details.name}
             </h1>
             <p className="mb-6 text-muted-foreground">
               {details.description}
             </p>
 
-            {details.paid ? (
-               <Alert variant="destructive" className="mb-6">
-                  <AlertCircle className="h-4 w-4" />
-                  <AlertTitle>Paid Class</AlertTitle>
-                  <AlertDescription>
-                      This is a premium class. Please enroll to access the content.
-                      <Button size="sm" className="ml-4">Enroll Now</Button>
-                  </AlertDescription>
+            {!isEnrolled ? (
+              <Alert variant="destructive" className="mb-6">
+                <AlertCircle className="h-4 w-4" />
+                <AlertTitle>Not Enrolled</AlertTitle>
+                <AlertDescription>
+                  You are not enrolled in this class. Please enroll to access
+                  the content.
+                  <Button size="sm" className="ml-4">
+                    Enroll Now for Rs. {details.price}
+                  </Button>
+                </AlertDescription>
               </Alert>
             ) : (
               <Tabs defaultValue="lessons" className="w-full">
@@ -117,36 +141,36 @@ export default function ClassDetailPage() {
                           title={lesson.title}
                           description={lesson.description}
                           tags={lesson.tags}
-                          link={lesson.link}
+                          link={lesson.link.replace('[id]', id)}
                           imageUrl={image?.imageUrl ?? ''}
                           imageHint={image?.imageHint ?? ''}
-                          paid={false} // Lessons inside a class are not individually paid
+                          price={0}
                         />
                       );
                     })}
                   </div>
                 </TabsContent>
                 <TabsContent value="month">
-                <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-                  {months.map(month => (
-                    <Card
-                      key={month}
-                      className="flex flex-col overflow-hidden transition-all hover:shadow-lg"
-                    >
-                      <div className="flex aspect-[3/2] w-full items-center justify-center bg-gradient-to-br from-destructive/80 to-destructive/40 p-6">
-                        <h3 className="font-headline text-2xl font-bold text-destructive-foreground">
-                          {month}
-                        </h3>
-                      </div>
-                      <CardContent className="flex-1 p-4 pt-6">
-                        <p className="text-sm text-muted-foreground">
-                          Content for {month}.
-                        </p>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
-              </TabsContent>
+                  <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+                    {months.map(month => (
+                      <Card
+                        key={month}
+                        className="flex flex-col overflow-hidden transition-all hover:shadow-lg"
+                      >
+                        <div className="flex aspect-[3/2] w-full items-center justify-center bg-gradient-to-br from-destructive/80 to-destructive/40 p-6">
+                          <h3 className="font-headline text-2xl font-bold text-destructive-foreground">
+                            {month}
+                          </h3>
+                        </div>
+                        <CardContent className="flex-1 p-4 pt-6">
+                          <p className="text-sm text-muted-foreground">
+                            Content for {month}.
+                          </p>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                </TabsContent>
               </Tabs>
             )}
           </div>

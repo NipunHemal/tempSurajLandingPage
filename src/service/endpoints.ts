@@ -25,6 +25,7 @@ export const ENDPOINTS = {
   },
   classes: {
     getAll: `/classes`,
+    getById: `/classes`,
   },
   modules: {
     getByClass: `/modules`,

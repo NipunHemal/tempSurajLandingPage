@@ -11,6 +11,7 @@ export interface Class {
   status: 'ACTIVE' | 'INACTIVE';
   createdAt: string;
   updatedAt: string;
+  enrollmentStatus?: 'ENROLLED' | 'NOT_ENROLLED';
 }
 
 export interface Module {
@@ -35,6 +36,11 @@ export interface ApiResponse<T> {
   success: boolean;
   data: T[];
   pagination: Pagination;
+}
+
+export interface SingleApiResponse<T> {
+  success: boolean;
+  data: T;
 }
 
 export interface GetAllClassesParams {
