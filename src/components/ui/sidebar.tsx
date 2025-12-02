@@ -176,10 +176,26 @@ const Sidebar = React.forwardRef<
     },
     ref
   ) => {
-    const { isMobile, state } = useSidebar()
-
+    const { isMobile, openMobile, setOpenMobile } = useSidebar()
+    const { state } = useSidebar()
+    
     if (isMobile) {
-      return null;
+      return (
+        <Sheet open={openMobile} onOpenChange={setOpenMobile}>
+          <SheetContent
+            side={side}
+            className={cn("flex w-[--sidebar-width-mobile] flex-col p-0", className)}
+          >
+            <SheetHeader className="p-2 border-b">
+              <SheetTitle className="sr-only">Menu</SheetTitle>
+              <SheetDescription className="sr-only">
+                Main navigation for the dashboard.
+              </SheetDescription>
+            </SheetHeader>
+            {children}
+          </SheetContent>
+        </Sheet>
+      );
     }
 
     if (collapsible === "none") {
