@@ -5,6 +5,7 @@ import Link from 'next/link';
 import {
   Card,
   CardContent,
+  CardDescription,
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
@@ -13,6 +14,7 @@ type ModuleCardProps = {
   imageUrl: string;
   imageHint: string;
   title: string;
+  description: string;
   link: string;
 };
 
@@ -20,6 +22,7 @@ export default function ModuleCard({
   imageUrl,
   imageHint,
   title,
+  description,
   link,
 }: ModuleCardProps) {
   return (
@@ -36,8 +39,11 @@ export default function ModuleCard({
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
         </CardHeader>
-        <CardContent className="flex flex-1 flex-col justify-center pt-6">
-          <CardTitle className="text-center font-headline text-xl">{title}</CardTitle>
+        <CardContent className="flex flex-1 flex-col p-4 pt-6">
+          <CardTitle className="mb-2 font-headline text-xl">{title}</CardTitle>
+          <CardDescription className="flex-1 text-sm text-muted-foreground">
+            {description}
+          </CardDescription>
         </CardContent>
       </Card>
     </Link>

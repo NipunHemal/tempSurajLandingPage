@@ -147,11 +147,12 @@ export default function ClassDetailPage() {
                         <p className="text-muted-foreground">No modules found for this class yet.</p>
                       </div>
                    ) : (
-                    <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+                    <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
                       {modules.map((module: any) => (
                         <ModuleCard
                           key={module.id}
                           title={module.name}
+                          description={module.description}
                           link={`/dashboard/class/${id}/module/${module.id}`}
                           imageUrl={module.image}
                           imageHint="module"
@@ -161,7 +162,7 @@ export default function ClassDetailPage() {
                   )}
                 </TabsContent>
                 <TabsContent value="month">
-                  <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+                  <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
                     {months.map(month => (
                       <Card
                         key={month}
