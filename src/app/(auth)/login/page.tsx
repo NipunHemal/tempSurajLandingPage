@@ -41,7 +41,7 @@ export default function LoginPage() {
   function onSubmit(values: z.infer<typeof formSchema>) {
     login(values);
   }
-  
+
   const GoogleIcon = () => (
     <svg className="mr-2 h-4 w-4" viewBox="0 0 48 48">
       <path
@@ -72,10 +72,13 @@ export default function LoginPage() {
         </p>
       </div>
 
-      <Button variant="outline" className="w-full">
-        <GoogleIcon />
-        Login with Google
-      </Button>
+      <Link href={`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/google/initiate?role=STUDENT`} className="mb-8 text-center">
+        <Button variant="outline" className="w-full">
+          <GoogleIcon />
+          Login with Google
+        </Button>
+      </Link>
+
 
       <div className="my-4 flex items-center">
         <Separator className="flex-1" />

@@ -47,7 +47,7 @@ export default function RegisterPage() {
   });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-    register({email: values.email, password: values.password}, {
+    register({ email: values.email, password: values.password }, {
       onSuccess: () => {
         router.push('/login');
       }
@@ -84,10 +84,12 @@ export default function RegisterPage() {
         </p>
       </div>
 
-       <Button variant="outline" className="w-full">
-        <GoogleIcon />
-        Sign up with Google
-      </Button>
+      <Link href={`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/google/initiate?role=STUDENT`} className="mb-8 text-center">
+        <Button variant="outline" className="w-full">
+          <GoogleIcon />
+          Sign up with Google
+        </Button>
+      </Link>
 
       <div className="my-4 flex items-center">
         <Separator className="flex-1" />
@@ -146,7 +148,7 @@ export default function RegisterPage() {
               <FormItem>
                 <FormLabel>Confirm Password</FormLabel>
                 <FormControl>
-                   <div className="relative">
+                  <div className="relative">
                     <Input
                       type={showConfirmPassword ? 'text' : 'password'}
                       {...field}
@@ -183,7 +185,7 @@ export default function RegisterPage() {
         </Link>
         .
       </p>
-       <p className="mt-4 text-center text-sm text-muted-foreground">
+      <p className="mt-4 text-center text-sm text-muted-foreground">
         Already have an account?{' '}
         <Link href="/login" className="font-medium text-primary hover:underline">
           Login
