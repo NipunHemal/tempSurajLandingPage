@@ -49,6 +49,7 @@ export const profileFormSchema = z.object({
   country: z.string().optional(),
   instituteNumber: z.string().optional(),
   instituteCardImage: z.string().optional(),
+  instituteCardImageUploadId: z.string().optional(),
 });
 
 type ProfileFormValues = z.infer<typeof profileFormSchema>;
@@ -87,7 +88,7 @@ export function DynamicFormField({ control, fieldConfig, form }: DynamicFormFiel
   const handleFileChange = (
     event: React.ChangeEvent<HTMLInputElement>,
     type: 'profile' | 'nic' | 'class',
-    field: 'profilePictureUploadId' | 'nicPicUploadId' | 'instituteCardImage'
+    field: 'profilePictureUploadId' | 'nicPicUploadId' | 'instituteCardImageUploadId'
   ) => {
     const file = event.target.files?.[0];
     if (file) {
@@ -162,7 +163,7 @@ export function DynamicFormField({ control, fieldConfig, form }: DynamicFormFiel
       case 'instituteCardImage':
         const uploadType = fieldName === 'nicPic' ? 'nic' : 'class';
         const buttonText = fieldName === 'nicPic' ? 'NIC Image' : 'Institute Card Image';
-        const uploadIdField = fieldName === 'nicPic' ? 'nicPicUploadId' : 'instituteCardImage';
+        const uploadIdField = fieldName === 'nicPic' ? 'nicPicUploadId' : 'instituteCardImageUploadId';
         return (
           <div className="col-span-full">
             <input
