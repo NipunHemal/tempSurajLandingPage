@@ -180,6 +180,23 @@ export function DynamicFormField({ control, fieldConfig, form }: DynamicFormFiel
             )}
           </div>
         );
+      case 'shySelect':
+        return (
+          <Select onValueChange={(value) => rhfProps.onChange(Number(value))} value={rhfProps.value?.toString()}>
+            <FormControl>
+              <SelectTrigger>
+                <SelectValue placeholder="Select your shy" />
+              </SelectTrigger>
+            </FormControl>
+            <SelectContent>
+              {[1, 2, 3, 4, 5].map((num) => (
+                <SelectItem key={num} value={num.toString()}>
+                  {num}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        );
       case 'homeAddress':
       case 'deliveryAddress':
         return <Textarea placeholder={`Your ${label.replace(' *', '')}`} {...rhfProps} value={rhfProps.value ?? ''} />;
