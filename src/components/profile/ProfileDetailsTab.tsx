@@ -103,7 +103,7 @@ export function ProfileDetailsTab() {
         guardianContactNumber: user.student.guardianContactNumber || '',
       });
     }
-  }, [user, form.reset]);
+  }, [user, form]);
 
   function onProfileSubmit(data: ProfileFormValues) {
     const payload: Record<string, any> = {};
@@ -191,7 +191,7 @@ export function ProfileDetailsTab() {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Gender *</FormLabel>
-                    <Select onValueChange={field.onChange} value={field.value} defaultValue={field.value}>
+                    <Select key={field.value} onValueChange={field.onChange} defaultValue={field.value}>
                       <FormControl>
                         <SelectTrigger>
                           <SelectValue placeholder="Select a gender" />
