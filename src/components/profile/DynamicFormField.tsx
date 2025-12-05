@@ -61,7 +61,13 @@ interface DynamicFormFieldProps {
 
 export function DynamicFormField({ control, fieldConfig, form }: DynamicFormFieldProps) {
   const fieldName = fieldConfig.fieldName as keyof ProfileFormValues;
-  const label = fieldConfig.fieldName.replace(/([A-Z])/g, ' $1').replace(/^./, (s) => s.toUpperCase()) + (fieldConfig.required ? ' *' : '');
+  
+  let label = fieldConfig.fieldName.replace(/([A-Z])/g, ' $1').replace(/^./, (s) => s.toUpperCase());
+  if (fieldName === 'shySelect') {
+    label = 'Select Your Exam Shy';
+  }
+  label += (fieldConfig.required ? ' *' : '');
+
 
   const existingImageValue = form.watch(fieldName);
   const [preview, setPreview] = useState<string | null>(null);
