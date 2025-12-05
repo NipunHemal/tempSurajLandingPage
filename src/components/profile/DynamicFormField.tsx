@@ -139,7 +139,7 @@ export function DynamicFormField({ control, fieldConfig, form }: DynamicFormFiel
             />
             <div className="relative group" onClick={() => fileInputRef.current?.click()}>
               <Avatar className="h-24 w-24 cursor-pointer">
-                <AvatarImage src={preview || ''} alt="Profile Picture" />
+                <AvatarImage src={preview || undefined} alt="Profile Picture" />
                 <AvatarFallback className="text-3xl">
                   <Upload />
                 </AvatarFallback>
