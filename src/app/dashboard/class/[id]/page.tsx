@@ -23,6 +23,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { useGetClassById } from '@/service/query/useClass';
+import PaymentDialog from '@/components/payment/PaymentDialog';
 
 export default function ClassDetailPage() {
   const params = useParams();
@@ -117,12 +118,14 @@ export default function ClassDetailPage() {
               <Alert variant="destructive" className="mb-6">
                 <AlertCircle className="h-4 w-4" />
                 <AlertTitle>Not Enrolled</AlertTitle>
-                <AlertDescription>
+                <AlertDescription className='flex justify-between items-center'>
                   You are not enrolled in this class. Please enroll to access
                   the content.
-                  <Button size="sm" className="ml-4">
-                    Enroll Now for Rs. {details.price}
-                  </Button>
+                  <PaymentDialog classId={details.id} amount={details.price}>
+                     <Button size="sm">
+                        Enroll Now for Rs. {details.price}
+                      </Button>
+                  </PaymentDialog>
                 </AlertDescription>
               </Alert>
             ) : (
