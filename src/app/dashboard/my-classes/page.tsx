@@ -31,15 +31,15 @@ export default function MyClassesPage() {
     <>
       <DashboardHeader title="My Classes" />
       <main className="p-6">
-        <div className="relative mb-8 h-48 w-full overflow-hidden rounded-lg bg-gradient-to-br from-primary to-primary/70">
+        <div className="relative mb-8 h-48 w-full overflow-hidden rounded-lg bg-background">
           <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 p-6 text-center">
-            <h2 className="font-headline text-3xl font-bold text-primary-foreground">
+            {/* <h2 className="font-headline text-3xl font-bold text-primary-foreground">
               Your Learning Journey
             </h2>
             <p className="max-w-md text-primary-foreground/90">
               All your enrolled courses in one place. Search below to find a
               specific class.
-            </p>
+            </p> */}
             <div className="relative w-full max-w-md">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-white/80" />
               <Input
