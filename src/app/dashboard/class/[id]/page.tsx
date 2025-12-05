@@ -7,8 +7,6 @@ import { useParams } from 'next/navigation';
 import Image from 'next/image';
 
 import DashboardHeader from '@/components/dashboard-header';
-import { classDetails } from '@/lib/class-data';
-import { PlaceHolderImages } from '@/lib/placeholder-images';
 import ContentCard from '@/components/content-card';
 import {
   Breadcrumb,
@@ -22,24 +20,31 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent } from '@/components/ui/card';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
-import { useGetClassById } from '@/service/query/useClass';
-import PaymentDialog from '@/components/payment/PaymentDialog';
+import { useGetClassById, useGetModulesByClass } from '@/service/query/useClass';
+import { useEnrollInClass } from '@/service/query/useEnrollment';
 
 export default function ClassDetailPage() {
   const params = useParams();
   const id = params.id as string;
+
   const {
     data: classResponse,
-    isLoading,
-    isError,
-    error,
+    isLoading: isLoadingClass,
+    isError: isClassError,
+    error: classError,
   } = useGetClassById(id);
 
   const details = classResponse?.data;
-  // TODO: Replace with API data for modules
-  const mockDetails = (classDetails as any)[id];
+  const isEnrolled = details?.enrollmentStatus === 'ENROLLED';
 
-  if (isLoading) {
+  const {
+    data: modulesResponse,
+    isLoading: isLoadingModules,
+  } = useGetModulesByClass({ classId: id, limit: 50 }, isEnrolled);
+  
+  const { mutate: enroll, isPending: isEnrolling } = useEnrollInClass();
+
+  if (isLoadingClass) {
     return (
       <>
         <DashboardHeader />
@@ -50,7 +55,7 @@ export default function ClassDetailPage() {
     );
   }
 
-  if (isError || !details) {
+  if (isClassError || !details) {
     return (
       <>
         <DashboardHeader title="Class Not Found" />
@@ -58,7 +63,7 @@ export default function ClassDetailPage() {
           <Alert variant="destructive">
             <AlertTitle>Error</AlertTitle>
             <AlertDescription>
-              {error?.message ||
+              {classError?.message ||
                 'The class you are looking for does not exist or could not be loaded.'}
             </AlertDescription>
           </Alert>
@@ -67,16 +72,15 @@ export default function ClassDetailPage() {
     );
   }
 
-  const getImage = (id: string) =>
-    PlaceHolderImages.find(img => img.id === id);
-
   const months = [
     'January', 'February', 'March', 'April', 'May', 'June',
     'July', 'August', 'September', 'October', 'November', 'December'
   ];
 
-  const allLessons = mockDetails?.modules?.flatMap((module: any) => module.lessons) ?? [];
-  const isEnrolled = details.enrollmentStatus === 'ENROLLED';
+  const modules = modulesResponse?.data ?? [];
+  const handleEnroll = () => {
+    enroll({ classId: id });
+  };
 
   return (
     <>
@@ -121,11 +125,10 @@ export default function ClassDetailPage() {
                 <AlertDescription className='flex justify-between items-center'>
                   You are not enrolled in this class. Please enroll to access
                   the content.
-                  <PaymentDialog classId={details.id} amount={details.price}>
-                     <Button size="sm">
-                        Enroll Now for Rs. {details.price}
-                      </Button>
-                  </PaymentDialog>
+                  <Button size="sm" onClick={handleEnroll} disabled={isEnrolling}>
+                    {isEnrolling && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                    {isEnrolling ? 'Enrolling...' : 'Enroll Now'}
+                  </Button>
                 </AlertDescription>
               </Alert>
             ) : (
@@ -135,23 +138,29 @@ export default function ClassDetailPage() {
                   <TabsTrigger value="month">Month Wise</TabsTrigger>
                 </TabsList>
                 <TabsContent value="lessons">
-                  <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-                    {allLessons.map((lesson: any) => {
-                      const image = getImage(lesson.imageId);
-                      return (
+                   {isLoadingModules ? (
+                     <div className="flex h-[30vh] items-center justify-center">
+                       <Loader2 className="h-8 w-8 animate-spin" />
+                     </div>
+                   ) : modules.length === 0 ? (
+                      <div className="flex h-[30vh] items-center justify-center rounded-md border-2 border-dashed">
+                        <p className="text-muted-foreground">No modules found for this class yet.</p>
+                      </div>
+                   ) : (
+                    <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+                      {modules.map((module: any) => (
                         <ContentCard
-                          key={lesson.id}
-                          title={lesson.title}
-                          description={lesson.description}
-                          tags={lesson.tags}
-                          link={lesson.link.replace('[id]', id)}
-                          imageUrl={image?.imageUrl ?? ''}
-                          imageHint={image?.imageHint ?? ''}
-                          price={0}
+                          key={module.id}
+                          title={module.name}
+                          description={module.description}
+                          link={`/dashboard/class/${id}/module/${module.id}`}
+                          imageUrl={module.image}
+                          imageHint="module"
+                          price={0} // Modules themselves don't have a price
                         />
-                      );
-                    })}
-                  </div>
+                      ))}
+                    </div>
+                  )}
                 </TabsContent>
                 <TabsContent value="month">
                   <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">

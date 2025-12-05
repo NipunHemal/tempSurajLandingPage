@@ -42,12 +42,12 @@ export const mainNav: NavItem[] = [
     icon: User,
     tooltip: 'Profile',
   },
-  // {
-  //   href: '/dashboard/announcements',
-  //   label: 'Announce',
-  //   icon: Megaphone,
-  //   tooltip: 'Announcements',
-  // },
+  {
+    href: '/dashboard/announcements',
+    label: 'Announce',
+    icon: Megaphone,
+    tooltip: 'Announcements',
+  },
 ];
 
 export const footerNav: NavItem[] = [

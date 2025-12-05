@@ -33,4 +33,7 @@ export const ENDPOINTS = {
   payments: {
     create: `/payments`,
   },
+  enrollments: {
+    enroll: `/enrollments`,
+  }
 };

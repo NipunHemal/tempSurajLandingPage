@@ -17,8 +17,6 @@ import {
   BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb';
 import DashboardHeader from '@/components/dashboard-header';
-import { classDetails } from '@/lib/class-data';
-import { PlaceHolderImages } from '@/lib/placeholder-images';
 import {
   Download,
   FileText,
@@ -30,20 +28,48 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { useState, useMemo } from 'react';
+import PaymentDialog from '@/components/payment/PaymentDialog';
+import { useGetClassById } from '@/service/query/useClass';
+
+// Mock data, to be replaced by API calls
+const mockLessonData = {
+    '1-1': {
+        id: '1-1',
+        title: 'The Fertile Crescent', 
+        longDescription: 'This lesson explores the geographical and environmental factors of the Fertile Crescent that gave rise to the world\'s first agricultural societies. We will examine how the domestication of plants and animals transformed human life and led to the establishment of permanent settlements.',
+        bannerImage: 'https://images.unsplash.com/photo-1600023062179-6c6b954698cd?ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxhbmNpZW50JTIwcnVpbnN8ZW58MHx8fHwxNzYyMzIxNzI5fDA&w=1080&q=80',
+        bannerImageHint: 'babylon ruins',
+        content: [
+          { week: '1st Week', progress: 75, items: [
+            { type: 'video', title: 'Lecture: The Neolithic Revolution', duration: '15:23', link: '#' },
+            { type: 'reading', title: 'Chapter 1: Dawn of Agriculture', duration: '25 min read', link: '#' },
+            { type: 'exam', title: 'Exam 1: Early Settlements', duration: '10 Questions', link: '#' }
+          ]},
+          { week: '2nd Week', progress: 25, items: [
+            { type: 'video', title: 'Video: Cuneiform and Early Writing', duration: '12:45', link: '#'},
+            { type: 'reading', title: 'Article: The Code of Ur-Nammu', duration: '15 min read', link: '#'}
+          ]},
+          { week: '3rd Week', progress: 0, items: [] },
+          { week: '4th Week', progress: 0, items: [] },
+        ]
+    }
+    // Add other lesson details here...
+}
+
 
 export default function LessonDetailPage() {
   const params = useParams();
   const classId = params.id as string;
   const lessonId = params.lessonId as string;
+  const { data: classResponse } = useGetClassById(classId);
+  const details = classResponse?.data;
 
   const [filter, setFilter] = useState<string | null>(null);
 
-  const course = (classDetails as any)[classId];
-  const lesson = course?.modules
-    .flatMap((m: any) => m.lessons)
-    .find((l: any) => l.id === lessonId);
+  // TODO: Replace with API data for lesson
+  const lesson = (mockLessonData as any)[lessonId];
 
-  if (!course || !lesson) {
+  if (!details || !lesson) {
     return (
         <>
             <DashboardHeader title="Lesson Not Found" />
@@ -54,9 +80,6 @@ export default function LessonDetailPage() {
     );
   }
 
-  const bannerImage = PlaceHolderImages.find(
-    img => img.id === lesson.bannerImageId
-  );
 
   const getContentTypeIcon = (type: string) => {
     switch (type) {
@@ -80,20 +103,15 @@ export default function LessonDetailPage() {
   };
   
   const weeklyContent = useMemo(() => {
-    const baseContent = [
-      { week: '1st Week', progress: 75, content: lesson.content.slice(0, 3) },
-      { week: '2nd Week', progress: 25, content: lesson.content.slice(0, 2) },
-      { week: '3rd Week', progress: 0, content: lesson.content.slice(0, 1) },
-      { week: '4th Week', progress: 0, content: [] },
-    ];
+    const baseContent = lesson.content;
 
     if (!filter) {
       return baseContent;
     }
 
-    return baseContent.map(week => ({
+    return baseContent.map((week: any) => ({
       ...week,
-      content: week.content.filter((item: any) => {
+      items: week.items.filter((item: any) => {
         if (filter === 'resource') {
           return item.type === 'reading' || item.type === 'video';
         }
@@ -102,6 +120,65 @@ export default function LessonDetailPage() {
     }));
 
   }, [lesson.content, filter]);
+
+  // A student has access if they are enrolled and the class is free, or if they are enrolled and have paid.
+  // For now, let's assume if enrollmentStatus is ENROLLED, they should pay if the price > 0
+  const hasPaid = false; // This will be determined by payment status API later
+  const needsToPay = details.enrollmentStatus === 'ENROLLED' && details.price > 0 && !hasPaid;
+
+  const renderContentItem = (item: any, itemIndex: number) => {
+     const isFreeItem = itemIndex === 0; // Let's assume the first item of each week is free
+
+     if (needsToPay && !isFreeItem) {
+        return (
+             <li key={itemIndex} className="flex items-center justify-between rounded-md border p-4 opacity-50">
+                <div className="flex items-center gap-4">
+                    {getContentTypeIcon(item.type)}
+                    <div>
+                        <p className="font-semibold">{item.title}</p>
+                        <p className="text-sm text-muted-foreground">{item.type.charAt(0).toUpperCase() + item.type.slice(1)}</p>
+                    </div>
+                </div>
+                <div className="flex items-center gap-4">
+                    <span className="text-sm text-muted-foreground">{item.duration}</span>
+                     <PaymentDialog classId={details.id} amount={details.price}>
+                        <Button size="sm">Pay to Unlock</Button>
+                    </PaymentDialog>
+                </div>
+            </li>
+        )
+     }
+
+     return (
+        <li key={itemIndex} className="flex items-center justify-between rounded-md border p-4">
+            <div className="flex items-center gap-4">
+            {getContentTypeIcon(item.type)}
+            <div>
+                <p className="font-semibold">{item.title}</p>
+                <p className="text-sm text-muted-foreground">{item.type.charAt(0).toUpperCase() + item.type.slice(1)}</p>
+            </div>
+            </div>
+            <div className="flex items-center gap-4">
+            <span className="text-sm text-muted-foreground">{item.duration}</span>
+            {item.type === 'video' ? (
+                <Button asChild variant="ghost" size="sm">
+                <Link href={item.link}>
+                    <PlayCircle className="mr-2" />
+                    Watch
+                </Link>
+                </Button>
+            ) : (
+                <Button asChild variant="ghost" size="sm">
+                <Link href={item.link}>
+                    <Download className="mr-2" />
+                    Download
+                </Link>
+                </Button>
+            )}
+            </div>
+        </li>
+     )
+  }
 
   return (
     <>
@@ -115,8 +192,9 @@ export default function LessonDetailPage() {
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
+               {/* This should eventually link to the module page */}
               <BreadcrumbLink asChild>
-                <Link href={`/dashboard/class/${classId}`}>{course.title}</Link>
+                <Link href={`/dashboard/class/${classId}`}>{details.name}</Link>
               </BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator />
@@ -127,14 +205,14 @@ export default function LessonDetailPage() {
         </Breadcrumb>
       </DashboardHeader>
       <main>
-        {bannerImage && (
+        {lesson.bannerImage && (
           <div className="relative h-64 w-full">
             <Image
-              src={bannerImage.imageUrl}
+              src={lesson.bannerImage}
               alt={lesson.title}
               fill
               className="object-cover"
-              data-ai-hint={bannerImage.imageHint}
+              data-ai-hint={lesson.bannerImageHint}
             />
           </div>
         )}
@@ -179,7 +257,7 @@ export default function LessonDetailPage() {
             </div>
 
             <Accordion type="single" collapsible defaultValue="item-0" className="w-full space-y-4">
-              {weeklyContent.map((week, index) => (
+              {weeklyContent.map((week: any, index: number) => (
                 <AccordionItem value={`item-${index}`} key={index} className="rounded-md border-0 bg-green-100/50">
                   <AccordionTrigger className="px-4 text-lg font-semibold text-green-900 hover:no-underline">
                     <div className="flex w-full items-center gap-4">
@@ -194,37 +272,9 @@ export default function LessonDetailPage() {
                     </div>
                   </AccordionTrigger>
                   <AccordionContent className="bg-background">
-                    {week.content.length > 0 ? (
+                    {week.items.length > 0 ? (
                       <ul className="space-y-2 pt-4">
-                        {week.content.map((item: any, itemIndex: number) => (
-                          <li key={itemIndex} className="flex items-center justify-between rounded-md border p-4">
-                            <div className="flex items-center gap-4">
-                              {getContentTypeIcon(item.type)}
-                              <div>
-                                <p className="font-semibold">{item.title}</p>
-                                <p className="text-sm text-muted-foreground">{item.type.charAt(0).toUpperCase() + item.type.slice(1)}</p>
-                              </div>
-                            </div>
-                            <div className="flex items-center gap-4">
-                              <span className="text-sm text-muted-foreground">{item.duration}</span>
-                              {item.type === 'video' ? (
-                                <Button asChild variant="ghost" size="sm">
-                                  <Link href={item.link}>
-                                    <PlayCircle className="mr-2" />
-                                    Watch
-                                  </Link>
-                                </Button>
-                              ) : (
-                                <Button asChild variant="ghost" size="sm">
-                                  <Link href={item.link}>
-                                    <Download className="mr-2" />
-                                    Download
-                                  </Link>
-                                </Button>
-                              )}
-                            </div>
-                          </li>
-                        ))}
+                        {week.items.map(renderContentItem)}
                       </ul>
                     ) : (
                       <div className="pt-4 text-center text-muted-foreground">No content for this week matching your filter.</div>

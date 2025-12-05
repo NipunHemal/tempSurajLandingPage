@@ -31,10 +31,10 @@ export const useGetClassById = (id: string) => {
   });
 };
 
-export const useGetModulesByClass = (params: GetModulesByClassIdParams) => {
+export const useGetModulesByClass = (params: GetModulesByClassIdParams, enabled: boolean = true) => {
   return useQuery<ApiResponse<Module>>({
     queryKey: ['modules', params],
     queryFn: () => getModulesByClassId(params),
-    enabled: !!params.classId,
+    enabled: !!params.classId && enabled,
   });
 };
