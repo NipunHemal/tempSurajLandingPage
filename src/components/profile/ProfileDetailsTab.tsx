@@ -63,18 +63,44 @@ export function ProfileDetailsTab() {
   useEffect(() => {
     if (user?.student) {
       form.reset({
+        // Permanent fields
         firstName: user.student.firstName || '',
         lastName: user.student.lastName || '',
-        dob: user.student.dob || undefined,
+        dob: user.student.dob ? user.student.dob.split('T')[0] : undefined,
         gender: user.student.gender as 'MALE' | 'FEMALE' | 'OTHER' | undefined,
         phoneNumber: user.phoneNumber || '',
-        whatsappNumber: user.whatsappNumber || '',
+        
+        // Dynamic Personal & Academic fields
+        profilePicture: user.student.profilePicture || undefined,
         year: user.student.year ? Number(user.student.year) : undefined,
         nic: user.student.nic || '',
-        homeAddress: user.student.homeAddress || '',
-        profilePicture: user.student.profilePicture || undefined,
         nicPic: user.student.nicPic || undefined,
-        // Set other fields from the user object as they are added to the schema
+        alYear: user.student.alYear ? Number(user.student.alYear) : undefined,
+        olYear: user.student.olYear ? Number(user.student.olYear) : undefined,
+        stream: user.student.stream || undefined,
+        medium: user.student.medium || undefined,
+        school: user.student.school || '',
+        shySelect: user.student.shySelect ? Number(user.student.shySelect) : undefined,
+        instituteNumber: user.student.instituteNumber || '',
+        instituteCardImage: user.student.instituteCardImage || undefined,
+
+        // Dynamic Contact fields
+        whatsappNumber: user.whatsappNumber || '',
+        telegramNumber: user.student.telegramNumber || '',
+        
+        // Dynamic Address fields
+        homeAddress: user.student.homeAddress || '',
+        deliveryAddress: user.student.deliveryAddress || '',
+        postalcode: user.student.postalcode || '',
+        city: user.student.city || '',
+        district: user.student.district || '',
+        province: user.student.province || '',
+        country: user.student.country || '',
+        
+        // Dynamic Guardian fields
+        guardianName: user.student.guardianName || '',
+        relationship: user.student.relationship || '',
+        guardianContactNumber: user.student.guardianContactNumber || '',
       });
     }
   }, [user, form.reset]);
