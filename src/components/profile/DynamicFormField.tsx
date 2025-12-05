@@ -15,13 +15,12 @@ import { Loader2, Upload, Pencil } from 'lucide-react';
 import { useUploadImage } from '@/service/query/useUpload';
 import { toast } from 'sonner';
 import type { Field } from '@/types/api-meta-types';
-import InputMask from 'react-input-mask';
 
 // Centralized schema definition
 export const profileFormSchema = z.object({
   firstName: z.string().min(2, { message: 'First name must be at least 2 characters.' }),
   lastName: z.string().min(2, { message: 'Last name must be at least 2 characters.' }),
-  dob: z.string().optional(),
+  dob: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Date must be in YYYY-MM-DD format.').optional(),
   gender: z.enum(['MALE', 'FEMALE', 'OTHER'], { required_error: 'Please select a gender.' }),
   phoneNumber: z.string().min(10, { message: 'Phone number must be at least 10 digits.' }),
   profilePicture: z.string().optional(),
@@ -179,7 +178,7 @@ export function DynamicFormField({ control, fieldConfig, form }: DynamicFormFiel
             </Button>
             {preview && (
               <div className="relative mt-4 h-48 w-full">
-                <Image src={preview} alt={`${buttonText} Preview`} fill objectFit="contain" className="rounded-md border" />
+                <Image src={preview} alt={`${buttonText} Preview`} fill className="object-contain rounded-md border" />
               </div>
             )}
           </div>
@@ -224,24 +223,6 @@ export function DynamicFormField({ control, fieldConfig, form }: DynamicFormFiel
       case 'homeAddress':
       case 'deliveryAddress':
         return <Textarea placeholder={`Your ${label.replace(' *', '')}`} {...rhfProps} value={rhfProps.value ?? ''} />;
-      case 'dob':
-        return (
-          <InputMask
-            mask="9999-99-99"
-            value={rhfProps.value || ''}
-            onChange={rhfProps.onChange}
-            onBlur={rhfProps.onBlur}
-          >
-            {/* @ts-ignore */}
-            {(inputProps: any) => (
-              <Input
-                {...inputProps}
-                placeholder="YYYY-MM-DD"
-                ref={rhfProps.ref}
-              />
-            )}
-          </InputMask>
-        );
       default:
         const inputType = typeof form.getValues(fieldName) === 'number' ? 'number' : 'text';
         return <Input placeholder={`Your ${label.replace(' *', '')}`} {...rhfProps} value={rhfProps.value ?? ''} type={inputType} />;
@@ -264,5 +245,3 @@ export function DynamicFormField({ control, fieldConfig, form }: DynamicFormFiel
     />
   );
 }
-
-    
