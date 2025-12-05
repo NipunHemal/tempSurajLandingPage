@@ -72,7 +72,7 @@ export default function LoginPage() {
         </p>
       </div>
 
-      <Link href={`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/google/initiate?role=STUDENT`} className="mb-8 text-center">
+      <Link href={`${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/google/initiate?role=STUDENT`} className="mb-8 text-center">
         <Button variant="outline" className="w-full">
           <GoogleIcon />
           Login with Google
