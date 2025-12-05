@@ -75,8 +75,8 @@ export function ProfileDetailsTab() {
         year: user.student.year ? Number(user.student.year) : undefined,
         nic: user.student.nic || '',
         homeAddress: user.student.homeAddress || '',
-        profilePicture: user.student.profilePicture || '',
-        nicPic: user.student.nicPic || '',
+        profilePicture: user.student.profilePicture || undefined,
+        nicPic: user.student.nicPic || undefined,
         // Set other fields from the user object as they are added to the schema
       });
     }
@@ -174,6 +174,9 @@ export function ProfileDetailsTab() {
                           onSelect={field.onChange}
                           disabled={(date) => date > new Date() || date < new Date('1900-01-01')}
                           initialFocus
+                          captionLayout="dropdown-nav"
+                          fromYear={1950}
+                          toYear={new Date().getFullYear()}
                         />
                       </PopoverContent>
                     </Popover>

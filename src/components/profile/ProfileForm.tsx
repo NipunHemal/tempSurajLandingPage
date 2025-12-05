@@ -156,6 +156,9 @@ export function ProfileForm() {
                           onSelect={field.onChange}
                           disabled={(date) => date > new Date() || date < new Date('1900-01-01')}
                           initialFocus
+                          captionLayout="dropdown-nav"
+                          fromYear={1950}
+                          toYear={new Date().getFullYear()}
                         />
                       </PopoverContent>
                     </Popover>
