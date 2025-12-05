@@ -5,8 +5,6 @@ import Link from 'next/link';
 import {
   Card,
   CardContent,
-  CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
@@ -35,7 +33,6 @@ export default function ContentCard({
   price,
   progress,
 }: ContentCardProps) {
-  const isFree = price === 0;
 
   return (
     <Link href={link} className="flex h-full">
@@ -50,17 +47,8 @@ export default function ContentCard({
             data-ai-hint={imageHint}
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-          <Badge
-            className={`absolute right-2 top-2 ${
-              isFree
-                ? 'bg-blue-500 text-white'
-                : 'bg-primary text-primary-foreground'
-            }`}
-          >
-            {isFree ? 'Free' : 'Paid'}
-          </Badge>
         </CardHeader>
-        <CardContent className="flex flex-1 flex-col pt-6">
+        <CardContent className="flex flex-1 flex-col justify-center pt-6">
           {tags && tags.length > 0 && (
             <div className="mb-2 flex flex-wrap gap-2">
               {tags.map(tag => (
@@ -78,21 +66,8 @@ export default function ContentCard({
               ))}
             </div>
           )}
-          <CardTitle className="mb-2 font-headline text-xl">{title}</CardTitle>
-          <CardDescription className="flex-1">{description}</CardDescription>
+          <CardTitle className="text-center font-headline text-xl">{title}</CardTitle>
         </CardContent>
-        <CardFooter className="flex-col items-start gap-2 pt-4">
-          <div className="flex w-full items-center justify-between">
-            <span className="text-xl font-bold text-primary">
-              {isFree ? 'Free' : `Rs. ${price}`}
-            </span>
-            {progress !== undefined && (
-              <span className="text-sm font-medium text-muted-foreground">
-                {progress}% Complete
-              </span>
-            )}
-          </div>
-        </CardFooter>
       </Card>
     </Link>
   );
