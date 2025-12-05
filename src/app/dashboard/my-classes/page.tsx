@@ -1,43 +1,45 @@
 
 'use client';
 
-import { Search } from 'lucide-react';
-import React, { useState, useMemo } from 'react';
-import Image from 'next/image';
+import { Search, Loader2 } from 'lucide-react';
+import React, { useState } from 'react';
+import { useDebounce } from 'use-debounce';
 
 import DashboardHeader from '@/components/dashboard-header';
-import { PlaceHolderImages } from '@/lib/placeholder-images';
 import ContentCard from '@/components/content-card';
-import { myClasses } from '@/lib/class-data';
 import { Input } from '@/components/ui/input';
+import { useGetClasses } from '@/service/query/useClass';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 export default function MyClassesPage() {
-  const getImage = (id: string) =>
-    PlaceHolderImages.find(img => img.id === id);
-
   const [searchTerm, setSearchTerm] = useState('');
+  const [debouncedSearchTerm] = useDebounce(searchTerm, 300);
 
-  const filteredClasses = useMemo(() => {
-    return myClasses.filter(c => {
-      return c.title
-        .toLowerCase()
-        .includes(searchTerm.toLowerCase());
-    });
-  }, [searchTerm]);
+  const {
+    data: classesResponse,
+    isLoading,
+    isError,
+    error,
+  } = useGetClasses({
+    search: debouncedSearchTerm,
+    enrollmentStatus: 'ENROLLED',
+  });
+
+  const enrolledClasses = classesResponse?.data ?? [];
 
   return (
     <>
       <DashboardHeader title="My Classes" />
       <main className="p-6">
-        <div className="relative mb-8 h-48 w-full overflow-hidden rounded-lg">
-          {/* <Image
-            src="https://images.unsplash.com/photo-1519681393784-d1202679a5ca?q=80&w=2070&auto=format&fit=crop"
-            alt="Search background"
-            fill
-            className="object-cover"
-            data-ai-hint="night sky"
-          /> */}
-          <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 bg-black/50">
+        <div className="relative mb-8 h-48 w-full overflow-hidden rounded-lg bg-gradient-to-br from-primary to-primary/70">
+          <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 p-6 text-center">
+            <h2 className="font-headline text-3xl font-bold text-primary-foreground">
+              Your Learning Journey
+            </h2>
+            <p className="max-w-md text-primary-foreground/90">
+              All your enrolled courses in one place. Search below to find a
+              specific class.
+            </p>
             <div className="relative w-full max-w-md">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-white/80" />
               <Input
@@ -49,24 +51,40 @@ export default function MyClassesPage() {
             </div>
           </div>
         </div>
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
-          {filteredClasses.map(card => {
-            const image = getImage(card.imageId);
-            return (
+
+        {isLoading ? (
+          <div className="flex h-[50vh] items-center justify-center">
+            <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+          </div>
+        ) : isError ? (
+          <Alert variant="destructive">
+            <AlertTitle>Error</AlertTitle>
+            <AlertDescription>
+              {error?.message ||
+                'Failed to load your classes. Please try again later.'}
+            </AlertDescription>
+          </Alert>
+        ) : enrolledClasses.length === 0 ? (
+          <div className="flex h-[50vh] items-center justify-center rounded-md border-2 border-dashed">
+            <p className="text-muted-foreground">
+              You haven&apos;t enrolled in any classes yet.
+            </p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
+            {enrolledClasses.map(card => (
               <ContentCard
                 key={card.id}
-                title={card.title}
+                title={card.name}
                 description={card.description}
-                tags={card.tags}
-                link={card.link}
-                imageUrl={image?.imageUrl ?? ''}
-                imageHint={image?.imageHint ?? ''}
-                paid={card.paid}
-                status={(card as any).status}
+                link={`/dashboard/class/${card.id}`}
+                imageUrl={card.image}
+                imageHint="class" // Generic hint for dynamic images
+                price={card.price}
               />
-            );
-          })}
-        </div>
+            ))}
+          </div>
+        )}
       </main>
     </>
   );

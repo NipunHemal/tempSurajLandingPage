@@ -47,6 +47,7 @@ export interface GetAllClassesParams {
   page?: number;
   limit?: number;
   search?: string;
+  enrollmentStatus?: 'ENROLLED' | 'NOT_ENROLLED';
 }
 
 export interface GetModulesByClassIdParams {
