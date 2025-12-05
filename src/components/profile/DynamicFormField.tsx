@@ -15,12 +15,13 @@ import { Loader2, Upload, Pencil } from 'lucide-react';
 import { useUploadImage } from '@/service/query/useUpload';
 import { toast } from 'sonner';
 import type { Field } from '@/types/api-meta-types';
+import InputMask from 'react-input-mask';
 
 // Centralized schema definition
 export const profileFormSchema = z.object({
   firstName: z.string().min(2, { message: 'First name must be at least 2 characters.' }),
   lastName: z.string().min(2, { message: 'Last name must be at least 2 characters.' }),
-  dob: z.date({ required_error: 'A date of birth is required.' }),
+  dob: z.string().optional(),
   gender: z.enum(['MALE', 'FEMALE', 'OTHER'], { required_error: 'Please select a gender.' }),
   phoneNumber: z.string().min(10, { message: 'Phone number must be at least 10 digits.' }),
   profilePicture: z.string().optional(),
@@ -78,7 +79,8 @@ export function DynamicFormField({ control, fieldConfig, form }: DynamicFormFiel
   const { mutate: uploadImage, isPending: isUploading } = useUploadImage();
   
   useEffect(() => {
-    if (typeof existingImageValue === 'string') {
+    // Only set preview from existing value if it looks like a URL
+    if (typeof existingImageValue === 'string' && existingImageValue.startsWith('http')) {
       setPreview(existingImageValue);
     }
   }, [existingImageValue]);
@@ -161,7 +163,7 @@ export function DynamicFormField({ control, fieldConfig, form }: DynamicFormFiel
       case 'instituteCardImage':
         const uploadType = fieldName === 'nicPic' ? 'nic' : 'class';
         const buttonText = fieldName === 'nicPic' ? 'NIC Image' : 'Institute Card Image';
-        const uploadIdField = fieldName === 'nicPic' ? 'nicPicUploadId' : 'institute_card_image';
+        const uploadIdField = fieldName === 'nicPic' ? 'nicPicUploadId' : 'instituteCardImage';
         return (
           <div className="col-span-full">
             <input
@@ -169,7 +171,7 @@ export function DynamicFormField({ control, fieldConfig, form }: DynamicFormFiel
               ref={fileInputRef}
               className="hidden"
               accept="image/*"
-              onChange={(e) => handleFileChange(e, uploadType, uploadIdField)}
+              onChange={(e) => handleFileChange(e, uploadType, uploadIdField as any)}
             />
             <Button type="button" variant="outline" onClick={() => fileInputRef.current?.click()} className="w-full">
               <Upload className="mr-2 h-4 w-4" />
@@ -177,7 +179,7 @@ export function DynamicFormField({ control, fieldConfig, form }: DynamicFormFiel
             </Button>
             {preview && (
               <div className="relative mt-4 h-48 w-full">
-                <Image src={preview} alt={`${buttonText} Preview`} layout="fill" objectFit="contain" className="rounded-md border" />
+                <Image src={preview} alt={`${buttonText} Preview`} fill objectFit="contain" className="rounded-md border" />
               </div>
             )}
           </div>
@@ -199,9 +201,47 @@ export function DynamicFormField({ control, fieldConfig, form }: DynamicFormFiel
             </SelectContent>
           </Select>
         );
+      case 'alYear':
+      case 'olYear':
+        const currentYear = new Date().getFullYear();
+        const years = Array.from({ length: 5 }, (_, i) => currentYear - 1 + i);
+        return (
+          <Select onValueChange={(value) => rhfProps.onChange(Number(value))} value={rhfProps.value?.toString()}>
+            <FormControl>
+              <SelectTrigger>
+                <SelectValue placeholder={`Select ${label.replace(' *', '')}`} />
+            </SelectTrigger>
+            </FormControl>
+            <SelectContent>
+              {years.map((year) => (
+                <SelectItem key={year} value={year.toString()}>
+                  {year}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        );
       case 'homeAddress':
       case 'deliveryAddress':
         return <Textarea placeholder={`Your ${label.replace(' *', '')}`} {...rhfProps} value={rhfProps.value ?? ''} />;
+      case 'dob':
+        return (
+          <InputMask
+            mask="9999-99-99"
+            value={rhfProps.value || ''}
+            onChange={rhfProps.onChange}
+            onBlur={rhfProps.onBlur}
+          >
+            {/* @ts-ignore */}
+            {(inputProps: any) => (
+              <Input
+                {...inputProps}
+                placeholder="YYYY-MM-DD"
+                ref={rhfProps.ref}
+              />
+            )}
+          </InputMask>
+        );
       default:
         const inputType = typeof form.getValues(fieldName) === 'number' ? 'number' : 'text';
         return <Input placeholder={`Your ${label.replace(' *', '')}`} {...rhfProps} value={rhfProps.value ?? ''} type={inputType} />;
@@ -224,3 +264,5 @@ export function DynamicFormField({ control, fieldConfig, form }: DynamicFormFiel
     />
   );
 }
+
+    
