@@ -5,6 +5,8 @@ import Link from 'next/link';
 import {
   Card,
   CardContent,
+  CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
@@ -33,6 +35,7 @@ export default function ContentCard({
   price,
   progress,
 }: ContentCardProps) {
+  const isFree = price === 0;
 
   return (
     <Link href={link} className="flex h-full">
@@ -47,10 +50,8 @@ export default function ContentCard({
             data-ai-hint={imageHint}
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-        </CardHeader>
-        <CardContent className="flex flex-1 flex-col justify-center pt-6">
           {tags && tags.length > 0 && (
-            <div className="mb-2 flex flex-wrap gap-2">
+            <div className="absolute right-2 top-2 flex flex-wrap gap-2">
               {tags.map(tag => (
                 <Badge
                   key={tag}
@@ -66,8 +67,18 @@ export default function ContentCard({
               ))}
             </div>
           )}
-          <CardTitle className="text-center font-headline text-xl">{title}</CardTitle>
+        </CardHeader>
+        <CardContent className="flex flex-1 flex-col p-4 pt-6">
+          <CardTitle className="mb-2 font-headline text-xl">{title}</CardTitle>
+          <CardDescription className="flex-1 text-sm text-muted-foreground">
+            {description}
+          </CardDescription>
         </CardContent>
+        <CardFooter className="p-4 pt-0">
+          <Badge variant={isFree ? 'default' : 'destructive'}>
+            {isFree ? 'Free' : `Rs. ${price}`}
+          </Badge>
+        </CardFooter>
       </Card>
     </Link>
   );

@@ -7,7 +7,6 @@ import { useParams } from 'next/navigation';
 import Image from 'next/image';
 
 import DashboardHeader from '@/components/dashboard-header';
-import ContentCard from '@/components/content-card';
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -22,6 +21,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { useGetClassById, useGetModulesByClass } from '@/service/query/useClass';
 import { useEnrollInClass } from '@/service/query/useEnrollment';
+import ModuleCard from '@/components/module-card';
 
 export default function ClassDetailPage() {
   const params = useParams();
@@ -149,14 +149,12 @@ export default function ClassDetailPage() {
                    ) : (
                     <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
                       {modules.map((module: any) => (
-                        <ContentCard
+                        <ModuleCard
                           key={module.id}
                           title={module.name}
-                          description={module.description}
                           link={`/dashboard/class/${id}/module/${module.id}`}
                           imageUrl={module.image}
                           imageHint="module"
-                          price={0} // Modules themselves don't have a price
                         />
                       ))}
                     </div>
