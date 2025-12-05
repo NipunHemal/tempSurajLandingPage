@@ -41,7 +41,7 @@ export interface StudentData {
   dob: string | null;
   gender: string | null;
   profilePicture: string | null;
-  year: string | null;
+  year: number | string | null;
   nic: string | null;
   nicPic: string | null;
   homeAddress: string | null;
@@ -54,6 +54,26 @@ export interface StudentData {
   createdAt: string;
   updatedAt: string;
   institute: Institute | null;
+  alYear: number | null;
+  olYear: number | null;
+  stream: string | null;
+  medium: string | null;
+  school: string | null;
+  telegramNumber: string | null;
+  shySelect: number | null;
+  instituteNumber: string | null;
+  instituteCardImage: string | null;
+  postalcode: string | null;
+  district: string | null;
+  city: string | null;
+  province: string | null;
+  country: string | null;
+  deliveryAddress: string | null;
+  guardianName: string | null;
+  relationship: string | null;
+  guardianContactNumber: string | null;
+  instituteId: string | null;
+  instituteName: string | null;
 }
 
 export interface UserProfileData {
