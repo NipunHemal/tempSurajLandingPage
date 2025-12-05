@@ -106,6 +106,8 @@ export function DynamicFormField({ control, fieldConfig, form }: DynamicFormFiel
     }
   };
 
+  console.log("⚡⚡⚡" , preview)
+
   const renderField = (rhfProps: ControllerRenderProps<ProfileFormValues, keyof ProfileFormValues>) => {
     if (fieldConfig.enum) {
       return (
