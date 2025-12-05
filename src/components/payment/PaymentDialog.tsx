@@ -41,12 +41,12 @@ import {
   Landmark,
   Loader2,
   Ticket,
-  Upload,
 } from 'lucide-react';
 import { useState, useRef } from 'react';
 import Image from 'next/image';
 import { toast } from 'sonner';
 import { useUploadImage } from '@/service/query/useUpload';
+import { useCreatePayment } from '@/service/query/usePayment';
 
 const paymentFormSchema = z.object({
   slipPictureUploadId: z.string().min(1, 'Payment slip is required.'),
@@ -70,6 +70,13 @@ export default function PaymentDialog({
   const [preview, setPreview] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { mutate: uploadImage, isPending: isUploading } = useUploadImage();
+  const { mutate: createPayment, isPending: isSubmittingPayment } = useCreatePayment({
+    onSuccess: () => {
+        setOpen(false);
+        form.reset();
+        setPreview(null);
+    }
+  });
 
   const form = useForm<PaymentFormValues>({
     resolver: zodResolver(paymentFormSchema),
@@ -84,7 +91,7 @@ export default function PaymentDialog({
     if (file) {
       setPreview(URL.createObjectURL(file));
       uploadImage(
-        { image: file, type: 'class' }, // Using 'class' as upload type for payment slips
+        { image: file, type: 'class' },
         {
           onSuccess: data => {
             form.setValue('slipPictureUploadId', data.data.uploadId);
@@ -100,13 +107,11 @@ export default function PaymentDialog({
   };
 
   const onSubmit = (values: PaymentFormValues) => {
-    console.log({
+    createPayment({
       classId,
       amount,
       ...values,
     });
-    // TODO: Implement payment submission logic here
-    toast.info('Payment submission is not yet implemented.');
   };
 
   const currentYear = new Date().getFullYear();
@@ -115,6 +120,8 @@ export default function PaymentDialog({
     const value = `${currentYear}-${String(i + 1).padStart(2, '0')}`;
     return { label: `${month} ${currentYear}`, value };
   });
+
+  const isSubmitting = isUploading || isSubmittingPayment;
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -207,6 +214,7 @@ export default function PaymentDialog({
                                 <p className="mt-2 text-sm text-muted-foreground">
                                   Click or drag to upload slip
                                 </p>
+
                               </div>
                             )}
                           </div>
@@ -216,9 +224,9 @@ export default function PaymentDialog({
                     </FormItem>
                   )}
                 />
-                <Button type="submit" className="w-full" disabled={isUploading || form.formState.isSubmitting}>
-                   {(isUploading || form.formState.isSubmitting) && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                   Submit Payment
+                <Button type="submit" className="w-full" disabled={isSubmitting}>
+                   {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                   {isSubmitting ? 'Submitting...' : 'Submit Payment'}
                 </Button>
               </form>
             </Form>

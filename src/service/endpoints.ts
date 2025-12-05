@@ -30,4 +30,7 @@ export const ENDPOINTS = {
   modules: {
     getByClass: `/modules`,
   },
+  payments: {
+    create: `/payments`,
+  },
 };
