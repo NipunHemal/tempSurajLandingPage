@@ -66,6 +66,9 @@ export function DynamicFormField({ control, fieldConfig, form }: DynamicFormFiel
   if (fieldName === 'shySelect') {
     label = 'Select Your Exam Shy';
   }
+  if (fieldName === 'year') {
+    label = 'Exam Year';
+  }
   label += (fieldConfig.required ? ' *' : '');
 
 
