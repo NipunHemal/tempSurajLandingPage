@@ -106,7 +106,7 @@ export function DynamicFormField({ control, fieldConfig, form }: DynamicFormFiel
     }
   };
 
-  console.log("⚡⚡⚡" , preview)
+
 
   const renderField = (rhfProps: ControllerRenderProps<ProfileFormValues, keyof ProfileFormValues>) => {
     if (fieldConfig.enum) {
@@ -161,7 +161,7 @@ export function DynamicFormField({ control, fieldConfig, form }: DynamicFormFiel
       case 'instituteCardImage':
         const uploadType = fieldName === 'nicPic' ? 'nic' : 'class';
         const buttonText = fieldName === 'nicPic' ? 'NIC Image' : 'Institute Card Image';
-        const uploadIdField = fieldName === 'nicPic' ? 'nicPicUploadId' : 'instituteCardImage';
+        const uploadIdField = fieldName === 'nicPic' ? 'nicPicUploadId' : 'institute_card_image';
         return (
           <div className="col-span-full">
             <input
