@@ -30,20 +30,20 @@ export function ProfileDetailsTab() {
   const { personalAndAcademicFields, contactFields, addressFields, guardianFields } = useMemo(() => {
     if (!meta) return { personalAndAcademicFields: [], contactFields: [], addressFields: [], guardianFields: [] };
     
-    const permanentFields = ['firstName', 'lastName', 'dob', 'gender', 'phoneNumber'];
+    const permanentFields = ['first_name', 'last_name', 'dob', 'gender', 'phone_number'];
     const allDynamicFields = meta.settings.STUDENT_PROFILE.fields.filter(
       (field) => field.isEnabled && !permanentFields.includes(field.fieldName)
     );
 
     const personalAndAcademicFields = allDynamicFields.filter((f) =>
-      ['profilePicture', 'year', 'nic', 'nicPic', 'alYear', 'olYear', 'stream', 'medium', 'school', 'shySelect', 'instituteNumber', 'instituteCardImage'].includes(f.fieldName)
+      ['profile_picture', 'year', 'nic', 'nic_pic', 'al_year', 'ol_year', 'stream', 'medium', 'school', 'shy_select', 'institute_number', 'institute_card_image'].includes(f.fieldName)
     );
-    const contactFields = allDynamicFields.filter((f) => ['whatsappNumber', 'telegramNumber'].includes(f.fieldName));
+    const contactFields = allDynamicFields.filter((f) => ['whatsapp_number', 'telegram_number'].includes(f.fieldName));
     const addressFields = allDynamicFields.filter((f) =>
-      ['homeAddress', 'deliveryAddress', 'postalcode', 'city', 'district', 'province', 'country'].includes(f.fieldName)
+      ['home_address', 'delivery_address', 'postal_code', 'city', 'district', 'province', 'country'].includes(f.fieldName)
     );
     const guardianFields = allDynamicFields.filter((f) =>
-      ['guardianName', 'relationship', 'guardianContactNumber'].includes(f.fieldName)
+      ['guardian_name', 'relationship', 'guardian_contact_number'].includes(f.fieldName)
     );
 
     return { personalAndAcademicFields, contactFields, addressFields, guardianFields };
@@ -52,10 +52,10 @@ export function ProfileDetailsTab() {
   const form = useForm<ProfileFormValues>({
     resolver: zodResolver(profileFormSchema),
     defaultValues: {
-      firstName: '',
-      lastName: '',
-      whatsappNumber: '',
-      phoneNumber: '',
+      first_name: '',
+      last_name: '',
+      whatsapp_number: '',
+      phone_number: '',
       nic: '',
       gender: undefined,
       stream: undefined,
@@ -66,17 +66,17 @@ export function ProfileDetailsTab() {
   useEffect(() => {
     if (user?.student) {
       form.reset({
-        firstName: user.student.firstName || '',
-        lastName: user.student.lastName || '',
+        first_name: user.student.firstName || '',
+        last_name: user.student.lastName || '',
         dob: user.student.dob ? new Date(user.student.dob) : undefined,
         gender: user.student.gender as 'MALE' | 'FEMALE' | 'OTHER' | undefined,
-        phoneNumber: user.phoneNumber || '',
-        whatsappNumber: user.whatsappNumber || '',
+        phone_number: user.phoneNumber || '',
+        whatsapp_number: user.whatsappNumber || '',
         year: user.student.year ? Number(user.student.year) : undefined,
         nic: user.student.nic || '',
-        homeAddress: user.student.homeAddress || '',
-        profilePicture: user.student.profilePicture || undefined,
-        nicPic: user.student.nicPic || undefined,
+        home_address: user.student.homeAddress || '',
+        profile_picture: user.student.profilePicture || undefined,
+        nic_pic: user.student.nicPic || undefined,
         // Set other fields from the user object as they are added to the schema
       });
     }
@@ -88,7 +88,7 @@ export function ProfileDetailsTab() {
       const value = data[key as keyof typeof data];
       
       // We don't want to submit the preview URL, only the upload ID
-      if (key === 'profilePicture' || key === 'nicPic' || key === 'instituteCardImage') continue;
+      if (key === 'profile_picture' || key === 'nic_pic' || key === 'institute_card_image') continue;
 
       if (value !== undefined && value !== null && value !== '') {
          if (key === 'dob' && value instanceof Date) {
@@ -113,11 +113,11 @@ export function ProfileDetailsTab() {
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="flex justify-center">
-              {personalAndAcademicFields.find((f) => f.fieldName === 'profilePicture') && (
+              {personalAndAcademicFields.find((f) => f.fieldName === 'profile_picture') && (
                 <DynamicFormField
-                  key="profilePicture"
+                  key="profile_picture"
                   control={form.control}
-                  fieldConfig={personalAndAcademicFields.find((f) => f.fieldName === 'profilePicture')!}
+                  fieldConfig={personalAndAcademicFields.find((f) => f.fieldName === 'profile_picture')!}
                   form={form}
                 />
               )}
@@ -125,7 +125,7 @@ export function ProfileDetailsTab() {
             <div className="grid grid-cols-1 gap-x-6 gap-y-8 md:grid-cols-2">
               <FormField
                 control={form.control}
-                name="firstName"
+                name="first_name"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>First Name *</FormLabel>
@@ -138,7 +138,7 @@ export function ProfileDetailsTab() {
               />
               <FormField
                 control={form.control}
-                name="lastName"
+                name="last_name"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Last Name *</FormLabel>
@@ -208,7 +208,7 @@ export function ProfileDetailsTab() {
               />
               <FormField
                 control={form.control}
-                name="phoneNumber"
+                name="phone_number"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Phone Number *</FormLabel>
@@ -220,7 +220,7 @@ export function ProfileDetailsTab() {
                 )}
               />
               {personalAndAcademicFields
-                .filter((f) => !['profilePicture'].includes(f.fieldName))
+                .filter((f) => !['profile_picture'].includes(f.fieldName))
                 .map((fieldConfig) => (
                   <DynamicFormField key={fieldConfig.fieldName} control={form.control} fieldConfig={fieldConfig} form={form} />
                 ))}
