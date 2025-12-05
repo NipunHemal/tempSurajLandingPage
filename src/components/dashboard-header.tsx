@@ -41,7 +41,7 @@ export default function DashboardHeader({ title, children }: { title?: string, c
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" size="icon" className="rounded-full">
               <Avatar>
-                <AvatarImage src={user?.student?.profilePicture || ''} />
+                <AvatarImage src={user?.student?.profilePicture || undefined} />
                 <AvatarFallback>
                   {user?.student?.firstName?.[0] || 'A'}
                   {user?.student?.lastName?.[0] || 'D'}
