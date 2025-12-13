@@ -77,6 +77,7 @@ export default function ClassPage() {
                 imageUrl={card.image}
                 imageHint="class" // Generic hint for dynamic images
                 price={card.price}
+                enrollmentStatus={card.enrollmentStatus}
               />
             ))}
           </div>

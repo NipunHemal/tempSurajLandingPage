@@ -23,6 +23,7 @@ type ContentCardProps = {
   status?: 'free' | 'paid' | 'unpaid';
   price?: number;
   progress?: number;
+  enrollmentStatus?: 'ENROLLED' | 'NOT_ENROLLED';
 };
 
 export default function ContentCard({
@@ -34,6 +35,7 @@ export default function ContentCard({
   link,
   price,
   progress,
+  enrollmentStatus,
 }: ContentCardProps) {
   const isFree = price === 0;
 
@@ -74,10 +76,15 @@ export default function ContentCard({
             {description}
           </CardDescription>
         </CardContent>
-        <CardFooter className="p-4 pt-0">
+        <CardFooter className="p-4 pt-0 flex gap-2">
           <Badge variant={isFree ? 'default' : 'destructive'}>
             {isFree ? 'Free' : `Rs. ${price}`}
           </Badge>
+          {enrollmentStatus === 'ENROLLED' && (
+            <Badge variant="outline" className="border-green-500 text-green-600 bg-green-50 dark:bg-green-950 dark:text-green-400">
+              Enrolled
+            </Badge>
+          )}
         </CardFooter>
       </Card>
     </Link>
