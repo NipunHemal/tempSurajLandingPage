@@ -62,7 +62,7 @@ interface DynamicFormFieldProps {
 
 export function DynamicFormField({ control, fieldConfig, form }: DynamicFormFieldProps) {
   const fieldName = fieldConfig.fieldName as keyof ProfileFormValues;
-  
+
   let label = fieldConfig.fieldName.replace(/([A-Z])/g, ' $1').replace(/^./, (s) => s.toUpperCase());
   if (fieldName === 'shySelect') {
     label = 'Select Your Exam Shy';
@@ -77,7 +77,7 @@ export function DynamicFormField({ control, fieldConfig, form }: DynamicFormFiel
   const [preview, setPreview] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { mutate: uploadImage, isPending: isUploading } = useUploadImage();
-  
+
   useEffect(() => {
     // Only set preview from existing value if it looks like a URL
     if (typeof existingImageValue === 'string' && existingImageValue.startsWith('http')) {
@@ -87,7 +87,7 @@ export function DynamicFormField({ control, fieldConfig, form }: DynamicFormFiel
 
   const handleFileChange = (
     event: React.ChangeEvent<HTMLInputElement>,
-    type: 'profile' | 'nic' | 'class',
+    type: 'profile' | 'nic' | 'class' | 'institute_card_image',
     field: 'profilePictureUploadId' | 'nicPicUploadId' | 'instituteCardImageUploadId'
   ) => {
     const file = event.target.files?.[0];
@@ -149,7 +149,7 @@ export function DynamicFormField({ control, fieldConfig, form }: DynamicFormFiel
                 </AvatarFallback>
               </Avatar>
               <div className="absolute bottom-0 right-0 flex items-center justify-center w-8 h-8 bg-gray-800 rounded-full border-2 border-background cursor-pointer group-hover:bg-gray-700 transition-colors">
-                 <Pencil className="text-white w-4 h-4" />
+                <Pencil className="text-white w-4 h-4" />
               </div>
               {isUploading && (
                 <div className="absolute inset-0 flex items-center justify-center rounded-full bg-black/50">
@@ -161,7 +161,7 @@ export function DynamicFormField({ control, fieldConfig, form }: DynamicFormFiel
         );
       case 'nicPic':
       case 'instituteCardImage':
-        const uploadType = fieldName === 'nicPic' ? 'nic' : 'class';
+        const uploadType = fieldName === 'nicPic' ? 'nic' : 'institute_card_image';
         const buttonText = fieldName === 'nicPic' ? 'NIC Image' : 'Institute Card Image';
         const uploadIdField = fieldName === 'nicPic' ? 'nicPicUploadId' : 'instituteCardImageUploadId';
         return (
@@ -210,7 +210,7 @@ export function DynamicFormField({ control, fieldConfig, form }: DynamicFormFiel
             <FormControl>
               <SelectTrigger>
                 <SelectValue placeholder={`Select ${label.replace(' *', '')}`} />
-            </SelectTrigger>
+              </SelectTrigger>
             </FormControl>
             <SelectContent>
               {years.map((year) => (
