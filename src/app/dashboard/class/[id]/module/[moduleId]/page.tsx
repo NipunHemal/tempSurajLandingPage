@@ -31,7 +31,7 @@ import {
     Loader2,
     ExternalLink,
 } from 'lucide-react';
-import Image from 'next/image';
+import CustomImage from '@/components/ui/custom-image';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { useState, useMemo } from 'react';
@@ -209,12 +209,12 @@ export default function ModuleDetailPage() {
             <main>
                 {moduleDetails?.image && (
                     <div className="relative h-64 w-full">
-                        <Image
+                        <CustomImage
                             src={moduleDetails.image}
                             alt={moduleDetails.name}
                             fill
                             className="object-cover"
-                            data-ai-hint="module-banner"
+                        // data-ai-hint="module-banner"
                         />
                         <div className="absolute inset-0 bg-black/50" />
                         <div className="absolute bottom-0 left-0 p-6 text-white">

@@ -4,7 +4,7 @@
 import { AlertCircle, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
-import Image from 'next/image';
+import CustomImage from '@/components/ui/custom-image';
 
 import DashboardHeader from '@/components/dashboard-header';
 import {
@@ -41,7 +41,7 @@ export default function ClassDetailPage() {
     data: modulesResponse,
     isLoading: isLoadingModules,
   } = useGetModulesByClass({ classId: id, limit: 50 }, isEnrolled);
-  
+
   const { mutate: enroll, isPending: isEnrolling } = useEnrollInClass();
 
   if (isLoadingClass) {
@@ -101,13 +101,15 @@ export default function ClassDetailPage() {
       </DashboardHeader>
       <main>
         <div className="relative h-64 w-full">
-          <Image
-            src={details.image}
-            alt={details.name}
-            fill
-            className="object-cover"
-            data-ai-hint="class details"
-          />
+          <div className="relative h-64 w-full">
+            <CustomImage
+              src={details.image}
+              alt={details.name}
+              fill
+              className="object-cover"
+            // data-ai-hint="class details"
+            />
+          </div>
         </div>
         <div className="p-6">
           <div className="mx-auto max-w-4xl">
@@ -138,15 +140,15 @@ export default function ClassDetailPage() {
                   <TabsTrigger value="month">Month Wise</TabsTrigger>
                 </TabsList>
                 <TabsContent value="lessons">
-                   {isLoadingModules ? (
-                     <div className="flex h-[30vh] items-center justify-center">
-                       <Loader2 className="h-8 w-8 animate-spin" />
-                     </div>
-                   ) : modules.length === 0 ? (
-                      <div className="flex h-[30vh] items-center justify-center rounded-md border-2 border-dashed">
-                        <p className="text-muted-foreground">No modules found for this class yet.</p>
-                      </div>
-                   ) : (
+                  {isLoadingModules ? (
+                    <div className="flex h-[30vh] items-center justify-center">
+                      <Loader2 className="h-8 w-8 animate-spin" />
+                    </div>
+                  ) : modules.length === 0 ? (
+                    <div className="flex h-[30vh] items-center justify-center rounded-md border-2 border-dashed">
+                      <p className="text-muted-foreground">No modules found for this class yet.</p>
+                    </div>
+                  ) : (
                     <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
                       {modules.map((module: any) => (
                         <ModuleCard
