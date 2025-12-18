@@ -29,11 +29,13 @@ export const ENDPOINTS = {
   },
   modules: {
     getByClass: `/modules`,
+    getById: (moduleId: string) => `/modules/${moduleId}`,
+    resources: (moduleId: string) => `/modules/${moduleId}/resources`,
   },
   payments: {
     create: `/payments`,
   },
   enrollments: {
     enroll: `/enrollments`,
-  }
+  },
 };

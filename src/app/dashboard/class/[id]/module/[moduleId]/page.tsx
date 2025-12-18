@@ -1,0 +1,329 @@
+'use client';
+
+import {
+    Accordion,
+    AccordionContent,
+    AccordionItem,
+    AccordionTrigger,
+} from '@/components/ui/accordion';
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+} from "@/components/ui/dialog";
+import { Button } from '@/components/ui/button';
+import {
+    Breadcrumb,
+    BreadcrumbItem,
+    BreadcrumbLink,
+    BreadcrumbList,
+    BreadcrumbPage,
+    BreadcrumbSeparator,
+} from '@/components/ui/breadcrumb';
+import DashboardHeader from '@/components/dashboard-header';
+import {
+    Download,
+    FileText,
+    PlayCircle,
+    BookCheck,
+    ClipboardList,
+    Loader2,
+    ExternalLink,
+} from 'lucide-react';
+import Image from 'next/image';
+import Link from 'next/link';
+import { useParams } from 'next/navigation';
+import { useState, useMemo } from 'react';
+import { useGetClassById } from '@/service/query/useClass';
+import { useGetModuleResources, useGetModuleById } from '@/service/query/useModule';
+import { ModuleResource } from '@/service/functions/modules.service';
+
+export default function ModuleDetailPage() {
+    const params = useParams();
+    const classId = params.id as string;
+    const moduleId = params.moduleId as string;
+
+    const { data: classResponse } = useGetClassById(classId);
+    const classDetails = classResponse?.data;
+
+    const { data: moduleResponse, isLoading: isLoadingModule } = useGetModuleById(moduleId);
+    const moduleDetails = moduleResponse?.data;
+
+    const {
+        data: resourcesResponse,
+        isLoading: isLoadingResources,
+        error: resourcesError
+    } = useGetModuleResources(moduleId);
+
+    const resources = resourcesResponse?.data || [];
+
+    const [filter, setFilter] = useState<string | null>(null);
+
+    const getContentTypeIcon = (type: string) => {
+        switch (type) {
+            case 'VIDEO':
+                return <PlayCircle className="text-muted-foreground" />;
+            case 'DOCUMENT':
+                return <FileText className="text-muted-foreground" />;
+            case 'LINK':
+                return <ExternalLink className="text-muted-foreground" />;
+            default:
+                return <FileText className="text-muted-foreground" />;
+        }
+    };
+
+    const handleFilter = (type: string) => {
+        setFilter(prevFilter => (prevFilter === type ? null : type));
+    };
+
+    // Group resources by month
+    const groupedContent = useMemo(() => {
+        if (!resources || resources.length === 0) return [];
+
+        const grouped: Record<string, ModuleResource[]> = {};
+
+        resources.forEach(item => {
+            // Filter logic
+            if (filter && item.resource.type !== filter) {
+                return;
+            }
+
+            const key = item.month || 'General';
+            if (!grouped[key]) {
+                grouped[key] = [];
+            }
+            grouped[key].push(item);
+        });
+
+        return Object.entries(grouped)
+            .sort((a, b) => b[0].localeCompare(a[0])) // Sort months descending? Or distinct sorting needed?
+            .map(([month, items]) => ({
+                month,
+                items
+            }));
+    }, [resources, filter]);
+
+    const [selectedResource, setSelectedResource] = useState<ModuleResource | null>(null);
+
+    const getEmbedUrl = (url: string) => {
+        if (!url) return '';
+        // Basic YouTube ID extraction
+        const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+        const match = url.match(regExp);
+
+        if (match && match[2].length === 11) {
+            return `https://www.youtube.com/embed/${match[2]}`;
+        }
+        return url;
+    };
+
+    if (isLoadingResources || isLoadingModule) {
+        return (
+            <>
+                <DashboardHeader />
+                <main className="flex flex-1 items-center justify-center h-[50vh]">
+                    <Loader2 className="h-8 w-8 animate-spin" />
+                </main>
+            </>
+        );
+    }
+
+    if (resourcesError) {
+        return (
+            <>
+                <DashboardHeader title="Module Not Found" />
+                <main className="flex flex-1 items-center justify-center">
+                    <p className="text-destructive">Error loading module resources.</p>
+                </main>
+            </>
+        )
+    }
+
+    const moduleTitle = moduleDetails?.name || "Module Resources";
+
+    const renderContentItem = (item: ModuleResource, itemIndex: number) => {
+        return (
+            <li key={item.id} className="flex items-center justify-between rounded-md border p-4">
+                <div className="flex items-center gap-4">
+                    {getContentTypeIcon(item.resource.type)}
+                    <div>
+                        <p className="font-semibold">{item.resource.title}</p>
+                        <p className="text-sm text-muted-foreground">{item.resource.description}</p>
+                        <p className="text-xs text-muted-foreground mt-1">Release: {new Date(item.releaseDate).toLocaleDateString()}</p>
+                    </div>
+                </div>
+                <div className="flex items-center gap-4">
+                    {item.resource.type === 'VIDEO' ? (
+                        <Button variant="ghost" size="sm" onClick={() => setSelectedResource(item)}>
+                            <PlayCircle className="mr-2" />
+                            Watch
+                        </Button>
+                    ) : item.resource.type === 'LINK' ? (
+                        <Button asChild variant="ghost" size="sm">
+                            <Link href={item.resource.url} target="_blank">
+                                <ExternalLink className="mr-2" />
+                                Open
+                            </Link>
+                        </Button>
+                    ) : (
+                        <Button asChild variant="ghost" size="sm">
+                            <Link href={item.resource.url} target="_blank">
+                                <Download className="mr-2" />
+                                Download
+                            </Link>
+                        </Button>
+                    )}
+                </div>
+            </li>
+        )
+    }
+
+    return (
+        <>
+            <DashboardHeader>
+                <Breadcrumb>
+                    <BreadcrumbList>
+                        <BreadcrumbItem>
+                            <BreadcrumbLink asChild>
+                                <Link href="/dashboard/class">Classes</Link>
+                            </BreadcrumbLink>
+                        </BreadcrumbItem>
+                        <BreadcrumbSeparator />
+                        <BreadcrumbItem>
+                            {classDetails ? (
+                                <BreadcrumbLink asChild>
+                                    <Link href={`/dashboard/class/${classId}`}>{classDetails.name}</Link>
+                                </BreadcrumbLink>
+                            ) : (
+                                <span>Class</span>
+                            )}
+                        </BreadcrumbItem>
+                        <BreadcrumbSeparator />
+                        <BreadcrumbItem>
+                            <BreadcrumbPage>{moduleTitle}</BreadcrumbPage>
+                        </BreadcrumbItem>
+                    </BreadcrumbList>
+                </Breadcrumb>
+            </DashboardHeader>
+            <main>
+                {moduleDetails?.image && (
+                    <div className="relative h-64 w-full">
+                        <Image
+                            src={moduleDetails.image}
+                            alt={moduleDetails.name}
+                            fill
+                            className="object-cover"
+                            data-ai-hint="module-banner"
+                        />
+                        <div className="absolute inset-0 bg-black/50" />
+                        <div className="absolute bottom-0 left-0 p-6 text-white">
+                            <h1 className="mb-2 font-headline text-4xl font-bold">
+                                {moduleDetails.name}
+                            </h1>
+                            <p className="text-lg opacity-90">
+                                {moduleDetails.description}
+                            </p>
+                        </div>
+                    </div>
+                )}
+
+                <div className="p-6">
+                    <div className="mx-auto max-w-4xl">
+                        {!moduleDetails?.image && (
+                            <>
+                                <h1 className="mb-2 font-headline text-4xl font-bold">
+                                    {moduleTitle}
+                                </h1>
+                                {moduleDetails?.description && (
+                                    <p className="mb-6 text-muted-foreground">
+                                        {moduleDetails.description}
+                                    </p>
+                                )}
+                            </>
+                        )}
+
+                        <div className="mb-8 flex gap-2">
+                            <Button
+                                variant={filter === 'VIDEO' ? 'default' : 'outline'}
+                                className={filter !== 'VIDEO' ? 'bg-background' : ''}
+                                onClick={() => handleFilter('VIDEO')}>
+                                <PlayCircle className="mr-2" />
+                                Videos
+                            </Button>
+                            <Button
+                                variant={filter === 'DOCUMENT' ? 'default' : 'outline'}
+                                className={filter !== 'DOCUMENT' ? 'bg-background' : ''}
+                                onClick={() => handleFilter('DOCUMENT')}>
+                                <FileText className="mr-2" />
+                                Documents
+                            </Button>
+                        </div>
+
+                        <Accordion type="single" collapsible defaultValue="item-0" className="w-full space-y-4">
+                            {groupedContent.map((group, index) => (
+                                <AccordionItem value={`item-${index}`} key={index} className="rounded-md border-0 bg-secondary/10">
+                                    <AccordionTrigger className="px-4 text-lg font-semibold hover:no-underline">
+                                        <div className="flex w-full items-center gap-4">
+                                            <span className="flex-1 text-left">{group.month}</span>
+                                            <span className="text-sm text-muted-foreground mr-4 font-normal">{group.items.length} items</span>
+                                        </div>
+                                    </AccordionTrigger>
+                                    <AccordionContent className="bg-background">
+                                        {group.items.length > 0 ? (
+                                            <ul className="space-y-2 pt-4">
+                                                {group.items.map((item, idx) => renderContentItem(item, idx))}
+                                            </ul>
+                                        ) : (
+                                            <div className="pt-4 text-center text-muted-foreground">No content for this month matching your filter.</div>
+                                        )}
+                                    </AccordionContent>
+                                </AccordionItem>
+                            ))}
+
+                            {groupedContent.length === 0 && (
+                                <div className="text-center py-10 text-muted-foreground">
+                                    No resources found for this module.
+                                </div>
+                            )}
+                        </Accordion>
+                    </div>
+                </div>
+            </main>
+
+            <Dialog open={!!selectedResource} onOpenChange={(open) => !open && setSelectedResource(null)}>
+                <DialogContent className="sm:max-w-[800px]">
+                    <DialogHeader>
+                        <DialogTitle>{selectedResource?.resource.title}</DialogTitle>
+                    </DialogHeader>
+                    <div className="aspect-video w-full overflow-hidden rounded-md bg-black">
+                        {selectedResource?.resource.type === 'VIDEO' && (
+                            <iframe
+                                width="100%"
+                                height="100%"
+                                src={getEmbedUrl(selectedResource.resource.url)}
+                                title={selectedResource.resource.title}
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                allowFullScreen
+                                className="h-full w-full border-0"
+                            />
+                        )}
+                        {/* Add Logic for DOCUMENTS if needed, typically they open in new tab or PDF viewer. 
+                            For now, keeping only VIDEO in popup as implied by "watch". 
+                            If it is not video, maybe just show a link or generic placeholder */}
+                        {selectedResource?.resource.type !== 'VIDEO' && (
+                            <div className="flex h-full items-center justify-center text-white">
+                                <p>This resource cannot be embedded directly.</p>
+                                <Button asChild variant="secondary" className="ml-4">
+                                    <Link href={selectedResource?.resource.url || '#'} target="_blank">
+                                        Open in New Tab
+                                    </Link>
+                                </Button>
+                            </div>
+                        )}
+                    </div>
+                </DialogContent>
+            </Dialog>
+        </>
+    );
+}

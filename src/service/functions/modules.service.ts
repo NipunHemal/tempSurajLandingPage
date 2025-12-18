@@ -1,0 +1,53 @@
+import { SingleApiResponse } from "@/types/api-class-types";
+import axiosClient from "../axios.client";
+import { ENDPOINTS } from "../endpoints";
+
+export interface ModuleResource {
+  id: string;
+  moduleId: string;
+  resourceId: string;
+  month: string;
+  subModule: string;
+  releaseDate: string;
+  expiresDate: string;
+  status: "ACTIVE" | "INACTIVE";
+  resource: {
+    id: string;
+    title: string;
+    description: string;
+    url: string;
+    type: "VIDEO" | "DOCUMENT" | "LINK";
+    status: "ACTIVE";
+  };
+}
+
+export interface GetModuleResourcesResponse {
+  success: boolean;
+  data: ModuleResource[];
+  message: string;
+}
+
+export const getModuleResources = async (
+  moduleId: string
+): Promise<GetModuleResourcesResponse> => {
+  const response = await axiosClient.get(ENDPOINTS.modules.resources(moduleId));
+  return response.data;
+};
+
+export interface Module {
+  id: string;
+  name: string;
+  description: string;
+  image: string;
+  classId: string;
+  status: "ACTIVE" | "INACTIVE";
+  createdAt: string;
+  updatedAt: string;
+}
+
+export const getModuleById = async (
+  moduleId: string
+): Promise<SingleApiResponse<Module>> => {
+  const response = await axiosClient.get(ENDPOINTS.modules.getById(moduleId));
+  return response.data;
+};
