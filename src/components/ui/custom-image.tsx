@@ -22,7 +22,7 @@ export default function CustomImage({
     const [imgSrc, setImgSrc] = useState(src);
 
     return (
-        <div className={cn("relative overflow-hidden", className)}>
+        <div className="relative h-full w-full overflow-hidden">
             {isLoading && (
                 <Skeleton className="absolute inset-0 h-full w-full" />
             )}
@@ -38,13 +38,7 @@ export default function CustomImage({
                     className={cn(
                         "transition-opacity duration-500",
                         isLoading ? "opacity-0" : "opacity-100",
-                        // If className is passed, it might override exact positioning, 
-                        // but usually we want the image to fill the container if using 'fill'.
-                        // If using fixed width/height, we rely on parent wrapper.
-                        // For this component, let's assume usage is mostly 'fill' or standard.
-                        // Removing 'className' from here might be safer if the wrapper div handles layout?
-                        // Actually, next/image expects specific class logic.
-                        // Let's apply className to image as well, but handle opacity manually.
+                        className
                     )}
                     {...props}
                     onLoad={() => setIsLoading(false)}
