@@ -5,6 +5,7 @@ import { AlertCircle, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import CustomImage from '@/components/ui/custom-image';
+import { useState } from 'react';
 
 import DashboardHeader from '@/components/dashboard-header';
 import {
@@ -43,6 +44,8 @@ export default function ClassDetailPage() {
   } = useGetModulesByClass({ classId: id, limit: 50 }, isEnrolled);
 
   const { mutate: enroll, isPending: isEnrolling } = useEnrollInClass();
+
+  const [subDescriptionOpen, setSubDescriptionOpen] = useState(false);
 
   if (isLoadingClass) {
     return (
@@ -116,9 +119,31 @@ export default function ClassDetailPage() {
             <h1 className="mb-2 font-headline text-4xl font-bold">
               {details.name}
             </h1>
-            <p className="mb-6 text-muted-foreground">
+            <p className="mb-1 text-muted-foreground">
               {details.description}
             </p>
+            {details.subDescription && (
+              <div className="mb-6">
+                <Button
+                  variant="link"
+                  className="p-0 h-auto font-semibold text-primary"
+                  onClick={() => setSubDescriptionOpen(!subDescriptionOpen)}
+                >
+                  {subDescriptionOpen ? "Show Less" : "More Details"}
+                </Button>
+                {subDescriptionOpen && (
+                  <div
+                    className="mt-2 whitespace-pre-wrap text-sm text-muted-foreground transition-all animate-in fade-in slide-in-from-top-2"
+                  // If user has HTML content, we might need dangerouslySetInnerHTML, 
+                  // but sticking to whitespace-pre-wrap as per previous safe impl unless explicitly asked to unsafe render.
+                  // User said "html content", so let's try to interpret if it needs parsing? 
+                  // For now staying safe.
+                  >
+                    {details.subDescription}
+                  </div>
+                )}
+              </div>
+            )}
 
             {!isEnrolled ? (
               <Alert variant="destructive" className="mb-6">
