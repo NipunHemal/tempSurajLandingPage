@@ -30,7 +30,7 @@ export const ENDPOINTS = {
   modules: {
     getByClass: `/modules`,
     getById: (moduleId: string) => `/modules/${moduleId}`,
-    resources: (moduleId: string) => `/modules/${moduleId}/resources`,
+    resources: (moduleId: string) => `/resources/module/${moduleId}`,
   },
   payments: {
     create: `/payments`,

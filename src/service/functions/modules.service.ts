@@ -4,21 +4,17 @@ import { ENDPOINTS } from "../endpoints";
 
 export interface ModuleResource {
   id: string;
+  title: string;
+  description: string;
+  url: string | null;
+  type: "VIDEO" | "DOCUMENT" | "LINK";
+  status: "ACTIVE" | "INACTIVE";
   moduleId: string;
-  resourceId: string;
   month: string;
   subModule: string;
   releaseDate: string;
-  expiresDate: string;
-  status: "ACTIVE" | "INACTIVE";
-  resource: {
-    id: string;
-    title: string;
-    description: string;
-    url: string;
-    type: "VIDEO" | "DOCUMENT" | "LINK";
-    status: "ACTIVE";
-  };
+  expiresDate: string | null;
+  paymentStatus: string;
 }
 
 export interface GetModuleResourcesResponse {

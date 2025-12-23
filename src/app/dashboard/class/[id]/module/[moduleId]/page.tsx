@@ -12,6 +12,16 @@ import {
     DialogHeader,
     DialogTitle,
 } from "@/components/ui/dialog";
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Button } from '@/components/ui/button';
 import {
     Breadcrumb,
@@ -30,6 +40,7 @@ import {
     ClipboardList,
     Loader2,
     ExternalLink,
+    Lock,
 } from 'lucide-react';
 import CustomImage from '@/components/ui/custom-image';
 import Link from 'next/link';
@@ -85,7 +96,7 @@ export default function ModuleDetailPage() {
 
         resources.forEach(item => {
             // Filter logic
-            if (filter && item.resource.type !== filter) {
+            if (filter && item.type !== filter) {
                 return;
             }
 
@@ -105,6 +116,7 @@ export default function ModuleDetailPage() {
     }, [resources, filter]);
 
     const [selectedResource, setSelectedResource] = useState<ModuleResource | null>(null);
+    const [showPaymentAlert, setShowPaymentAlert] = useState(false);
 
     const getEmbedUrl = (url: string) => {
         if (!url) return '';
@@ -143,32 +155,47 @@ export default function ModuleDetailPage() {
     const moduleTitle = moduleDetails?.name || "Module Resources";
 
     const renderContentItem = (item: ModuleResource, itemIndex: number) => {
+        const isLocked = item.paymentStatus === 'NOT_PAID';
+
+        const handleLockedClick = () => {
+            setShowPaymentAlert(true);
+        };
+
         return (
-            <li key={item.id} className="flex items-center justify-between rounded-md border p-4">
+            <li key={item.id} className={`flex items-center justify-between rounded-md border p-4 ${isLocked ? 'opacity-75 bg-muted/30' : ''}`}>
                 <div className="flex items-center gap-4">
-                    {getContentTypeIcon(item.resource.type)}
+                    {isLocked ? (
+                        <Lock className="text-muted-foreground" />
+                    ) : (
+                        getContentTypeIcon(item.type)
+                    )}
                     <div>
-                        <p className="font-semibold">{item.resource.title}</p>
-                        <p className="text-sm text-muted-foreground">{item.resource.description}</p>
+                        <p className="font-semibold">{item.title}</p>
+                        <p className="text-sm text-muted-foreground">{item.description}</p>
                         <p className="text-xs text-muted-foreground mt-1">Release: {new Date(item.releaseDate).toLocaleDateString()}</p>
                     </div>
                 </div>
                 <div className="flex items-center gap-4">
-                    {item.resource.type === 'VIDEO' ? (
+                    {isLocked ? (
+                        <Button variant="outline" size="sm" onClick={handleLockedClick}>
+                            <Lock className="mr-2 h-4 w-4" />
+                            Locked
+                        </Button>
+                    ) : item.type === 'VIDEO' ? (
                         <Button variant="ghost" size="sm" onClick={() => setSelectedResource(item)}>
                             <PlayCircle className="mr-2" />
                             Watch
                         </Button>
-                    ) : item.resource.type === 'LINK' ? (
+                    ) : item.type === 'LINK' ? (
                         <Button asChild variant="ghost" size="sm">
-                            <Link href={item.resource.url} target="_blank">
+                            <Link href={item.url || '#'} target="_blank">
                                 <ExternalLink className="mr-2" />
                                 Open
                             </Link>
                         </Button>
                     ) : (
                         <Button asChild variant="ghost" size="sm">
-                            <Link href={item.resource.url} target="_blank">
+                            <Link href={item.url || '#'} target="_blank">
                                 <Download className="mr-2" />
                                 Download
                             </Link>
@@ -185,14 +212,14 @@ export default function ModuleDetailPage() {
                 <Breadcrumb>
                     <BreadcrumbList>
                         <BreadcrumbItem>
-                            <BreadcrumbLink asChild>
+                            <BreadcrumbLink asChild href={''}>
                                 <Link href="/dashboard/class">Classes</Link>
                             </BreadcrumbLink>
                         </BreadcrumbItem>
                         <BreadcrumbSeparator />
                         <BreadcrumbItem>
                             {classDetails ? (
-                                <BreadcrumbLink asChild>
+                                <BreadcrumbLink asChild href={''}>
                                     <Link href={`/dashboard/class/${classId}`}>{classDetails.name}</Link>
                                 </BreadcrumbLink>
                             ) : (
@@ -294,15 +321,15 @@ export default function ModuleDetailPage() {
             <Dialog open={!!selectedResource} onOpenChange={(open) => !open && setSelectedResource(null)}>
                 <DialogContent className="sm:max-w-[800px]">
                     <DialogHeader>
-                        <DialogTitle>{selectedResource?.resource.title}</DialogTitle>
+                        <DialogTitle>{selectedResource?.title}</DialogTitle>
                     </DialogHeader>
                     <div className="aspect-video w-full overflow-hidden rounded-md bg-black">
-                        {selectedResource?.resource.type === 'VIDEO' && (
+                        {selectedResource?.type === 'VIDEO' && (
                             <iframe
                                 width="100%"
                                 height="100%"
-                                src={getEmbedUrl(selectedResource.resource.url)}
-                                title={selectedResource.resource.title}
+                                src={getEmbedUrl(selectedResource.url || '')}
+                                title={selectedResource.title}
                                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                                 allowFullScreen
                                 className="h-full w-full border-0"
@@ -311,11 +338,11 @@ export default function ModuleDetailPage() {
                         {/* Add Logic for DOCUMENTS if needed, typically they open in new tab or PDF viewer. 
                             For now, keeping only VIDEO in popup as implied by "watch". 
                             If it is not video, maybe just show a link or generic placeholder */}
-                        {selectedResource?.resource.type !== 'VIDEO' && (
+                        {selectedResource?.type !== 'VIDEO' && (
                             <div className="flex h-full items-center justify-center text-white">
                                 <p>This resource cannot be embedded directly.</p>
                                 <Button asChild variant="secondary" className="ml-4">
-                                    <Link href={selectedResource?.resource.url || '#'} target="_blank">
+                                    <Link href={selectedResource?.url || '#'} target="_blank">
                                         Open in New Tab
                                     </Link>
                                 </Button>
@@ -324,6 +351,25 @@ export default function ModuleDetailPage() {
                     </div>
                 </DialogContent>
             </Dialog>
+
+            <AlertDialog open={showPaymentAlert} onOpenChange={setShowPaymentAlert}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>Payment Required</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            This content is locked. Please complete your payment to access this resource.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction asChild>
+                            <Link href={`/dashboard/class/${classId}/payment`}>
+                                Go to Payment
+                            </Link>
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
         </>
     );
 }
