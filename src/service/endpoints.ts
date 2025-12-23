@@ -32,6 +32,10 @@ export const ENDPOINTS = {
     getById: (moduleId: string) => `/modules/${moduleId}`,
     resources: (moduleId: string) => `/resources/module/${moduleId}`,
   },
+  resources: {
+    getByClassAndMonth: (classId: string, month: string) =>
+      `/resources/class/${classId}/months/${month}`,
+  },
   payments: {
     create: `/payments`,
   },

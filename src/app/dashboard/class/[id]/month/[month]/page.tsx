@@ -1,0 +1,302 @@
+'use client';
+
+import {
+    Accordion,
+    AccordionContent,
+    AccordionItem,
+    AccordionTrigger,
+} from '@/components/ui/accordion';
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { Button } from '@/components/ui/button';
+import {
+    Breadcrumb,
+    BreadcrumbItem,
+    BreadcrumbLink,
+    BreadcrumbList,
+    BreadcrumbPage,
+    BreadcrumbSeparator,
+} from '@/components/ui/breadcrumb';
+import DashboardHeader from '@/components/dashboard-header';
+import {
+    Download,
+    FileText,
+    PlayCircle,
+    Loader2,
+    ExternalLink,
+    Lock,
+} from 'lucide-react';
+import Link from 'next/link';
+import { useParams } from 'next/navigation';
+import { useState, useMemo } from 'react';
+import { useGetClassById } from '@/service/query/useClass';
+import { useGetResourcesByClassAndMonth } from '@/service/query/useModule';
+import { ModuleResource } from '@/service/functions/modules.service';
+
+const MONTHS = [
+    'January', 'February', 'March', 'April', 'May', 'June',
+    'July', 'August', 'September', 'October', 'November', 'December'
+];
+
+export default function MonthResourcesPage() {
+    const params = useParams();
+    const classId = params.id as string;
+    const month = params.month as string; // Format: YYYY-MM
+
+    const { data: classResponse } = useGetClassById(classId);
+    const classDetails = classResponse?.data;
+
+    const {
+        data: resourcesResponse,
+        isLoading: isLoadingResources,
+        error: resourcesError
+    } = useGetResourcesByClassAndMonth(classId, month);
+
+    const resources = resourcesResponse?.data || [];
+
+    const [filter, setFilter] = useState<string | null>(null);
+    const [showPaymentAlert, setShowPaymentAlert] = useState(false);
+
+    // Get month display name from YYYY-MM format
+    const getMonthDisplayName = (): string => {
+        if (!month) return '';
+        const [year, monthNum] = month.split('-');
+        const monthIndex = parseInt(monthNum, 10) - 1;
+        return `${MONTHS[monthIndex]} ${year}`;
+    };
+
+    const getContentTypeIcon = (type: string) => {
+        switch (type) {
+            case 'VIDEO':
+                return <PlayCircle className="text-muted-foreground" />;
+            case 'DOCUMENT':
+                return <FileText className="text-muted-foreground" />;
+            case 'LINK':
+                return <ExternalLink className="text-muted-foreground" />;
+            default:
+                return <FileText className="text-muted-foreground" />;
+        }
+    };
+
+    const handleFilter = (type: string) => {
+        setFilter(prevFilter => (prevFilter === type ? null : type));
+    };
+
+    // Group resources by subModule
+    const groupedContent = useMemo(() => {
+        if (!resources || resources.length === 0) return [];
+
+        const grouped: Record<string, ModuleResource[]> = {};
+
+        resources.forEach(item => {
+            // Filter logic
+            if (filter && item.type !== filter) {
+                return;
+            }
+
+            const key = item.subModule || 'General';
+            if (!grouped[key]) {
+                grouped[key] = [];
+            }
+            grouped[key].push(item);
+        });
+
+        return Object.entries(grouped)
+            .map(([subModule, items]) => ({
+                subModule,
+                items
+            }));
+    }, [resources, filter]);
+
+    const renderContentItem = (item: ModuleResource, itemIndex: number) => {
+        const isLocked = item.paymentStatus === 'NOT_PAID';
+
+        const handleLockedClick = () => {
+            setShowPaymentAlert(true);
+        };
+
+        return (
+            <li key={item.id} className={`flex items-center justify-between rounded-md border p-4 ${isLocked ? 'opacity-75 bg-muted/30' : ''}`}>
+                <div className="flex items-center gap-4">
+                    {isLocked ? (
+                        <Lock className="text-muted-foreground" />
+                    ) : (
+                        getContentTypeIcon(item.type)
+                    )}
+                    <div>
+                        <p className="font-semibold">{item.title}</p>
+                        <p className="text-sm text-muted-foreground">{item.description}</p>
+                        <p className="text-xs text-muted-foreground mt-1">Release: {new Date(item.releaseDate).toLocaleDateString()}</p>
+                    </div>
+                </div>
+                <div className="flex items-center gap-4">
+                    {isLocked ? (
+                        <Button variant="outline" size="sm" onClick={handleLockedClick}>
+                            <Lock className="mr-2 h-4 w-4" />
+                            Locked
+                        </Button>
+                    ) : item.type === 'VIDEO' ? (
+                        <Button variant="ghost" size="sm" asChild>
+                            <Link href={`/dashboard/class/${classId}/module/${item.moduleId}`}>
+                                <PlayCircle className="mr-2" />
+                                Watch
+                            </Link>
+                        </Button>
+                    ) : item.type === 'LINK' ? (
+                        <Button asChild variant="ghost" size="sm">
+                            <Link href={item.url || '#'} target="_blank">
+                                <ExternalLink className="mr-2" />
+                                Open
+                            </Link>
+                        </Button>
+                    ) : (
+                        <Button asChild variant="ghost" size="sm">
+                            <Link href={item.url || '#'} target="_blank">
+                                <Download className="mr-2" />
+                                Download
+                            </Link>
+                        </Button>
+                    )}
+                </div>
+            </li>
+        )
+    }
+
+    if (isLoadingResources) {
+        return (
+            <>
+                <DashboardHeader />
+                <main className="flex flex-1 items-center justify-center h-[50vh]">
+                    <Loader2 className="h-8 w-8 animate-spin" />
+                </main>
+            </>
+        );
+    }
+
+    if (resourcesError) {
+        return (
+            <>
+                <DashboardHeader title="Resources Not Found" />
+                <main className="flex flex-1 items-center justify-center">
+                    <p className="text-destructive">Error loading resources for this month.</p>
+                </main>
+            </>
+        )
+    }
+
+    const monthTitle = getMonthDisplayName();
+
+    return (
+        <>
+            <DashboardHeader>
+                <Breadcrumb>
+                    <BreadcrumbList>
+                        <BreadcrumbItem>
+                            <BreadcrumbLink asChild href={''}>
+                                <Link href="/dashboard/class">Classes</Link>
+                            </BreadcrumbLink>
+                        </BreadcrumbItem>
+                        <BreadcrumbSeparator />
+                        <BreadcrumbItem>
+                            {classDetails ? (
+                                <BreadcrumbLink asChild href={''}>
+                                    <Link href={`/dashboard/class/${classId}`}>{classDetails.name}</Link>
+                                </BreadcrumbLink>
+                            ) : (
+                                <span>Class</span>
+                            )}
+                        </BreadcrumbItem>
+                        <BreadcrumbSeparator />
+                        <BreadcrumbItem>
+                            <BreadcrumbPage>{monthTitle}</BreadcrumbPage>
+                        </BreadcrumbItem>
+                    </BreadcrumbList>
+                </Breadcrumb>
+            </DashboardHeader>
+            <main>
+                <div className="p-6">
+                    <div className="mx-auto max-w-4xl">
+                        <h1 className="mb-2 font-headline text-4xl font-bold">
+                            {monthTitle}
+                        </h1>
+                        <p className="mb-6 text-muted-foreground">
+                            Resources for {monthTitle}
+                        </p>
+
+                        <div className="mb-8 flex gap-2">
+                            <Button
+                                variant={filter === 'VIDEO' ? 'default' : 'outline'}
+                                className={filter !== 'VIDEO' ? 'bg-background' : ''}
+                                onClick={() => handleFilter('VIDEO')}>
+                                <PlayCircle className="mr-2" />
+                                Videos
+                            </Button>
+                            <Button
+                                variant={filter === 'DOCUMENT' ? 'default' : 'outline'}
+                                className={filter !== 'DOCUMENT' ? 'bg-background' : ''}
+                                onClick={() => handleFilter('DOCUMENT')}>
+                                <FileText className="mr-2" />
+                                Documents
+                            </Button>
+                        </div>
+
+                        <Accordion type="single" collapsible defaultValue="item-0" className="w-full space-y-4">
+                            {groupedContent.map((group, index) => (
+                                <AccordionItem value={`item-${index}`} key={index} className="rounded-md border-0 bg-secondary/10">
+                                    <AccordionTrigger className="px-4 text-lg font-semibold hover:no-underline">
+                                        <div className="flex w-full items-center gap-4">
+                                            <span className="flex-1 text-left">{group.subModule}</span>
+                                            <span className="text-sm text-muted-foreground mr-4 font-normal">{group.items.length} items</span>
+                                        </div>
+                                    </AccordionTrigger>
+                                    <AccordionContent className="bg-background">
+                                        {group.items.length > 0 ? (
+                                            <ul className="space-y-2 pt-4">
+                                                {group.items.map((item, idx) => renderContentItem(item, idx))}
+                                            </ul>
+                                        ) : (
+                                            <div className="pt-4 text-center text-muted-foreground">No content for this section matching your filter.</div>
+                                        )}
+                                    </AccordionContent>
+                                </AccordionItem>
+                            ))}
+
+                            {groupedContent.length === 0 && (
+                                <div className="text-center py-10 text-muted-foreground">
+                                    No resources found for this month.
+                                </div>
+                            )}
+                        </Accordion>
+                    </div>
+                </div>
+            </main>
+
+            <AlertDialog open={showPaymentAlert} onOpenChange={setShowPaymentAlert}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>Payment Required</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            This content is locked. Please complete your payment to access this resource.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction asChild>
+                            <Link href={`/dashboard/class/${classId}/payment`}>
+                                Go to Payment
+                            </Link>
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
+        </>
+    );
+}

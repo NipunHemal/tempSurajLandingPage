@@ -47,3 +47,14 @@ export const getModuleById = async (
   const response = await axiosClient.get(ENDPOINTS.modules.getById(moduleId));
   return response.data;
 };
+
+// Get resources by class and month
+export const getResourcesByClassAndMonth = async (
+  classId: string,
+  month: string
+): Promise<GetModuleResourcesResponse> => {
+  const response = await axiosClient.get(
+    ENDPOINTS.resources.getByClassAndMonth(classId, month)
+  );
+  return response.data;
+};

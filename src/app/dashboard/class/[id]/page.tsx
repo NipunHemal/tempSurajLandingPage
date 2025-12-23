@@ -85,6 +85,13 @@ export default function ClassDetailPage() {
     enroll({ classId: id });
   };
 
+  // Convert month name to YYYY-MM format for the page URL
+  const getMonthApiFormat = (monthName: string): string => {
+    const monthIndex = months.indexOf(monthName) + 1;
+    const year = details?.year || new Date().getFullYear();
+    return `${year}-${monthIndex.toString().padStart(2, '0')}`;
+  };
+
   return (
     <>
       <DashboardHeader>
@@ -191,21 +198,25 @@ export default function ClassDetailPage() {
                 <TabsContent value="month">
                   <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
                     {months.map(month => (
-                      <Card
+                      <Link
                         key={month}
-                        className="flex flex-col overflow-hidden transition-all hover:shadow-lg"
+                        href={`/dashboard/class/${id}/month/${getMonthApiFormat(month)}`}
                       >
-                        <div className="flex aspect-[3/2] w-full items-center justify-center bg-gradient-to-br from-destructive/80 to-destructive/40 p-6">
-                          <h3 className="font-headline text-2xl font-bold text-destructive-foreground">
-                            {month}
-                          </h3>
-                        </div>
-                        <CardContent className="flex-1 p-4 pt-6">
-                          <p className="text-sm text-muted-foreground">
-                            Content for {month}.
-                          </p>
-                        </CardContent>
-                      </Card>
+                        <Card
+                          className="flex flex-col overflow-hidden transition-all hover:shadow-lg cursor-pointer"
+                        >
+                          <div className="flex aspect-[3/2] w-full items-center justify-center bg-gradient-to-br from-destructive/80 to-destructive/40 p-6">
+                            <h3 className="font-headline text-2xl font-bold text-destructive-foreground">
+                              {month}
+                            </h3>
+                          </div>
+                          <CardContent className="flex-1 p-4 pt-6">
+                            <p className="text-sm text-muted-foreground">
+                              Content for {month}.
+                            </p>
+                          </CardContent>
+                        </Card>
+                      </Link>
                     ))}
                   </div>
                 </TabsContent>
