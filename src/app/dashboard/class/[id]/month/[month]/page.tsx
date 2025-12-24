@@ -121,12 +121,14 @@ export default function MonthResourcesPage() {
     const renderContentItem = (item: ModuleResource, itemIndex: number) => {
         const isLocked = item.paymentStatus === 'NOT_PAID';
 
-        const handleLockedClick = () => {
-            setShowPaymentAlert(true);
+        const handleCardClick = () => {
+            if (isLocked) {
+                setShowPaymentAlert(true);
+            }
         };
 
-        return (
-            <li key={item.id} className={`flex items-center justify-between rounded-md border p-4 ${isLocked ? 'opacity-75 bg-muted/30' : ''}`}>
+        const cardContent = (
+            <div className="flex items-center justify-between w-full">
                 <div className="flex items-center gap-4">
                     {isLocked ? (
                         <Lock className="text-muted-foreground" />
@@ -139,37 +141,61 @@ export default function MonthResourcesPage() {
                         <p className="text-xs text-muted-foreground mt-1">Release: {new Date(item.releaseDate).toLocaleDateString()}</p>
                     </div>
                 </div>
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-2 text-muted-foreground">
                     {isLocked ? (
-                        <Button variant="outline" size="sm" onClick={handleLockedClick}>
-                            <Lock className="mr-2 h-4 w-4" />
-                            Locked
-                        </Button>
+                        <>
+                            <Lock className="h-4 w-4" />
+                            <span className="text-sm">Locked</span>
+                        </>
                     ) : item.type === 'VIDEO' ? (
-                        <Button variant="ghost" size="sm" asChild>
-                            <Link href={`/dashboard/class/${classId}/module/${item.moduleId}`}>
-                                <PlayCircle className="mr-2" />
-                                Watch
-                            </Link>
-                        </Button>
+                        <>
+                            <PlayCircle className="h-4 w-4" />
+                            <span className="text-sm">Watch</span>
+                        </>
                     ) : item.type === 'LINK' ? (
-                        <Button asChild variant="ghost" size="sm">
-                            <Link href={item.url || '#'} target="_blank">
-                                <ExternalLink className="mr-2" />
-                                Open
-                            </Link>
-                        </Button>
+                        <>
+                            <ExternalLink className="h-4 w-4" />
+                            <span className="text-sm">Open</span>
+                        </>
                     ) : (
-                        <Button asChild variant="ghost" size="sm">
-                            <Link href={item.url || '#'} target="_blank">
-                                <Download className="mr-2" />
-                                Download
-                            </Link>
-                        </Button>
+                        <>
+                            <Download className="h-4 w-4" />
+                            <span className="text-sm">Download</span>
+                        </>
                     )}
                 </div>
+            </div>
+        );
+
+        if (isLocked) {
+            return (
+                <li
+                    key={item.id}
+                    onClick={handleCardClick}
+                    className="flex items-center justify-between rounded-md border p-4 opacity-75 bg-muted/30 cursor-pointer hover:bg-muted/50 transition-colors"
+                >
+                    {cardContent}
+                </li>
+            );
+        }
+
+        // For unlocked items, wrap in Link for navigation
+        const href = item.type === 'VIDEO'
+            ? `/dashboard/class/${classId}/module/${item.moduleId}`
+            : item.url || '#';
+        const isExternal = item.type === 'LINK' || item.type === 'DOCUMENT';
+
+        return (
+            <li key={item.id} className="rounded-md border hover:bg-muted/30 transition-colors">
+                <Link
+                    href={href}
+                    target={isExternal ? '_blank' : undefined}
+                    className="flex items-center justify-between p-4 w-full"
+                >
+                    {cardContent}
+                </Link>
             </li>
-        )
+        );
     }
 
     if (isLoadingResources) {
