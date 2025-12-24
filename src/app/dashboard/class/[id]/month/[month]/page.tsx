@@ -24,6 +24,7 @@ import {
     Loader2,
     ExternalLink,
     Lock,
+    Clock,
 } from 'lucide-react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
@@ -111,11 +112,14 @@ export default function MonthResourcesPage() {
 
     const renderContentItem = (item: ModuleResource, itemIndex: number) => {
         const isLocked = item.paymentStatus === 'NOT_PAID';
+        const isPending = item.paymentStatus === 'PENDING';
+        const isAccessible = !isLocked && !isPending;
 
         const handleCardClick = () => {
             if (isLocked) {
                 setShowPaymentDialog(true);
             }
+            // For pending, we don't do anything - just show the status
         };
 
         const cardContent = (
@@ -123,6 +127,8 @@ export default function MonthResourcesPage() {
                 <div className="flex items-center gap-4">
                     {isLocked ? (
                         <Lock className="text-muted-foreground" />
+                    ) : isPending ? (
+                        <Clock className="text-amber-500" />
                     ) : (
                         getContentTypeIcon(item.type)
                     )}
@@ -137,6 +143,11 @@ export default function MonthResourcesPage() {
                         <>
                             <Lock className="h-4 w-4" />
                             <span className="text-sm">Locked</span>
+                        </>
+                    ) : isPending ? (
+                        <>
+                            <Clock className="h-4 w-4 text-amber-500" />
+                            <span className="text-sm text-amber-500">Pending</span>
                         </>
                     ) : item.type === 'VIDEO' ? (
                         <>
@@ -158,12 +169,26 @@ export default function MonthResourcesPage() {
             </div>
         );
 
+        // Locked items - show payment dialog on click
         if (isLocked) {
             return (
                 <li
                     key={item.id}
                     onClick={handleCardClick}
                     className="flex items-center justify-between rounded-md border p-4 opacity-75 bg-muted/30 cursor-pointer hover:bg-muted/50 transition-colors"
+                >
+                    {cardContent}
+                </li>
+            );
+        }
+
+        // Pending items - not clickable, show pending status
+        if (isPending) {
+            return (
+                <li
+                    key={item.id}
+                    className="flex items-center justify-between rounded-md border p-4 opacity-75 bg-amber-500/10 border-amber-500/30"
+                    title="Payment is pending approval"
                 >
                     {cardContent}
                 </li>

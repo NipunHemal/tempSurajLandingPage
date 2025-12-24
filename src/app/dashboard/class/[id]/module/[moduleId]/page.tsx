@@ -32,6 +32,7 @@ import {
     Loader2,
     ExternalLink,
     Lock,
+    Clock,
 } from 'lucide-react';
 import CustomImage from '@/components/ui/custom-image';
 import Link from 'next/link';
@@ -162,6 +163,7 @@ export default function ModuleDetailPage() {
 
     const renderContentItem = (item: ModuleResource, itemIndex: number) => {
         const isLocked = item.paymentStatus === 'NOT_PAID';
+        const isPending = item.paymentStatus === 'PENDING';
 
         const handleCardClick = () => {
             if (isLocked) {
@@ -176,6 +178,8 @@ export default function ModuleDetailPage() {
                 <div className="flex items-center gap-4">
                     {isLocked ? (
                         <Lock className="text-muted-foreground" />
+                    ) : isPending ? (
+                        <Clock className="text-amber-500" />
                     ) : (
                         getContentTypeIcon(item.type)
                     )}
@@ -190,6 +194,11 @@ export default function ModuleDetailPage() {
                         <>
                             <Lock className="h-4 w-4" />
                             <span className="text-sm">Locked</span>
+                        </>
+                    ) : isPending ? (
+                        <>
+                            <Clock className="h-4 w-4 text-amber-500" />
+                            <span className="text-sm text-amber-500">Pending</span>
                         </>
                     ) : item.type === 'VIDEO' ? (
                         <>
@@ -211,13 +220,39 @@ export default function ModuleDetailPage() {
             </div>
         );
 
-        // Locked items or VIDEO items use onClick
-        if (isLocked || item.type === 'VIDEO') {
+        // Locked items - show payment dialog on click
+        if (isLocked) {
             return (
                 <li
                     key={item.id}
                     onClick={handleCardClick}
-                    className={`flex items-center justify-between rounded-md border p-4 cursor-pointer transition-colors ${isLocked ? 'opacity-75 bg-muted/30 hover:bg-muted/50' : 'hover:bg-muted/30'}`}
+                    className="flex items-center justify-between rounded-md border p-4 opacity-75 bg-muted/30 cursor-pointer hover:bg-muted/50 transition-colors"
+                >
+                    {cardContent}
+                </li>
+            );
+        }
+
+        // Pending items - not clickable, show pending status
+        if (isPending) {
+            return (
+                <li
+                    key={item.id}
+                    className="flex items-center justify-between rounded-md border p-4 opacity-75 bg-amber-500/10 border-amber-500/30"
+                    title="Payment is pending approval"
+                >
+                    {cardContent}
+                </li>
+            );
+        }
+
+        // VIDEO items - clickable to open video player
+        if (item.type === 'VIDEO') {
+            return (
+                <li
+                    key={item.id}
+                    onClick={handleCardClick}
+                    className="flex items-center justify-between rounded-md border p-4 cursor-pointer hover:bg-muted/30 transition-colors"
                 >
                     {cardContent}
                 </li>
