@@ -90,11 +90,11 @@ export default function MonthResourcesPage() {
         setFilter(prevFilter => (prevFilter === type ? null : type));
     };
 
-    // Group resources by subModule
+    // Group resources by module name (lesson)
     const groupedContent = useMemo(() => {
         if (!resources || resources.length === 0) return [];
 
-        const grouped: Record<string, ModuleResource[]> = {};
+        const grouped: Record<string, { moduleId: string; items: ModuleResource[] }> = {};
 
         resources.forEach(item => {
             // Filter logic
@@ -102,16 +102,18 @@ export default function MonthResourcesPage() {
                 return;
             }
 
-            const key = item.subModule || 'General';
-            if (!grouped[key]) {
-                grouped[key] = [];
+            const moduleName = item.module?.name || 'General';
+            const moduleId = item.module?.id || item.moduleId;
+            if (!grouped[moduleName]) {
+                grouped[moduleName] = { moduleId, items: [] };
             }
-            grouped[key].push(item);
+            grouped[moduleName].items.push(item);
         });
 
         return Object.entries(grouped)
-            .map(([subModule, items]) => ({
-                subModule,
+            .map(([moduleName, { moduleId, items }]) => ({
+                moduleName,
+                moduleId,
                 items
             }));
     }, [resources, filter]);
@@ -253,7 +255,7 @@ export default function MonthResourcesPage() {
                                 <AccordionItem value={`item-${index}`} key={index} className="rounded-md border-0 bg-secondary/10">
                                     <AccordionTrigger className="px-4 text-lg font-semibold hover:no-underline">
                                         <div className="flex w-full items-center gap-4">
-                                            <span className="flex-1 text-left">{group.subModule}</span>
+                                            <span className="flex-1 text-left">{group.moduleName}</span>
                                             <span className="text-sm text-muted-foreground mr-4 font-normal">{group.items.length} items</span>
                                         </div>
                                     </AccordionTrigger>

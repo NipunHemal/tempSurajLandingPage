@@ -10,6 +10,10 @@ export interface ModuleResource {
   type: "VIDEO" | "DOCUMENT" | "LINK";
   status: "ACTIVE" | "INACTIVE";
   moduleId: string;
+  module?: {
+    id: string;
+    name: string;
+  };
   month: string;
   subModule: string;
   releaseDate: string;
