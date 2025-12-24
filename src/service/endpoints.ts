@@ -38,6 +38,8 @@ export const ENDPOINTS = {
   },
   payments: {
     create: `/payments`,
+    history: (studentId: string, classId: string) =>
+      `/payments/history/${studentId}/${classId}`,
   },
   enrollments: {
     enroll: `/enrollments`,

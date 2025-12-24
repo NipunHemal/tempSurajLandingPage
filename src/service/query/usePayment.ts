@@ -1,6 +1,6 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { createPayment } from '../functions/payment.service';
-import { toast } from 'sonner';
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { createPayment, getPaymentHistory } from "../functions/payment.service";
+import { toast } from "sonner";
 
 interface MutationCallbacks {
   onSuccess?: () => void;
@@ -12,17 +12,29 @@ export const useCreatePayment = (callbacks?: MutationCallbacks) => {
   return useMutation({
     mutationFn: createPayment,
     onSuccess: (response) => {
-      toast.success(response.message || 'Payment submitted successfully!');
-      queryClient.invalidateQueries({ queryKey: ['class'] });
+      toast.success(response.message || "Payment submitted successfully!");
+      queryClient.invalidateQueries({ queryKey: ["class"] });
+      queryClient.invalidateQueries({ queryKey: ["paymentHistory"] });
       callbacks?.onSuccess?.();
     },
     onError: (error: any) => {
-      console.error('Payment submission failed:', error);
+      console.error("Payment submission failed:", error);
       toast.error(
         error?.response?.data?.message ||
-          'Payment submission failed. Please try again.'
+          "Payment submission failed. Please try again."
       );
       callbacks?.onError?.(error);
     },
+  });
+};
+
+export const useGetPaymentHistory = (
+  studentId: string | undefined,
+  classId: string | undefined
+) => {
+  return useQuery({
+    queryKey: ["paymentHistory", studentId, classId],
+    queryFn: () => getPaymentHistory(studentId!, classId!),
+    enabled: !!studentId && !!classId,
   });
 };

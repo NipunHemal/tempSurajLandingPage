@@ -37,6 +37,8 @@ import { useParams } from 'next/navigation';
 import { useState, useMemo } from 'react';
 import { useGetClassById } from '@/service/query/useClass';
 import { useGetResourcesByClassAndMonth } from '@/service/query/useModule';
+import { useGetPaymentHistory } from '@/service/query/usePayment';
+import { useAuthStore } from '@/store/auth.store';
 import { ModuleResource } from '@/service/functions/modules.service';
 
 const MONTHS = [
@@ -63,6 +65,21 @@ export default function MonthResourcesPage() {
     const [filter, setFilter] = useState<string | null>(null);
     const [showPaymentDialog, setShowPaymentDialog] = useState(false);
     const [selectedResource, setSelectedResource] = useState<ModuleResource | null>(null);
+
+    const { user } = useAuthStore();
+
+    const { data: paymentHistoryResponse } = useGetPaymentHistory(
+        user?.id,
+        classId
+    );
+
+    // Check payment status for current month
+    const currentMonthPayment = paymentHistoryResponse?.data?.find(
+        payment => payment.paymentMonth === month
+    );
+    const isPaid = currentMonthPayment?.status === 'COMPLETED';
+    const isPending = currentMonthPayment?.status === 'PENDING';
+    const needsPayment = !isPaid && !isPending;
 
     // Get month display name from YYYY-MM format
     const getMonthDisplayName = (): string => {
@@ -301,9 +318,50 @@ export default function MonthResourcesPage() {
                         <h1 className="mb-2 font-headline text-4xl font-bold">
                             {monthTitle}
                         </h1>
-                        <p className="mb-6 text-muted-foreground">
+                        <p className="mb-4 text-muted-foreground">
                             Resources for {monthTitle}
                         </p>
+
+                        {/* Payment Banner */}
+                        {needsPayment && (
+                            <div className="mb-6 rounded-lg border border-destructive/50 bg-gradient-to-r from-destructive/20 to-destructive/10 p-4">
+                                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                                    <div className="flex items-center gap-3">
+                                        <div className="rounded-full bg-destructive/20 p-2">
+                                            <Lock className="h-5 w-5 text-destructive" />
+                                        </div>
+                                        <div>
+                                            <h3 className="font-semibold text-destructive">Payment Required</h3>
+                                            <p className="text-sm text-muted-foreground">
+                                                Unlock all content for {monthTitle} by completing your payment.
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <Button
+                                        onClick={() => setShowPaymentDialog(true)}
+                                        className="bg-destructive hover:bg-destructive/90"
+                                    >
+                                        Pay Now - Rs. {classDetails?.price || 0}
+                                    </Button>
+                                </div>
+                            </div>
+                        )}
+
+                        {isPending && (
+                            <div className="mb-6 rounded-lg border border-amber-500/50 bg-gradient-to-r from-amber-500/20 to-amber-500/10 p-4">
+                                <div className="flex items-center gap-3">
+                                    <div className="rounded-full bg-amber-500/20 p-2">
+                                        <Clock className="h-5 w-5 text-amber-500" />
+                                    </div>
+                                    <div>
+                                        <h3 className="font-semibold text-amber-600">Payment Pending Approval</h3>
+                                        <p className="text-sm text-muted-foreground">
+                                            Your payment for {monthTitle} is being reviewed. You&apos;ll have full access once approved.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
 
                         <div className="mb-8 flex gap-2">
                             <Button

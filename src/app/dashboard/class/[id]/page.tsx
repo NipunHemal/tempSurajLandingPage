@@ -1,11 +1,11 @@
 
 'use client';
 
-import { AlertCircle, Loader2 } from 'lucide-react';
+import { AlertCircle, Loader2, CheckCircle, Clock, Lock } from 'lucide-react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import CustomImage from '@/components/ui/custom-image';
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 
 import DashboardHeader from '@/components/dashboard-header';
 import {
@@ -22,6 +22,8 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { useGetClassById, useGetModulesByClass } from '@/service/query/useClass';
 import { useEnrollInClass } from '@/service/query/useEnrollment';
+import { useGetPaymentHistory } from '@/service/query/usePayment';
+import { useAuthStore } from '@/store/auth.store';
 import ModuleCard from '@/components/module-card';
 
 export default function ClassDetailPage() {
@@ -46,6 +48,27 @@ export default function ClassDetailPage() {
   const { mutate: enroll, isPending: isEnrolling } = useEnrollInClass();
 
   const [subDescriptionOpen, setSubDescriptionOpen] = useState(false);
+
+  const { user } = useAuthStore();
+
+  const { data: paymentHistoryResponse } = useGetPaymentHistory(
+    user?.id,
+    id
+  );
+
+  // Create a map of payment status by month (YYYY-MM format)
+  const paymentStatusByMonth = useMemo(() => {
+    const statusMap: Record<string, 'COMPLETED' | 'PENDING' | 'REJECTED'> = {};
+    if (paymentHistoryResponse?.data) {
+      paymentHistoryResponse.data.forEach(payment => {
+        // If there's already a COMPLETED status for this month, don't override
+        if (statusMap[payment.paymentMonth] !== 'COMPLETED') {
+          statusMap[payment.paymentMonth] = payment.status;
+        }
+      });
+    }
+    return statusMap;
+  }, [paymentHistoryResponse]);
 
   if (isLoadingClass) {
     return (
@@ -197,34 +220,61 @@ export default function ClassDetailPage() {
                 </TabsContent>
                 <TabsContent value="month">
                   <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                    {months.map(month => (
-                      <Link
-                        key={month}
-                        href={`/dashboard/class/${id}/month/${getMonthApiFormat(month)}`}
-                      >
-                        <Card
-                          className="flex flex-col overflow-hidden transition-all hover:shadow-lg cursor-pointer"
+                    {months.map(month => {
+                      const monthKey = getMonthApiFormat(month);
+                      const paymentStatus = paymentStatusByMonth[monthKey];
+                      const isPaid = paymentStatus === 'COMPLETED';
+                      const isPending = paymentStatus === 'PENDING';
+
+                      return (
+                        <Link
+                          key={month}
+                          href={`/dashboard/class/${id}/month/${monthKey}`}
                         >
-                          <div className="flex aspect-[3/2] w-full items-center justify-center bg-gradient-to-br from-destructive/80 to-destructive/40 p-6">
-                            <h3 className="font-headline text-2xl font-bold text-destructive-foreground">
-                              {month}
-                            </h3>
-                          </div>
-                          <CardContent className="flex-1 p-4 pt-6">
-                            <p className="text-sm text-muted-foreground">
-                              Content for {month}.
-                            </p>
-                          </CardContent>
-                        </Card>
-                      </Link>
-                    ))}
+                          <Card
+                            className={`flex flex-col overflow-hidden transition-all hover:shadow-lg cursor-pointer relative ${isPaid ? 'ring-2 ring-green-500/50' : isPending ? 'ring-2 ring-amber-500/50' : ''
+                              }`}
+                          >
+                            {/* Payment status badge */}
+                            <div className="absolute top-2 right-2 z-10">
+                              {isPaid ? (
+                                <div className="flex items-center gap-1 bg-green-500/90 text-white px-2 py-1 rounded-full text-xs font-medium">
+                                  <CheckCircle className="h-3 w-3" /> Paid
+                                </div>
+                              ) : isPending ? (
+                                <div className="flex items-center gap-1 bg-amber-500/90 text-white px-2 py-1 rounded-full text-xs font-medium">
+                                  <Clock className="h-3 w-3" /> Pending
+                                </div>
+                              ) : (
+                                <div className="flex items-center gap-1 bg-muted/80 text-muted-foreground px-2 py-1 rounded-full text-xs font-medium">
+                                  <Lock className="h-3 w-3" /> Not Paid
+                                </div>
+                              )}
+                            </div>
+                            <div className={`flex aspect-[3/2] w-full items-center justify-center p-6 ${isPaid ? 'bg-gradient-to-br from-green-600/80 to-green-500/40' :
+                              isPending ? 'bg-gradient-to-br from-amber-600/80 to-amber-500/40' :
+                                'bg-gradient-to-br from-destructive/80 to-destructive/40'
+                              }`}>
+                              <h3 className="font-headline text-2xl font-bold text-destructive-foreground">
+                                {month}
+                              </h3>
+                            </div>
+                            <CardContent className="flex-1 p-4 pt-6">
+                              <p className="text-sm text-muted-foreground">
+                                {isPaid ? 'Payment completed' : isPending ? 'Payment pending approval' : `Content for ${month}.`}
+                              </p>
+                            </CardContent>
+                          </Card>
+                        </Link>
+                      );
+                    })}
                   </div>
                 </TabsContent>
               </Tabs>
             )}
           </div>
         </div>
-      </main>
+      </main >
     </>
   );
 }
