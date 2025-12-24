@@ -6,6 +6,12 @@ import {
     AccordionItem,
     AccordionTrigger,
 } from '@/components/ui/accordion';
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+} from "@/components/ui/dialog";
 import PaymentDialog from '@/components/payment/PaymentDialog';
 import { Button } from '@/components/ui/button';
 import {
@@ -56,6 +62,7 @@ export default function MonthResourcesPage() {
 
     const [filter, setFilter] = useState<string | null>(null);
     const [showPaymentDialog, setShowPaymentDialog] = useState(false);
+    const [selectedResource, setSelectedResource] = useState<ModuleResource | null>(null);
 
     // Get month display name from YYYY-MM format
     const getMonthDisplayName = (): string => {
@@ -80,6 +87,17 @@ export default function MonthResourcesPage() {
 
     const handleFilter = (type: string) => {
         setFilter(prevFilter => (prevFilter === type ? null : type));
+    };
+
+    // Convert YouTube URL to embed URL
+    const getEmbedUrl = (url: string) => {
+        if (!url) return '';
+        const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+        const match = url.match(regExp);
+        if (match && match[2].length === 11) {
+            return `https://www.youtube.com/embed/${match[2]}`;
+        }
+        return url;
     };
 
     // Group resources by module name (lesson)
@@ -195,17 +213,29 @@ export default function MonthResourcesPage() {
             );
         }
 
-        // For unlocked items, wrap in Link for navigation
-        const href = item.type === 'VIDEO'
-            ? `/dashboard/class/${classId}/module/${item.moduleId}`
-            : item.url || '#';
-        const isExternal = item.type === 'LINK' || item.type === 'DOCUMENT';
+        // VIDEO items - open in popup
+        if (item.type === 'VIDEO') {
+            return (
+                <li
+                    key={item.id}
+                    onClick={() => setSelectedResource(item)}
+                    className="rounded-md border hover:bg-muted/30 transition-colors cursor-pointer"
+                >
+                    <div className="flex items-center justify-between p-4 w-full">
+                        {cardContent}
+                    </div>
+                </li>
+            );
+        }
+
+        // For LINK/DOCUMENT items, wrap in Link for navigation
+        const href = item.url || '#';
 
         return (
             <li key={item.id} className="rounded-md border hover:bg-muted/30 transition-colors">
                 <Link
                     href={href}
-                    target={isExternal ? '_blank' : undefined}
+                    target="_blank"
                     className="flex items-center justify-between p-4 w-full"
                 >
                     {cardContent}
@@ -330,6 +360,31 @@ export default function MonthResourcesPage() {
                 open={showPaymentDialog}
                 onOpenChange={setShowPaymentDialog}
             />
+
+            {/* Video Player Dialog */}
+            <Dialog open={!!selectedResource} onOpenChange={(open) => !open && setSelectedResource(null)}>
+                <DialogContent className="sm:max-w-4xl">
+                    <DialogHeader>
+                        <DialogTitle>{selectedResource?.title}</DialogTitle>
+                    </DialogHeader>
+                    <div className="aspect-video w-full bg-black rounded-md overflow-hidden">
+                        {selectedResource?.url && (
+                            <iframe
+                                src={getEmbedUrl(selectedResource.url)}
+                                title={selectedResource.title}
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                allowFullScreen
+                                className="h-full w-full border-0"
+                            />
+                        )}
+                        {!selectedResource?.url && (
+                            <div className="flex h-full items-center justify-center text-white">
+                                <p>Video URL not available.</p>
+                            </div>
+                        )}
+                    </div>
+                </DialogContent>
+            </Dialog>
         </>
     );
 }
