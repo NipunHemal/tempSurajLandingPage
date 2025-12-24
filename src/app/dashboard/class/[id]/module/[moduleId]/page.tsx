@@ -88,6 +88,21 @@ export default function ModuleDetailPage() {
         setFilter(prevFilter => (prevFilter === type ? null : type));
     };
 
+    // Format month from YYYY-MM to readable format like "November 2026"
+    const formatMonthDisplay = (monthKey: string): string => {
+        if (monthKey === 'General') return 'General';
+        const months = [
+            'January', 'February', 'March', 'April', 'May', 'June',
+            'July', 'August', 'September', 'October', 'November', 'December'
+        ];
+        const parts = monthKey.split('-');
+        if (parts.length !== 2) return monthKey;
+        const year = parts[0];
+        const monthIndex = parseInt(parts[1], 10) - 1;
+        if (monthIndex < 0 || monthIndex > 11) return monthKey;
+        return `${months[monthIndex]} ${year}`;
+    };
+
     // Group resources by month
     const groupedContent = useMemo(() => {
         if (!resources || resources.length === 0) return [];
@@ -292,7 +307,7 @@ export default function ModuleDetailPage() {
                                 <AccordionItem value={`item-${index}`} key={index} className="rounded-md border-0 bg-secondary/10">
                                     <AccordionTrigger className="px-4 text-lg font-semibold hover:no-underline">
                                         <div className="flex w-full items-center gap-4">
-                                            <span className="flex-1 text-left">{group.month}</span>
+                                            <span className="flex-1 text-left">{formatMonthDisplay(group.month)}</span>
                                             <span className="text-sm text-muted-foreground mr-4 font-normal">{group.items.length} items</span>
                                         </div>
                                     </AccordionTrigger>
