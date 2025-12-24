@@ -6,16 +6,7 @@ import {
     AccordionItem,
     AccordionTrigger,
 } from '@/components/ui/accordion';
-import {
-    AlertDialog,
-    AlertDialogAction,
-    AlertDialogCancel,
-    AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
+import PaymentDialog from '@/components/payment/PaymentDialog';
 import { Button } from '@/components/ui/button';
 import {
     Breadcrumb,
@@ -63,7 +54,7 @@ export default function MonthResourcesPage() {
     const resources = resourcesResponse?.data || [];
 
     const [filter, setFilter] = useState<string | null>(null);
-    const [showPaymentAlert, setShowPaymentAlert] = useState(false);
+    const [showPaymentDialog, setShowPaymentDialog] = useState(false);
 
     // Get month display name from YYYY-MM format
     const getMonthDisplayName = (): string => {
@@ -123,7 +114,7 @@ export default function MonthResourcesPage() {
 
         const handleCardClick = () => {
             if (isLocked) {
-                setShowPaymentAlert(true);
+                setShowPaymentDialog(true);
             }
         };
 
@@ -307,24 +298,13 @@ export default function MonthResourcesPage() {
                 </div>
             </main>
 
-            <AlertDialog open={showPaymentAlert} onOpenChange={setShowPaymentAlert}>
-                <AlertDialogContent>
-                    <AlertDialogHeader>
-                        <AlertDialogTitle>Payment Required</AlertDialogTitle>
-                        <AlertDialogDescription>
-                            This content is locked. Please complete your payment to access this resource.
-                        </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                        <AlertDialogCancel>Cancel</AlertDialogCancel>
-                        <AlertDialogAction asChild>
-                            <Link href={`/dashboard/class/${classId}/payment`}>
-                                Go to Payment
-                            </Link>
-                        </AlertDialogAction>
-                    </AlertDialogFooter>
-                </AlertDialogContent>
-            </AlertDialog>
+            <PaymentDialog
+                classId={classId}
+                amount={classDetails?.price || 0}
+                defaultPaymentMonth={month}
+                open={showPaymentDialog}
+                onOpenChange={setShowPaymentDialog}
+            />
         </>
     );
 }

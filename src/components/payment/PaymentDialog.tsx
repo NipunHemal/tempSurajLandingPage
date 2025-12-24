@@ -56,25 +56,40 @@ const paymentFormSchema = z.object({
 type PaymentFormValues = z.infer<typeof paymentFormSchema>;
 
 interface PaymentDialogProps {
-  children: React.ReactNode;
+  children?: React.ReactNode;
   classId: string;
   amount: number;
+  defaultPaymentMonth?: string;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
 export default function PaymentDialog({
   children,
   classId,
   amount,
+  defaultPaymentMonth,
+  open: controlledOpen,
+  onOpenChange,
 }: PaymentDialogProps) {
-  const [open, setOpen] = useState(false);
+  const [internalOpen, setInternalOpen] = useState(false);
+  const isControlled = controlledOpen !== undefined;
+  const open = isControlled ? controlledOpen : internalOpen;
+  const setOpen = (value: boolean) => {
+    if (isControlled) {
+      onOpenChange?.(value);
+    } else {
+      setInternalOpen(value);
+    }
+  };
   const [preview, setPreview] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { mutate: uploadImage, isPending: isUploading } = useUploadImage();
   const { mutate: createPayment, isPending: isSubmittingPayment } = useCreatePayment({
     onSuccess: () => {
-        setOpen(false);
-        form.reset();
-        setPreview(null);
+      setOpen(false);
+      form.reset();
+      setPreview(null);
     }
   });
 
@@ -82,7 +97,7 @@ export default function PaymentDialog({
     resolver: zodResolver(paymentFormSchema),
     defaultValues: {
       slipPictureUploadId: '',
-      paymentMonth: '',
+      paymentMonth: defaultPaymentMonth || '',
     },
   });
 
@@ -91,7 +106,7 @@ export default function PaymentDialog({
     if (file) {
       setPreview(URL.createObjectURL(file));
       uploadImage(
-        { image: file, type: 'class' },
+        { image: file, type: 'payment_slip' },
         {
           onSuccess: data => {
             form.setValue('slipPictureUploadId', data.data.uploadId);
@@ -110,6 +125,8 @@ export default function PaymentDialog({
     createPayment({
       classId,
       amount,
+      currency: 'LKR',
+      method: 'BANK_SLIP',
       ...values,
     });
   };
@@ -125,7 +142,7 @@ export default function PaymentDialog({
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>{children}</DialogTrigger>
+      {children && <DialogTrigger asChild>{children}</DialogTrigger>}
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>Complete Your Enrollment</DialogTitle>
@@ -225,8 +242,8 @@ export default function PaymentDialog({
                   )}
                 />
                 <Button type="submit" className="w-full" disabled={isSubmitting}>
-                   {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                   {isSubmitting ? 'Submitting...' : 'Submit Payment'}
+                  {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                  {isSubmitting ? 'Submitting...' : 'Submit Payment'}
                 </Button>
               </form>
             </Form>

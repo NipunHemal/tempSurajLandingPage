@@ -12,16 +12,7 @@ import {
     DialogHeader,
     DialogTitle,
 } from "@/components/ui/dialog";
-import {
-    AlertDialog,
-    AlertDialogAction,
-    AlertDialogCancel,
-    AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
+import PaymentDialog from '@/components/payment/PaymentDialog';
 import { Button } from '@/components/ui/button';
 import {
     Breadcrumb,
@@ -131,7 +122,7 @@ export default function ModuleDetailPage() {
     }, [resources, filter]);
 
     const [selectedResource, setSelectedResource] = useState<ModuleResource | null>(null);
-    const [showPaymentAlert, setShowPaymentAlert] = useState(false);
+    const [showPaymentDialog, setShowPaymentDialog] = useState(false);
 
     const getEmbedUrl = (url: string) => {
         if (!url) return '';
@@ -174,7 +165,7 @@ export default function ModuleDetailPage() {
 
         const handleCardClick = () => {
             if (isLocked) {
-                setShowPaymentAlert(true);
+                setShowPaymentDialog(true);
             } else if (item.type === 'VIDEO') {
                 setSelectedResource(item);
             }
@@ -393,24 +384,12 @@ export default function ModuleDetailPage() {
                 </DialogContent>
             </Dialog>
 
-            <AlertDialog open={showPaymentAlert} onOpenChange={setShowPaymentAlert}>
-                <AlertDialogContent>
-                    <AlertDialogHeader>
-                        <AlertDialogTitle>Payment Required</AlertDialogTitle>
-                        <AlertDialogDescription>
-                            This content is locked. Please complete your payment to access this resource.
-                        </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                        <AlertDialogCancel>Cancel</AlertDialogCancel>
-                        <AlertDialogAction asChild>
-                            <Link href={`/dashboard/class/${classId}/payment`}>
-                                Go to Payment
-                            </Link>
-                        </AlertDialogAction>
-                    </AlertDialogFooter>
-                </AlertDialogContent>
-            </AlertDialog>
+            <PaymentDialog
+                classId={classId}
+                amount={classDetails?.price || 0}
+                open={showPaymentDialog}
+                onOpenChange={setShowPaymentDialog}
+            />
         </>
     );
 }
