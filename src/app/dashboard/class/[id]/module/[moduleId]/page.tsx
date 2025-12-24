@@ -172,12 +172,16 @@ export default function ModuleDetailPage() {
     const renderContentItem = (item: ModuleResource, itemIndex: number) => {
         const isLocked = item.paymentStatus === 'NOT_PAID';
 
-        const handleLockedClick = () => {
-            setShowPaymentAlert(true);
+        const handleCardClick = () => {
+            if (isLocked) {
+                setShowPaymentAlert(true);
+            } else if (item.type === 'VIDEO') {
+                setSelectedResource(item);
+            }
         };
 
-        return (
-            <li key={item.id} className={`flex items-center justify-between rounded-md border p-4 ${isLocked ? 'opacity-75 bg-muted/30' : ''}`}>
+        const cardContent = (
+            <div className="flex items-center justify-between w-full">
                 <div className="flex items-center gap-4">
                     {isLocked ? (
                         <Lock className="text-muted-foreground" />
@@ -190,35 +194,57 @@ export default function ModuleDetailPage() {
                         <p className="text-xs text-muted-foreground mt-1">Release: {new Date(item.releaseDate).toLocaleDateString()}</p>
                     </div>
                 </div>
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-2 text-muted-foreground">
                     {isLocked ? (
-                        <Button variant="outline" size="sm" onClick={handleLockedClick}>
-                            <Lock className="mr-2 h-4 w-4" />
-                            Locked
-                        </Button>
+                        <>
+                            <Lock className="h-4 w-4" />
+                            <span className="text-sm">Locked</span>
+                        </>
                     ) : item.type === 'VIDEO' ? (
-                        <Button variant="ghost" size="sm" onClick={() => setSelectedResource(item)}>
-                            <PlayCircle className="mr-2" />
-                            Watch
-                        </Button>
+                        <>
+                            <PlayCircle className="h-4 w-4" />
+                            <span className="text-sm">Watch</span>
+                        </>
                     ) : item.type === 'LINK' ? (
-                        <Button asChild variant="ghost" size="sm">
-                            <Link href={item.url || '#'} target="_blank">
-                                <ExternalLink className="mr-2" />
-                                Open
-                            </Link>
-                        </Button>
+                        <>
+                            <ExternalLink className="h-4 w-4" />
+                            <span className="text-sm">Open</span>
+                        </>
                     ) : (
-                        <Button asChild variant="ghost" size="sm">
-                            <Link href={item.url || '#'} target="_blank">
-                                <Download className="mr-2" />
-                                Download
-                            </Link>
-                        </Button>
+                        <>
+                            <Download className="h-4 w-4" />
+                            <span className="text-sm">Download</span>
+                        </>
                     )}
                 </div>
+            </div>
+        );
+
+        // Locked items or VIDEO items use onClick
+        if (isLocked || item.type === 'VIDEO') {
+            return (
+                <li
+                    key={item.id}
+                    onClick={handleCardClick}
+                    className={`flex items-center justify-between rounded-md border p-4 cursor-pointer transition-colors ${isLocked ? 'opacity-75 bg-muted/30 hover:bg-muted/50' : 'hover:bg-muted/30'}`}
+                >
+                    {cardContent}
+                </li>
+            );
+        }
+
+        // For LINK/DOCUMENT items, wrap in Link for navigation
+        return (
+            <li key={item.id} className="rounded-md border hover:bg-muted/30 transition-colors">
+                <Link
+                    href={item.url || '#'}
+                    target="_blank"
+                    className="flex items-center justify-between p-4 w-full"
+                >
+                    {cardContent}
+                </Link>
             </li>
-        )
+        );
     }
 
     return (
