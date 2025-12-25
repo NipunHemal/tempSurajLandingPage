@@ -121,7 +121,7 @@ export default function ClassDetailPage() {
         <Breadcrumb>
           <BreadcrumbList>
             <BreadcrumbItem>
-              <BreadcrumbLink asChild>
+              <BreadcrumbLink asChild href={''}>
                 <Link href="/dashboard/class">Classes</Link>
               </BreadcrumbLink>
             </BreadcrumbItem>
@@ -259,11 +259,6 @@ export default function ClassDetailPage() {
                                 {month}
                               </h3>
                             </div>
-                            <CardContent className="flex-1 p-4 pt-6">
-                              <p className="text-sm text-muted-foreground">
-                                {isPaid ? 'Payment completed' : isPending ? 'Payment pending approval' : `Content for ${month}.`}
-                              </p>
-                            </CardContent>
                           </Card>
                         </Link>
                       );
