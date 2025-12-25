@@ -1,6 +1,11 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { createPayment, getPaymentHistory } from "../functions/payment.service";
+import {
+  createPayment,
+  getPaymentHistory,
+  getPayments,
+} from "../functions/payment.service";
 import { toast } from "sonner";
+import { PaymentFilters } from "@/types/api-payment-types";
 
 interface MutationCallbacks {
   onSuccess?: () => void;
@@ -15,6 +20,7 @@ export const useCreatePayment = (callbacks?: MutationCallbacks) => {
       toast.success(response.message || "Payment submitted successfully!");
       queryClient.invalidateQueries({ queryKey: ["class"] });
       queryClient.invalidateQueries({ queryKey: ["paymentHistory"] });
+      queryClient.invalidateQueries({ queryKey: ["payments"] });
       callbacks?.onSuccess?.();
     },
     onError: (error: any) => {
@@ -36,5 +42,12 @@ export const useGetPaymentHistory = (
     queryKey: ["paymentHistory", studentId, classId],
     queryFn: () => getPaymentHistory(studentId!, classId!),
     enabled: !!studentId && !!classId,
+  });
+};
+
+export const useGetPayments = (filters: PaymentFilters) => {
+  return useQuery({
+    queryKey: ["payments", filters],
+    queryFn: () => getPayments(filters),
   });
 };

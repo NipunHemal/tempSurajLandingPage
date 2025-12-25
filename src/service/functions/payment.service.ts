@@ -1,4 +1,8 @@
-import { CreatePaymentData } from "@/types/api-payment-types";
+import {
+  CreatePaymentData,
+  GetPaymentsResponse,
+  PaymentFilters,
+} from "@/types/api-payment-types";
 import axiosClient from "../axios.client";
 import { ENDPOINTS } from "../endpoints";
 
@@ -38,6 +42,27 @@ export const getPaymentHistory = async (
 ): Promise<GetPaymentHistoryResponse> => {
   const response = await axiosClient.get(
     ENDPOINTS.payments.history(studentId, classId)
+  );
+  return response.data;
+};
+
+export const getPayments = async (
+  filters: PaymentFilters
+): Promise<GetPaymentsResponse> => {
+  const params = new URLSearchParams();
+
+  if (filters.status) params.append("status", filters.status);
+  if (filters.page) params.append("page", filters.page.toString());
+  if (filters.limit) params.append("limit", filters.limit.toString());
+  if (filters.month) params.append("month", filters.month);
+  if (filters.paymentMethod)
+    params.append("paymentMethod", filters.paymentMethod);
+  if (filters.studentId) params.append("studentId", filters.studentId);
+  if (filters.classId) params.append("classId", filters.classId);
+  if (filters.search) params.append("search", filters.search);
+
+  const response = await axiosClient.get(
+    `${ENDPOINTS.payments.getAll}?${params.toString()}`
   );
   return response.data;
 };
