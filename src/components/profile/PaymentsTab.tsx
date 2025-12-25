@@ -21,7 +21,7 @@ import {
 } from '@/components/ui/table';
 import { useGetPayments } from '@/service/query/usePayment';
 import { useAuthStore } from '@/store/auth.store';
-import { Loader2, CheckCircle, Clock, XCircle, CreditCard, ChevronLeft, ChevronRight, Receipt, Eye } from 'lucide-react';
+import { Loader2, CheckCircle, Clock, XCircle, CreditCard, ChevronLeft, ChevronRight, Receipt } from 'lucide-react';
 import { PaymentFilters } from '@/types/api-payment-types';
 import CustomImage from '@/components/ui/custom-image';
 import {
@@ -35,7 +35,7 @@ import {
 export function PaymentsTab() {
   const { user } = useAuthStore();
   const [filters, setFilters] = useState<PaymentFilters>({
-    studentId: user?.studentProfile?.id || null,
+    studentId: user?.student?.id || null,
     page: 1,
     limit: 10,
     status: '',
@@ -220,49 +220,46 @@ export function PaymentsTab() {
                       <TableHead>Method</TableHead>
                       <TableHead>Status</TableHead>
                       <TableHead>Date</TableHead>
-                      <TableHead className="text-right">Slip</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {payments.map((payment) => (
-                      <TableRow key={payment.id}>
-                        <TableCell className="font-medium">
-                          {payment.class.name}
-                        </TableCell>
-                        <TableCell>{formatMonth(payment.paymentMonth)}</TableCell>
-                        <TableCell className="font-semibold">
-                          {formatCurrency(payment.amount, payment.currency)}
-                        </TableCell>
-                        <TableCell>{getMethodBadge(payment.method)}</TableCell>
-                        <TableCell>{getStatusBadge(payment.status)}</TableCell>
-                        <TableCell className="text-muted-foreground">
-                          {formatDate(payment.paymentDate)}
-                        </TableCell>
-                        <TableCell className="text-right">
-                          {payment.slipPicture && (
-                            <Dialog>
-                              <DialogTrigger asChild>
-                                <Button variant="ghost" size="sm">
-                                  <Eye className="h-4 w-4" />
-                                </Button>
-                              </DialogTrigger>
-                              <DialogContent className="max-w-2xl">
-                                <DialogHeader>
-                                  <DialogTitle>Payment Slip</DialogTitle>
-                                </DialogHeader>
-                                <div className="relative aspect-[3/4] w-full overflow-hidden rounded-lg">
-                                  <CustomImage
-                                    src={payment.slipPicture}
-                                    alt="Payment slip"
-                                    fill
-                                    className="object-contain"
-                                  />
-                                </div>
-                              </DialogContent>
-                            </Dialog>
-                          )}
-                        </TableCell>
-                      </TableRow>
+                      <Dialog key={payment.id}>
+                        <DialogTrigger asChild>
+                          <TableRow className={payment.slipPicture ? 'cursor-pointer hover:bg-muted/50' : ''}>
+                            <TableCell className="font-medium">
+                              {payment.class.name}
+                            </TableCell>
+                            <TableCell>{formatMonth(payment.paymentMonth)}</TableCell>
+                            <TableCell className="font-semibold">
+                              {formatCurrency(payment.amount, payment.currency)}
+                            </TableCell>
+                            <TableCell>{getMethodBadge(payment.method)}</TableCell>
+                            <TableCell>{getStatusBadge(payment.status)}</TableCell>
+                            <TableCell className="text-muted-foreground">
+                              {formatDate(payment.paymentDate)}
+                            </TableCell>
+                          </TableRow>
+                        </DialogTrigger>
+                        {payment.slipPicture && (
+                          <DialogContent className="max-w-[95vw] sm:max-w-[90vw] md:max-w-4xl max-h-[90vh]">
+                            <DialogHeader>
+                              <DialogTitle>Payment Slip - {formatMonth(payment.paymentMonth)}</DialogTitle>
+                            </DialogHeader>
+                            <div className="overflow-auto max-h-[75vh]">
+                              <div className="relative w-full min-w-[600px]">
+                                <CustomImage
+                                  src={payment.slipPicture}
+                                  alt="Payment slip"
+                                  width={1200}
+                                  height={800}
+                                  className="object-contain w-full h-auto"
+                                />
+                              </div>
+                            </div>
+                          </DialogContent>
+                        )}
+                      </Dialog>
                     ))}
                   </TableBody>
                 </Table>
