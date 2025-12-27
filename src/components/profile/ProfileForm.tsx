@@ -14,7 +14,7 @@ import { useMemo } from 'react';
 import { useUpdateStudentProfile } from '@/service/query/useStudent';
 import { useMetaStore } from '@/store/meta.store';
 import { useRouter } from 'next/navigation';
-import { DynamicFormField, profileFormSchema } from './DynamicFormField';
+import { DynamicFormField, profileFormSchema, createProfileFormSchema } from './DynamicFormField';
 import { format } from 'date-fns';
 
 type ProfileFormValues = z.infer<typeof profileFormSchema>;
@@ -28,6 +28,8 @@ export function ProfileForm() {
   });
 
   const { meta } = useMetaStore();
+
+  const formSchema = useMemo(() => createProfileFormSchema(meta), [meta]);
 
   const { personalAndAcademicFields, contactFields, addressFields, guardianFields } = useMemo(() => {
     if (!meta) return { personalAndAcademicFields: [], contactFields: [], addressFields: [], guardianFields: [] };
@@ -52,7 +54,7 @@ export function ProfileForm() {
   }, [meta]);
 
   const form = useForm<ProfileFormValues>({
-    resolver: zodResolver(profileFormSchema),
+    resolver: zodResolver(formSchema),
     defaultValues: {
       firstName: '',
       lastName: '',
@@ -134,7 +136,7 @@ export function ProfileForm() {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Date of Birth *</FormLabel>
-                     <FormControl>
+                    <FormControl>
                       <Input placeholder="YYYY-MM-DD" {...field} value={field.value || ''} />
                     </FormControl>
                     <FormMessage />

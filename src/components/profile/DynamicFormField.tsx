@@ -16,41 +16,93 @@ import { useUploadImage } from '@/service/query/useUpload';
 import { toast } from 'sonner';
 import type { Field } from '@/types/api-meta-types';
 
-// Centralized schema definition
-export const profileFormSchema = z.object({
+import { MetaData } from '@/types/api-meta-types';
+
+const baseValidators = {
   firstName: z.string().min(2, { message: 'First name must be at least 2 characters.' }),
   lastName: z.string().min(2, { message: 'Last name must be at least 2 characters.' }),
-  dob: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Date must be in YYYY-MM-DD format.').optional(),
+  dob: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Date must be in YYYY-MM-DD format.'),
   gender: z.enum(['MALE', 'FEMALE', 'OTHER'], { required_error: 'Please select a gender.' }),
   phoneNumber: z.string().min(10, { message: 'Phone number must be at least 10 digits.' }),
-  profilePicture: z.string().optional(),
-  nicPic: z.string().optional(),
-  profilePictureUploadId: z.string().optional(),
-  nicPicUploadId: z.string().optional(),
-  year: z.coerce.number().optional(),
-  nic: z.string().optional(),
-  alYear: z.coerce.number().optional(),
-  olYear: z.coerce.number().optional(),
-  stream: z.string().optional(),
-  medium: z.string().optional(),
-  school: z.string().optional(),
-  whatsappNumber: z.string().optional(),
-  telegramNumber: z.string().optional(),
-  shySelect: z.coerce.number().optional(),
-  postalcode: z.string().optional(),
-  homeAddress: z.string().optional(),
-  deliveryAddress: z.string().optional(),
-  guardianName: z.string().optional(),
-  relationship: z.string().optional(),
-  guardianContactNumber: z.string().optional(),
-  city: z.string().optional(),
-  district: z.string().optional(),
-  province: z.string().optional(),
-  country: z.string().optional(),
-  instituteNumber: z.string().optional(),
-  instituteCardImage: z.string().optional(),
-  instituteCardImageUploadId: z.string().optional(),
-});
+  profilePicture: z.string().min(1, { message: 'Required' }),
+  nicPic: z.string().min(1, { message: 'Required' }),
+  profilePictureUploadId: z.string().min(1, { message: 'Required' }),
+  nicPicUploadId: z.string().min(1, { message: 'Required' }),
+  year: z.coerce.number(),
+  nic: z.string().min(1, { message: 'Required' }),
+  alYear: z.coerce.number(),
+  olYear: z.coerce.number(),
+  stream: z.string().min(1, { message: 'Required' }),
+  medium: z.string().min(1, { message: 'Required' }),
+  school: z.string().min(1, { message: 'Required' }),
+  whatsappNumber: z.string().min(1, { message: 'Required' }),
+  telegramNumber: z.string().min(1, { message: 'Required' }),
+  shySelect: z.coerce.number(),
+  postalcode: z.string().min(1, { message: 'Required' }),
+  homeAddress: z.string().min(1, { message: 'Required' }),
+  deliveryAddress: z.string().min(1, { message: 'Required' }),
+  guardianName: z.string().min(1, { message: 'Required' }),
+  relationship: z.string().min(1, { message: 'Required' }),
+  guardianContactNumber: z.string().min(1, { message: 'Required' }),
+  city: z.string().min(1, { message: 'Required' }),
+  district: z.string().min(1, { message: 'Required' }),
+  province: z.string().min(1, { message: 'Required' }),
+  country: z.string().min(1, { message: 'Required' }),
+  instituteNumber: z.string().min(1, { message: 'Required' }),
+  instituteCardImage: z.string().min(1, { message: 'Required' }),
+  instituteCardImageUploadId: z.string().min(1, { message: 'Required' }),
+};
+
+export const createProfileFormSchema = (meta: MetaData | null) => {
+  const shape: Record<keyof typeof baseValidators, z.ZodTypeAny> = {} as any;
+  const enabledFields = new Set<string>();
+
+  if (meta) {
+    meta.settings.STUDENT_PROFILE.fields.forEach((field) => {
+      if (field.isEnabled) {
+        enabledFields.add(field.fieldName);
+      }
+    });
+  }
+
+  // Always required fields if not in meta (fallback)
+  const defaultRequired = ['firstName', 'lastName', 'gender', 'phoneNumber'];
+
+  for (const [key, validator] of Object.entries(baseValidators)) {
+    let isRequired = false;
+
+    if (meta) {
+      if (enabledFields.has(key)) {
+        isRequired = true;
+      }
+      // Special case: if it's one of the core fields and meta doesn't explicitly disable it (conceptually),
+      // strictly speaking relying on enabledFields.has(key) is correct per user request.
+      // But we should ensure core fields are in the meta if we rely 100% on it.
+      // The user provided JSON shows core fields like firstName ARE in the meta and are enabled.
+    } else {
+      // Fallback for when meta is not loaded yet
+      if (defaultRequired.includes(key)) {
+        isRequired = true;
+      }
+    }
+
+    // Special handling for upload IDs to match their visual fields if needed, 
+    // or just leave them optional to avoid validation blocking if the user hasn't uploaded yet? 
+    // Usually hidden fields rely on the main field validation unless we manually link them.
+    // Let's make them optional by default to avoid issues, unless we want to enforce upload.
+    // If 'profilePicture' is required, the UI shows a visual error. The form submit handler might check strictness.
+    // zod schema validation runs on submit. If profilePicture is required, string must be present.
+    // If we want to strictly require the upload ID, we'd need to map that too.
+    // For now, let's treat the visual field (e.g. CAO) as the source of truth for "requiredness".
+
+    shape[key as keyof typeof baseValidators] = isRequired ? validator : validator.optional();
+  }
+
+  return z.object(shape);
+};
+
+// Default schema for type inference and initial state
+export const profileFormSchema = createProfileFormSchema(null);
 
 type ProfileFormValues = z.infer<typeof profileFormSchema>;
 
@@ -88,7 +140,7 @@ export function DynamicFormField({ control, fieldConfig, form }: DynamicFormFiel
   const handleFileChange = (
     event: React.ChangeEvent<HTMLInputElement>,
     type: 'profile' | 'nic' | 'class' | 'institute_card_image',
-    field: 'profilePictureUploadId' | 'nicPicUploadId' | 'instituteCardImageUploadId'
+    field: keyof ProfileFormValues
   ) => {
     const file = event.target.files?.[0];
     if (file) {

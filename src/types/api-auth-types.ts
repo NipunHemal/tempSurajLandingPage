@@ -1,4 +1,3 @@
-
 import { Institute } from "./api-institute-types";
 
 export interface LoginData {
@@ -12,17 +11,17 @@ export interface RegisterData {
 }
 
 export interface UpdateProfileData {
-    firstName: string;
-    lastName: string;
-    profilePicture?: string;
+  firstName: string;
+  lastName: string;
+  profilePicture?: string;
 }
 
 export interface EmailChangeData {
-    newEmail: string;
+  newEmail: string;
 }
 
 export interface EmailChangeCodeData {
-    code: string;
+  code: string;
 }
 
 export interface PasswordResetRequestData {
@@ -36,6 +35,7 @@ export interface ResetPasswordData {
 }
 
 export interface StudentData {
+  id: string;
   firstName: string | null;
   lastName: string | null;
   dob: string | null;

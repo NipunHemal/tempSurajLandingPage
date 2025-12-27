@@ -189,10 +189,10 @@ export default function ClassDetailPage() {
                 </AlertDescription>
               </Alert>
             ) : (
-              <Tabs defaultValue="lessons" className="w-full">
+              <Tabs defaultValue="month" className="w-full">
                 <TabsList className="mb-6">
-                  <TabsTrigger value="lessons">Lesson Wise</TabsTrigger>
                   <TabsTrigger value="month">Month Wise</TabsTrigger>
+                  <TabsTrigger value="lessons">Lesson Wise</TabsTrigger>
                 </TabsList>
                 <TabsContent value="lessons">
                   {isLoadingModules ? (

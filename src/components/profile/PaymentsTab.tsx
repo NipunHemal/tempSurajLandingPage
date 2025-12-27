@@ -87,11 +87,11 @@ export function PaymentsTab() {
             Pending
           </Badge>
         );
-      case 'REJECTED':
+      case 'FAILED':
         return (
           <Badge className="bg-red-500/20 text-red-500 hover:bg-red-500/30">
             <XCircle className="mr-1 h-3 w-3" />
-            Rejected
+            Failed
           </Badge>
         );
       default:
@@ -197,7 +197,7 @@ export function PaymentsTab() {
                 <SelectItem value="all">All Statuses</SelectItem>
                 <SelectItem value="COMPLETED">Completed</SelectItem>
                 <SelectItem value="PENDING">Pending</SelectItem>
-                <SelectItem value="REJECTED">Rejected</SelectItem>
+                <SelectItem value="FAILED">Failed</SelectItem>
               </SelectContent>
             </Select>
           </div>
