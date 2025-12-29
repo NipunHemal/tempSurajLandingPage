@@ -1,4 +1,3 @@
-
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -13,11 +12,11 @@ import { Loader2 } from 'lucide-react';
 import { useEffect, useMemo } from 'react';
 import { useUpdateStudentProfile } from '@/service/query/useStudent';
 import { useMetaStore } from '@/store/meta.store';
-import { DynamicFormField, profileFormSchema } from './DynamicFormField';
+import { DynamicFormField } from './DynamicFormField';
 import { useAuthStore } from '@/store/auth.store';
-import { format } from 'date-fns';
+import { createProfileFormSchema, mapSubmissionData } from './utils/form-helpers';
 
-type ProfileFormValues = z.infer<typeof profileFormSchema>;
+type ProfileFormValues = z.infer<ReturnType<typeof createProfileFormSchema>>;
 
 export function ProfileDetailsTab() {
   const { user } = useAuthStore();
@@ -26,7 +25,7 @@ export function ProfileDetailsTab() {
 
   const { personalAndAcademicFields, contactFields, addressFields, guardianFields } = useMemo(() => {
     if (!meta) return { personalAndAcademicFields: [], contactFields: [], addressFields: [], guardianFields: [] };
-    
+
     const permanentFields = ['firstName', 'lastName', 'dob', 'gender', 'phoneNumber'];
     const allDynamicFields = meta.settings.STUDENT_PROFILE.fields.filter(
       (field) => field.isEnabled && !permanentFields.includes(field.fieldName)
@@ -45,9 +44,11 @@ export function ProfileDetailsTab() {
 
     return { personalAndAcademicFields, contactFields, addressFields, guardianFields };
   }, [meta]);
-  
+
+  const formSchema = useMemo(() => createProfileFormSchema(meta), [meta]);
+
   const form = useForm<ProfileFormValues>({
-    resolver: zodResolver(profileFormSchema),
+    resolver: zodResolver(formSchema),
     defaultValues: {
       firstName: '',
       lastName: '',
@@ -69,7 +70,7 @@ export function ProfileDetailsTab() {
         dob: user.student.dob ? user.student.dob.split('T')[0] : undefined,
         gender: user.student.gender as 'MALE' | 'FEMALE' | 'OTHER' | undefined,
         phoneNumber: user.phoneNumber || '',
-        
+
         // Dynamic Personal & Academic fields
         profilePicture: user.student.profilePicture || undefined,
         year: user.student.year ? Number(user.student.year) : undefined,
@@ -87,7 +88,7 @@ export function ProfileDetailsTab() {
         // Dynamic Contact fields
         whatsappNumber: user.whatsappNumber || '',
         telegramNumber: user.student.telegramNumber || '',
-        
+
         // Dynamic Address fields
         homeAddress: user.student.homeAddress || '',
         deliveryAddress: user.student.deliveryAddress || '',
@@ -96,7 +97,7 @@ export function ProfileDetailsTab() {
         district: user.student.district || '',
         province: user.student.province || '',
         country: user.student.country || '',
-        
+
         // Dynamic Guardian fields
         guardianName: user.student.guardianName || '',
         relationship: user.student.relationship || '',
@@ -105,22 +106,8 @@ export function ProfileDetailsTab() {
     }
   }, [user, form]);
 
-  function onProfileSubmit(data: ProfileFormValues) {
-    const payload: Record<string, any> = {};
-    for (const key in data) {
-      const value = data[key as keyof typeof data];
-      
-      // We don't want to submit the preview URL, only the upload ID
-      if (key === 'profilePicture' || key === 'nicPic' || key === 'instituteCardImage') continue;
-
-      if (value !== undefined && value !== null && value !== '') {
-         if (key === 'dob' && value instanceof Date) {
-          payload[key] = format(value, 'yyyy-MM-dd');
-        } else {
-          payload[key] = value;
-        }
-      }
-    }
+  function onProfileSubmit(data: any) {
+    const payload = mapSubmissionData(data);
     updateProfile(payload);
   }
 
@@ -128,7 +115,7 @@ export function ProfileDetailsTab() {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onProfileSubmit)} className="space-y-8">
+      <form onSubmit={form.handleSubmit(onProfileSubmit, (e) => console.log(e))} className="space-y-8">
         <Card>
           <CardHeader>
             <CardTitle>Personal & Academic Information</CardTitle>
