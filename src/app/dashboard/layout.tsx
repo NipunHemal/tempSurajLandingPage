@@ -39,23 +39,25 @@ export default function DashboardLayout({
   return (
     <SidebarProvider defaultOpen>
       <Sidebar>
-        <SidebarHeader className="h-16 items-center justify-center border-b">
-          <div className="flex items-center gap-2 font-headline text-lg font-semibold">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="size-6 text-primary"
-            >
-              <path d="M12 3L2 9L12 15L22 9L12 3Z" />
-              <path d="M2 15L12 21L22 15" />
-              <path d="M2 9L12 15L22 9" />
-            </svg>
-            <span className="font-headline">ELIGHT LMS</span>
+        <SidebarHeader className="h-20 items-center justify-center border-b border-border/40 p-4">
+          <div className="flex items-center gap-3 font-headline text-xl font-bold tracking-wide">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary ring-1 ring-primary/20">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="size-6"
+              >
+                <path d="M12 3L2 9L12 15L22 9L12 3Z" />
+                <path d="M2 15L12 21L22 15" />
+                <path d="M2 9L12 15L22 9" />
+              </svg>
+            </div>
+            <span className="font-headline bg-gradient-to-br from-foreground to-foreground/70 bg-clip-text text-transparent">ELIGHT LMS</span>
           </div>
         </SidebarHeader>
         <SidebarContent className="p-2">

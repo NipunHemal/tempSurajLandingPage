@@ -7,9 +7,13 @@ import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Loader2 } from 'lucide-react';
-import { useEffect, useMemo } from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Badge } from '@/components/ui/badge';
+import { Separator } from '@/components/ui/separator';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Loader2, User, BookOpen, Phone, MapPin, Shield, Camera, Pencil } from 'lucide-react';
+import { useEffect, useMemo, useState } from 'react';
 import { useUpdateStudentProfile } from '@/service/query/useStudent';
 import { useMetaStore } from '@/store/meta.store';
 import { DynamicFormField } from './DynamicFormField';
@@ -22,17 +26,21 @@ export function ProfileDetailsTab() {
   const { user } = useAuthStore();
   const { mutate: updateProfile, isPending: isUpdatingProfile } = useUpdateStudentProfile();
   const { meta } = useMetaStore();
+  const [activeTab, setActiveTab] = useState('personal');
 
-  const { personalAndAcademicFields, contactFields, addressFields, guardianFields } = useMemo(() => {
-    if (!meta) return { personalAndAcademicFields: [], contactFields: [], addressFields: [], guardianFields: [] };
+  const { personalFields, academicFields, contactFields, addressFields, guardianFields } = useMemo(() => {
+    if (!meta) return { personalFields: [], academicFields: [], contactFields: [], addressFields: [], guardianFields: [] };
 
     const permanentFields = ['firstName', 'lastName', 'dob', 'gender', 'phoneNumber'];
     const allDynamicFields = meta.settings.STUDENT_PROFILE.fields.filter(
       (field) => field.isEnabled && !permanentFields.includes(field.fieldName)
     );
 
-    const personalAndAcademicFields = allDynamicFields.filter((f) =>
-      ['profilePicture', 'year', 'nic', 'nicPic', 'alYear', 'olYear', 'stream', 'medium', 'school', 'shySelect', 'instituteNumber', 'instituteCardImage'].includes(f.fieldName)
+    const personalFields = allDynamicFields.filter((f) =>
+      ['profilePicture', 'nic', 'nicPic'].includes(f.fieldName)
+    );
+    const academicFields = allDynamicFields.filter((f) =>
+      ['year', 'alYear', 'olYear', 'stream', 'medium', 'school', 'shySelect', 'instituteNumber', 'instituteCardImage'].includes(f.fieldName)
     );
     const contactFields = allDynamicFields.filter((f) => ['whatsappNumber', 'telegramNumber'].includes(f.fieldName));
     const addressFields = allDynamicFields.filter((f) =>
@@ -42,7 +50,7 @@ export function ProfileDetailsTab() {
       ['guardianName', 'relationship', 'guardianContactNumber'].includes(f.fieldName)
     );
 
-    return { personalAndAcademicFields, contactFields, addressFields, guardianFields };
+    return { personalFields, academicFields, contactFields, addressFields, guardianFields };
   }, [meta]);
 
   const formSchema = useMemo(() => createProfileFormSchema(meta), [meta]);
@@ -114,152 +122,241 @@ export function ProfileDetailsTab() {
   const isSubmitting = form.formState.isSubmitting || isUpdatingProfile;
 
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onProfileSubmit, (e) => console.log(e))} className="space-y-8">
-        <Card>
-          <CardHeader>
-            <CardTitle>Personal & Academic Information</CardTitle>
-            <CardDescription>This information is required to create your student profile.</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <div className="flex justify-center">
-              {personalAndAcademicFields.find((f) => f.fieldName === 'profilePicture') && (
-                <DynamicFormField
-                  key="profilePicture"
-                  control={form.control}
-                  fieldConfig={personalAndAcademicFields.find((f) => f.fieldName === 'profilePicture')!}
-                  form={form}
-                />
-              )}
+    <div className="container mx-auto max-w-7xl animate-in fade-in slide-in-from-bottom-4 duration-500">
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onProfileSubmit, (e) => console.log(e))} className="flex flex-col gap-8 lg:flex-row">
+
+          {/* Left Column: Profile Card */}
+          <aside className="w-full lg:w-80 shrink-0 space-y-6">
+            <Card className="overflow-hidden border-border/50 shadow-lg">
+              <div className="h-32 bg-gradient-to-br from-primary/80 to-primary/40 relative">
+                <div className="absolute -bottom-16 left-1/2 -translate-x-1/2">
+                  <div className="relative group">
+                    <Avatar className="h-32 w-32 border-4 border-background shadow-xl ring-2 ring-primary/20">
+                      <AvatarImage src={user?.student?.profilePicture || undefined} className="object-cover" />
+                      <AvatarFallback className="text-4xl font-bold bg-primary/10 text-primary">
+                        {user?.student?.firstName?.[0] || 'S'}
+                      </AvatarFallback>
+                    </Avatar>
+                    {/* Hidden Dynamic Field for Profile Picture logic if needed, but usually handled by custom component or separate upload */}
+                  </div>
+                </div>
+              </div>
+              <CardContent className="mt-20 text-center pb-8">
+                <h2 className="text-2xl font-bold tracking-tight">{user?.student?.firstName} {user?.student?.lastName}</h2>
+                <p className="text-muted-foreground font-medium">{user?.email}</p>
+                <div className="mt-4 flex flex-wrap justify-center gap-2">
+                  <Badge variant="secondary" className="px-3 py-1 bg-primary/10 text-primary hover:bg-primary/20 border-primary/20">Student</Badge>
+                  {user?.student?.id && <Badge variant="outline" className="px-3 py-1 text-muted-foreground">ID: {user?.student?.id}</Badge>}
+                </div>
+              </CardContent>
+              <Separator />
+              <CardFooter className="flex-col gap-2 bg-muted/30 p-4">
+                <div className="flex w-full items-center justify-between text-sm">
+                  <span className="text-muted-foreground">Joined</span>
+                  <span className="font-medium text-foreground">
+                    {user?.student?.createdAt ? new Date(user.student.createdAt).toLocaleDateString() : 'N/A'}
+                  </span>
+                </div>
+              </CardFooter>
+            </Card>
+
+            {/* Profile Picture Upload Field Placement - If supported by Dynamic Form */}
+            {personalFields.find((f) => f.fieldName === 'profilePicture') && (
+              <Card className="border-border/50 shadow-md">
+                <CardHeader>
+                  <CardTitle className="text-base">Profile Photo</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <DynamicFormField
+                    key="profilePicture"
+                    control={form.control}
+                    fieldConfig={personalFields.find((f) => f.fieldName === 'profilePicture')!}
+                    form={form}
+                  />
+                </CardContent>
+              </Card>
+            )}
+          </aside>
+
+          {/* Right Column: Tabbed Form */}
+          <div className="flex-1 space-y-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <h1 className="text-3xl font-bold tracking-tight">Profile Settings</h1>
+                <p className="text-muted-foreground mt-1">Manage your personal information and preferences.</p>
+              </div>
+              <Button type="submit" disabled={isSubmitting} className="min-w-[140px] shadow-md hover:shadow-lg transition-all">
+                {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                {isSubmitting ? 'Saving...' : 'Save Changes'}
+              </Button>
             </div>
-            <div className="grid grid-cols-1 gap-x-6 gap-y-8 md:grid-cols-2">
-              <FormField
-                control={form.control}
-                name="firstName"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>First Name *</FormLabel>
-                    <FormControl>
-                      <Input placeholder="John" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="lastName"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Last Name *</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Doe" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="dob"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Date of Birth *</FormLabel>
-                    <FormControl>
-                      <Input placeholder="YYYY-MM-DD" {...field} value={field.value || ''} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="gender"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Gender *</FormLabel>
-                    <Select key={field.value} onValueChange={field.onChange} defaultValue={field.value}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select a gender" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="MALE">Male</SelectItem>
-                        <SelectItem value="FEMALE">Female</SelectItem>
-                        <SelectItem value="OTHER">Other</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="phoneNumber"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Phone Number *</FormLabel>
-                    <FormControl>
-                      <Input placeholder="07xxxxxxxx" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              {personalAndAcademicFields
-                .filter((f) => !['profilePicture'].includes(f.fieldName))
-                .map((fieldConfig) => (
-                  <DynamicFormField key={fieldConfig.fieldName} control={form.control} fieldConfig={fieldConfig} form={form} />
-                ))}
-            </div>
-          </CardContent>
-        </Card>
 
-        {contactFields.length > 0 && (
-          <Card>
-            <CardHeader>
-              <CardTitle>Contact Information</CardTitle>
-            </CardHeader>
-            <CardContent className="grid grid-cols-1 gap-x-6 gap-y-8 md:grid-cols-2">
-              {contactFields.map((fieldConfig) => (
-                <DynamicFormField key={fieldConfig.fieldName} control={form.control} fieldConfig={fieldConfig} form={form} />
-              ))}
-            </CardContent>
-          </Card>
-        )}
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+              <TabsList className="grid w-full grid-cols-2 lg:flex lg:w-auto h-auto p-1 bg-muted/50 gap-1 rounded-xl">
+                <TabsTrigger value="personal" className="data-[state=active]:bg-background data-[state=active]:text-primary data-[state=active]:shadow-sm rounded-lg py-2.5 px-4"><User className="mr-2 h-4 w-4" /> Personal</TabsTrigger>
+                <TabsTrigger value="academic" className="data-[state=active]:bg-background data-[state=active]:text-primary data-[state=active]:shadow-sm rounded-lg py-2.5 px-4"><BookOpen className="mr-2 h-4 w-4" /> Academic</TabsTrigger>
+                {contactFields.length > 0 && <TabsTrigger value="contact" className="data-[state=active]:bg-background data-[state=active]:text-primary data-[state=active]:shadow-sm rounded-lg py-2.5 px-4"><Phone className="mr-2 h-4 w-4" /> Contact</TabsTrigger>}
+                {addressFields.length > 0 && <TabsTrigger value="address" className="data-[state=active]:bg-background data-[state=active]:text-primary data-[state=active]:shadow-sm rounded-lg py-2.5 px-4"><MapPin className="mr-2 h-4 w-4" /> Address</TabsTrigger>}
+                {guardianFields.length > 0 && <TabsTrigger value="guardian" className="data-[state=active]:bg-background data-[state=active]:text-primary data-[state=active]:shadow-sm rounded-lg py-2.5 px-4"><Shield className="mr-2 h-4 w-4" /> Guardian</TabsTrigger>}
+              </TabsList>
 
-        {addressFields.length > 0 && (
-          <Card>
-            <CardHeader>
-              <CardTitle>Address Information</CardTitle>
-            </CardHeader>
-            <CardContent className="grid grid-cols-1 gap-x-6 gap-y-8 md:grid-cols-2">
-              {addressFields.map((fieldConfig) => (
-                <DynamicFormField key={fieldConfig.fieldName} control={form.control} fieldConfig={fieldConfig} form={form} />
-              ))}
-            </CardContent>
-          </Card>
-        )}
+              <div className="mt-6">
+                <TabsContent value="personal" className="space-y-6 focus-visible:outline-none">
+                  <Card className="border-border/50 shadow-sm">
+                    <CardHeader>
+                      <CardTitle>Personal Information</CardTitle>
+                      <CardDescription>Basic personal details.</CardDescription>
+                    </CardHeader>
+                    <CardContent className="grid gap-6 md:grid-cols-2">
+                      <FormField
+                        control={form.control}
+                        name="firstName"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>First Name <span className="text-primary">*</span></FormLabel>
+                            <FormControl>
+                              <Input placeholder="John" {...field} className="bg-background/50 focus:bg-background transition-colors" />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={form.control}
+                        name="lastName"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Last Name <span className="text-primary">*</span></FormLabel>
+                            <FormControl>
+                              <Input placeholder="Doe" {...field} className="bg-background/50 focus:bg-background transition-colors" />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={form.control}
+                        name="dob"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Date of Birth <span className="text-primary">*</span></FormLabel>
+                            <FormControl>
+                              <Input type="date" {...field} value={field.value || ''} className="bg-background/50 focus:bg-background transition-colors" />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={form.control}
+                        name="gender"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Gender <span className="text-primary">*</span></FormLabel>
+                            <Select key={field.value} onValueChange={field.onChange} defaultValue={field.value}>
+                              <FormControl>
+                                <SelectTrigger className="bg-background/50 focus:bg-background transition-colors">
+                                  <SelectValue placeholder="Select a gender" />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent>
+                                <SelectItem value="MALE">Male</SelectItem>
+                                <SelectItem value="FEMALE">Female</SelectItem>
+                                <SelectItem value="OTHER">Other</SelectItem>
+                              </SelectContent>
+                            </Select>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={form.control}
+                        name="phoneNumber"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Phone Number <span className="text-primary">*</span></FormLabel>
+                            <FormControl>
+                              <Input placeholder="07xxxxxxxx" {...field} className="bg-background/50 focus:bg-background transition-colors" />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      {personalFields
+                        .filter((f) => !['profilePicture'].includes(f.fieldName))
+                        .map((fieldConfig) => (
+                          <DynamicFormField key={fieldConfig.fieldName} control={form.control} fieldConfig={fieldConfig} form={form} />
+                        ))}
+                    </CardContent>
+                  </Card>
+                </TabsContent>
 
-        {guardianFields.length > 0 && (
-          <Card>
-            <CardHeader>
-              <CardTitle>Guardian Information</CardTitle>
-            </CardHeader>
-            <CardContent className="grid grid-cols-1 gap-x-6 gap-y-8 md:grid-cols-2">
-              {guardianFields.map((fieldConfig) => (
-                <DynamicFormField key={fieldConfig.fieldName} control={form.control} fieldConfig={fieldConfig} form={form} />
-              ))}
-            </CardContent>
-          </Card>
-        )}
+                <TabsContent value="academic" className="space-y-6 focus-visible:outline-none">
+                  <Card className="border-border/50 shadow-sm">
+                    <CardHeader>
+                      <CardTitle>Academic Details</CardTitle>
+                      <CardDescription>Your educational background and preferences.</CardDescription>
+                    </CardHeader>
+                    <CardContent className="grid gap-6 md:grid-cols-2">
+                      {academicFields.length > 0 ? (
+                        academicFields.map((fieldConfig) => (
+                          <DynamicFormField key={fieldConfig.fieldName} control={form.control} fieldConfig={fieldConfig} form={form} />
+                        ))
+                      ) : (
+                        <div className="col-span-2 text-center py-8 text-muted-foreground">No academic fields configured.</div>
+                      )}
+                    </CardContent>
+                  </Card>
+                </TabsContent>
 
-        <Button type="submit" className="w-full" disabled={isSubmitting}>
-          {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          {isSubmitting ? 'Saving...' : 'Save Changes'}
-        </Button>
-      </form>
-    </Form>
+                <TabsContent value="contact" className="space-y-6 focus-visible:outline-none">
+                  <Card className="border-border/50 shadow-sm">
+                    <CardHeader>
+                      <CardTitle>Additional Contacts</CardTitle>
+                      <CardDescription>Social and messaging contacts.</CardDescription>
+                    </CardHeader>
+                    <CardContent className="grid gap-6 md:grid-cols-2">
+                      {contactFields.map((fieldConfig) => (
+                        <DynamicFormField key={fieldConfig.fieldName} control={form.control} fieldConfig={fieldConfig} form={form} />
+                      ))}
+                    </CardContent>
+                  </Card>
+                </TabsContent>
+
+                <TabsContent value="address" className="space-y-6 focus-visible:outline-none">
+                  <Card className="border-border/50 shadow-sm">
+                    <CardHeader>
+                      <CardTitle>Address Information</CardTitle>
+                      <CardDescription>Shipping and billing addresses.</CardDescription>
+                    </CardHeader>
+                    <CardContent className="grid gap-6 md:grid-cols-2">
+                      {addressFields.map((fieldConfig) => (
+                        <DynamicFormField key={fieldConfig.fieldName} control={form.control} fieldConfig={fieldConfig} form={form} />
+                      ))}
+                    </CardContent>
+                  </Card>
+                </TabsContent>
+
+                <TabsContent value="guardian" className="space-y-6 focus-visible:outline-none">
+                  <Card className="border-border/50 shadow-sm">
+                    <CardHeader>
+                      <CardTitle>Guardian Details</CardTitle>
+                      <CardDescription>Parent or guardian contact information.</CardDescription>
+                    </CardHeader>
+                    <CardContent className="grid gap-6 md:grid-cols-2">
+                      {guardianFields.map((fieldConfig) => (
+                        <DynamicFormField key={fieldConfig.fieldName} control={form.control} fieldConfig={fieldConfig} form={form} />
+                      ))}
+                    </CardContent>
+                  </Card>
+                </TabsContent>
+
+              </div>
+            </Tabs>
+          </div>
+        </form>
+      </Form>
+    </div>
   );
 }
