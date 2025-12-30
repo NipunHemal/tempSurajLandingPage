@@ -50,9 +50,9 @@ export default function MyClassesPage() {
     <>
       <main className="min-h-screen bg-background pb-12">
         {/* Personal Hero Header */}
-        <div className="relative w-full bg-slate-900 border-b border-border/50 overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-r from-slate-900 to-slate-800 opacity-90" />
-          <div className="absolute inset-0 opacity-10 bg-[radial-gradient(#4b5563_1px,transparent_1px)] [background-size:16px_16px]" />
+        <div className="relative w-full bg-zinc-950 border-b border-border/50 overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-r from-zinc-900 to-black opacity-90" />
+          <div className="absolute inset-0 opacity-10 bg-[radial-gradient(#fabb09_1px,transparent_1px)] [background-size:16px_16px]" />
 
           <div className="container mx-auto max-w-7xl px-6 py-8 relative z-10">
             <div className="flex flex-col md:flex-row items-center justify-between gap-6">
@@ -60,16 +60,16 @@ export default function MyClassesPage() {
                 <h1 className="text-2xl md:text-3xl font-bold text-white tracking-tight">
                   Welcome Back
                 </h1>
-                <p className="text-slate-400 text-base">
+                <p className="text-zinc-400 text-base">
                   Track your progress and continue your journey.
                 </p>
               </div>
 
               <div className="w-full md:w-[400px] relative">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 h-4 w-4" />
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400 h-4 w-4" />
                 <Input
                   placeholder="Filter your enrolled classes..."
-                  className="w-full h-11 pl-10 rounded-xl border-slate-700 bg-slate-800/50 text-white placeholder:text-slate-500 focus:bg-slate-800 focus:border-primary transition-all shadow-md text-sm"
+                  className="w-full h-11 pl-10 rounded-xl border-zinc-800 bg-zinc-900/50 text-white placeholder:text-zinc-500 focus:bg-zinc-900 focus:border-primary transition-all shadow-md text-sm"
                   value={searchTerm}
                   onChange={e => setSearchTerm(e.target.value)}
                 />
