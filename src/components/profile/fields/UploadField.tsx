@@ -79,14 +79,14 @@ export function UploadField({ value, onChange, variant = 'avatar', label }: Uplo
                     onChange={handleFileChange}
                 />
                 <div className="relative group" onClick={triggerUpload}>
-                    <Avatar className="h-24 w-24 cursor-pointer">
-                        <AvatarImage src={preview || undefined} alt="Profile Picture" />
-                        <AvatarFallback className="text-3xl">
-                            <Upload />
+                    <Avatar className="h-32 w-32 cursor-pointer border-4 border-background shadow-xl ring-4 ring-primary/20 transition-all hover:ring-primary/40">
+                        <AvatarImage src={preview || undefined} alt="Profile Picture" className="object-cover" />
+                        <AvatarFallback className="text-4xl font-bold bg-primary/10 text-primary">
+                            <Upload className="h-10 w-10 opacity-50" />
                         </AvatarFallback>
                     </Avatar>
-                    <div className="absolute bottom-0 right-0 flex items-center justify-center w-8 h-8 bg-gray-800 rounded-full border-2 border-background cursor-pointer group-hover:bg-gray-700 transition-colors">
-                        <Pencil className="text-white w-4 h-4" />
+                    <div className="absolute bottom-1 right-1 flex items-center justify-center w-10 h-10 bg-primary text-primary-foreground rounded-full border-4 border-background shadow-sm cursor-pointer hover:bg-primary/90 transition-transform hover:scale-105 active:scale-95">
+                        <Pencil className="w-4 h-4" />
                     </div>
                     {isUploading && (
                         <div className="absolute inset-0 flex items-center justify-center rounded-full bg-black/50">

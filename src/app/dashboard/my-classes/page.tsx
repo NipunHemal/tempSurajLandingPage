@@ -49,18 +49,20 @@ export default function MyClassesPage() {
   return (
     <>
       <DashboardHeader title="My Classes" />
-      <main className="p-6">
-        <div className="relative mb-8 h-48 w-full overflow-hidden rounded-lg">
-          <div className="absolute inset-0 flex items-center justify-center bg-black/50">
-            <div className="relative w-full max-w-md">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-white/80" />
-              <Input
-                placeholder="Search classes..."
-                className="h-12 w-full rounded-full border-2 border-white/50 bg-transparent pl-12 text-lg text-white placeholder:text-white/80 focus:border-white focus:ring-offset-0"
-                value={searchTerm}
-                onChange={e => setSearchTerm(e.target.value)}
-              />
-            </div>
+      <main className="p-6 md:p-8 max-w-7xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+          <div>
+            <h1 className="text-3xl font-bold tracking-tight">Your Classes</h1>
+            <p className="text-muted-foreground mt-1">Manage and access your enrolled courses.</p>
+          </div>
+          <div className="relative w-full md:w-96">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground h-4 w-4" />
+            <Input
+              placeholder="Search your classes..."
+              className="h-11 w-full pl-10 rounded-xl bg-background border-border/60 focus-visible:ring-primary/20 transition-all shadow-sm focus:shadow-md"
+              value={searchTerm}
+              onChange={e => setSearchTerm(e.target.value)}
+            />
           </div>
         </div>
 

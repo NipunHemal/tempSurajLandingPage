@@ -111,7 +111,7 @@ export function DynamicFormField({ control, fieldConfig, form }: DynamicFormFiel
       name={fieldName}
       render={({ field }) => (
         <FormItem className={isImageUpload && fieldName !== 'profilePicture' ? 'col-span-full' : ''}>
-          <FormLabel>{labelWithAsterisk}</FormLabel>
+          {fieldName !== 'profilePicture' && <FormLabel>{labelWithAsterisk}</FormLabel>}
           <FormControl>
             {renderField(field)}
           </FormControl>

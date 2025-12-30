@@ -131,15 +131,15 @@ export function ProfileDetailsTab() {
             <Card className="overflow-hidden border-border/50 shadow-lg">
               <div className="h-32 bg-gradient-to-br from-primary/80 to-primary/40 relative">
                 <div className="absolute -bottom-16 left-1/2 -translate-x-1/2">
-                  <div className="relative group">
-                    <Avatar className="h-32 w-32 border-4 border-background shadow-xl ring-2 ring-primary/20">
-                      <AvatarImage src={user?.student?.profilePicture || undefined} className="object-cover" />
-                      <AvatarFallback className="text-4xl font-bold bg-primary/10 text-primary">
-                        {user?.student?.firstName?.[0] || 'S'}
-                      </AvatarFallback>
-                    </Avatar>
-                    {/* Hidden Dynamic Field for Profile Picture logic if needed, but usually handled by custom component or separate upload */}
-                  </div>
+                  {/* Profile Picture Upload Field */}
+                  {personalFields.find((f) => f.fieldName === 'profilePicture') && (
+                    <DynamicFormField
+                      key="profilePicture"
+                      control={form.control}
+                      fieldConfig={personalFields.find((f) => f.fieldName === 'profilePicture')!}
+                      form={form}
+                    />
+                  )}
                 </div>
               </div>
               <CardContent className="mt-20 text-center pb-8">
@@ -160,23 +160,6 @@ export function ProfileDetailsTab() {
                 </div>
               </CardFooter>
             </Card>
-
-            {/* Profile Picture Upload Field Placement - If supported by Dynamic Form */}
-            {personalFields.find((f) => f.fieldName === 'profilePicture') && (
-              <Card className="border-border/50 shadow-md">
-                <CardHeader>
-                  <CardTitle className="text-base">Profile Photo</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <DynamicFormField
-                    key="profilePicture"
-                    control={form.control}
-                    fieldConfig={personalFields.find((f) => f.fieldName === 'profilePicture')!}
-                    form={form}
-                  />
-                </CardContent>
-              </Card>
-            )}
           </aside>
 
           {/* Right Column: Tabbed Form */}
