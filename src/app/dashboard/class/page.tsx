@@ -52,7 +52,7 @@ export default function ClassPage() {
       <main className="p-6">
         <div className="relative mb-8 h-48 w-full overflow-hidden rounded-lg">
           <div className="absolute inset-0 flex items-center justify-center bg-black/50">
-            <div className="relative w-full max-w-md">
+            <div className="relative w-[95%] max-w-md md:w-full">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-white/80" />
               <Input
                 placeholder="Search classes..."

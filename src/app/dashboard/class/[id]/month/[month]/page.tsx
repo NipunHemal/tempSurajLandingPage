@@ -299,7 +299,12 @@ export default function MonthResourcesPage() {
                         <BreadcrumbItem>
                             {classDetails ? (
                                 <BreadcrumbLink asChild href={''}>
-                                    <Link href={`/dashboard/class/${classId}`}>{classDetails.name}</Link>
+                                    <Link
+                                        href={`/dashboard/class/${classId}`}
+                                        className="block max-w-[100px] truncate md:max-w-none"
+                                    >
+                                        {classDetails.name}
+                                    </Link>
                                 </BreadcrumbLink>
                             ) : (
                                 <span>Class</span>
@@ -307,7 +312,7 @@ export default function MonthResourcesPage() {
                         </BreadcrumbItem>
                         <BreadcrumbSeparator />
                         <BreadcrumbItem>
-                            <BreadcrumbPage>{monthTitle}</BreadcrumbPage>
+                            <BreadcrumbPage className="line-clamp-1 max-w-[120px] md:max-w-none">{monthTitle}</BreadcrumbPage>
                         </BreadcrumbItem>
                     </BreadcrumbList>
                 </Breadcrumb>
