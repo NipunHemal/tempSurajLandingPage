@@ -52,7 +52,7 @@ export default function MyClassesPage() {
         {/* Personal Hero Header */}
         <div className="relative w-full bg-zinc-950 border-b border-border/50 overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-r from-zinc-900 to-black opacity-90" />
-          <div className="absolute inset-0 opacity-10 bg-[radial-gradient(#fabb09_1px,transparent_1px)] [background-size:16px_16px]" />
+          <div className="absolute inset-0 opacity-10 bg-[radial-gradient(#fabb09_1.5px,transparent_1.5px)] [background-size:24px_24px]" />
 
           <div className="container mx-auto max-w-7xl px-6 py-8 relative z-10">
             <div className="flex flex-col md:flex-row items-center justify-between gap-6">

@@ -54,7 +54,7 @@ export default function ClassPage() {
         <div className="relative w-full bg-zinc-950 border-b border-border/50 overflow-hidden">
           {/* Ambient Background */}
           <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-background to-background opacity-20 pointer-events-none" />
-          <div className="absolute inset-0 opacity-10 bg-[radial-gradient(#fabb09_1px,transparent_1px)] [background-size:16px_16px] pointer-events-none" />
+          <div className="absolute inset-0 opacity-10 bg-[radial-gradient(#fabb09_1.5px,transparent_1.5px)] [background-size:24px_24px] pointer-events-none" />
           <div className="absolute -top-20 -right-20 w-[500px] h-[500px] bg-primary/20 rounded-full blur-[100px] pointer-events-none" />
           <div className="absolute top-1/2 left-10 w-[300px] h-[300px] bg-indigo-500/10 rounded-full blur-[80px] pointer-events-none" />
 
