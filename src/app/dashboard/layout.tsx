@@ -22,6 +22,7 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import { useAuthStore } from '@/store/auth.store';
 import { Hourglass } from 'lucide-react';
 import ApprovalBanner from '@/components/alerts/ApprovalBanner';
+import AnnouncementManager from '@/components/announcement/announcement-manager';
 
 export default function DashboardLayout({
   children,
@@ -60,37 +61,38 @@ export default function DashboardLayout({
           <SidebarMenu>
             {mainNav.map((item, index) => {
               const isActive = item.href === '/dashboard'
-                  ? pathname === item.href
-                  : !!(item.href && pathname.startsWith(item.href));
-              
+                ? pathname === item.href
+                : !!(item.href && pathname.startsWith(item.href));
+
               return (
-              <SidebarMenuItem key={index}>
-                <SidebarMenuButton
-                  asChild
-                  isActive={isActive}
-                  tooltip={item.tooltip}
-                >
-                  <Link href={item.href || '#'}>
-                    <item.icon />
-                    {item.label}
-                  </Link>
-                </SidebarMenuButton>
-                {item.badge && (
-                   <SidebarMenuBadge className="h-5 w-5 justify-center rounded-full bg-destructive text-destructive-foreground">
-                    {item.badge}
-                  </SidebarMenuBadge>
-                )}
-              </SidebarMenuItem>
-            )})}
+                <SidebarMenuItem key={index}>
+                  <SidebarMenuButton
+                    asChild
+                    isActive={isActive}
+                    tooltip={item.tooltip}
+                  >
+                    <Link href={item.href || '#'}>
+                      <item.icon />
+                      {item.label}
+                    </Link>
+                  </SidebarMenuButton>
+                  {item.badge && (
+                    <SidebarMenuBadge className="h-5 w-5 justify-center rounded-full bg-destructive text-destructive-foreground">
+                      {item.badge}
+                    </SidebarMenuBadge>
+                  )}
+                </SidebarMenuItem>
+              )
+            })}
           </SidebarMenu>
         </SidebarContent>
         <SidebarFooter className="p-2">
           <SidebarMenu>
             {footerNav.map((item, index) => (
               <SidebarMenuItem key={index}>
-                 <SidebarMenuButton
+                <SidebarMenuButton
                   asChild
-                  isActive={!!(item.href && pathname.startsWith(item.href))} 
+                  isActive={!!(item.href && pathname.startsWith(item.href))}
                   tooltip={item.tooltip}
                 >
                   <Link href={item.href || '#'}>
@@ -104,6 +106,7 @@ export default function DashboardLayout({
         </SidebarFooter>
       </Sidebar>
       <SidebarInset className={isMobile ? 'pb-20' : ''}>
+        <AnnouncementManager />
         {isPendingApproval && <ApprovalBanner />}
         {children}
       </SidebarInset>

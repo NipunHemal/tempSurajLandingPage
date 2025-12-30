@@ -45,4 +45,8 @@ export const ENDPOINTS = {
   enrollments: {
     enroll: `/enrollments`,
   },
+  announcements: {
+    getAll: `/announcements`,
+    markViewed: (id: string) => `/announcements/${id}/view`,
+  },
 };
