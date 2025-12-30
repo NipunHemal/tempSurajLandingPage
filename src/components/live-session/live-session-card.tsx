@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Calendar, Clock, Video, MonitorPlay } from "lucide-react";
 import LiveIndicator from "./live-indicator";
-import { format } from "date-fns";
+import { format, subMinutes } from "date-fns";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 
@@ -17,7 +17,17 @@ export default function LiveSessionCard({ session, showClassName = true }: LiveS
     const isLive = session.status === LiveSessionStatus.LIVE;
     const isEnded = session.status === LiveSessionStatus.ENDED;
 
-    // Find primary provider or first one
+    // Check if starting soon (within buffer)
+    const isStartingSoon = !isLive && !isEnded && (() => {
+        if (session.status === LiveSessionStatus.SCHEDULED) {
+            const startTime = new Date(session.startTime);
+            const bufferMinutes = session.showBeforeMinutes || 15;
+            const showAfter = subMinutes(startTime, bufferMinutes);
+            return new Date() >= showAfter;
+        }
+        return false;
+    })();
+
     const primaryProvider = session.providers.find(p => p.isPrimary) || session.providers[0];
     const joinUrl = primaryProvider?.joinUrl || '#';
 
@@ -32,7 +42,8 @@ export default function LiveSessionCard({ session, showClassName = true }: LiveS
     return (
         <Card className={cn(
             "flex flex-col overflow-hidden transition-all hover:shadow-md",
-            isLive ? "border-red-500/50 shadow-red-500/5" : ""
+            isLive ? "border-red-500/50 shadow-red-500/5" :
+                isStartingSoon ? "border-amber-500/50 shadow-amber-500/5" : ""
         )}>
             <CardHeader className="p-4 pb-2">
                 <div className="flex items-start justify-between gap-2">
@@ -46,6 +57,14 @@ export default function LiveSessionCard({ session, showClassName = true }: LiveS
                     </div>
                     {isLive ? (
                         <LiveIndicator />
+                    ) : isStartingSoon ? (
+                        <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-700 dark:bg-amber-900/30 dark:text-amber-400">
+                            <span className="relative flex h-2 w-2">
+                                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-amber-400 opacity-75"></span>
+                                <span className="relative inline-flex h-2 w-2 rounded-full bg-amber-500"></span>
+                            </span>
+                            SOON
+                        </span>
                     ) : (
                         <Badge variant="secondary" className={cn("text-xs", isEnded ? "opacity-70" : "")}>
                             {session.status}
@@ -82,6 +101,17 @@ export default function LiveSessionCard({ session, showClassName = true }: LiveS
                         <Link href={joinUrl} target="_blank">
                             {getProviderIcon(primaryProvider?.provider)}
                             Join Live Class
+                        </Link>
+                    </Button>
+                ) : isStartingSoon ? (
+                    <Button
+                        asChild
+                        className="w-full bg-amber-500 hover:bg-amber-600 text-white gap-2"
+                        size="sm"
+                    >
+                        <Link href={joinUrl} target="_blank">
+                            {getProviderIcon(primaryProvider?.provider)}
+                            Join Waiting Room
                         </Link>
                     </Button>
                 ) : isEnded ? (

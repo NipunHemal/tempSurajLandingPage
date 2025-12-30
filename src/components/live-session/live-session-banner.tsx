@@ -2,11 +2,13 @@
 
 import { LiveSession, LiveSessionStatus } from "@/types/live-session.types";
 import { Button } from "@/components/ui/button";
-import { X, Video } from "lucide-react";
+import { X, Video, Clock } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import LiveIndicator from "./live-indicator";
 import { motion, AnimatePresence } from "framer-motion";
+import { formatDistanceToNow, subMinutes } from "date-fns";
+import { cn } from "@/lib/utils";
 
 interface LiveSessionBannerProps {
     session: LiveSession;
@@ -16,8 +18,22 @@ interface LiveSessionBannerProps {
 export default function LiveSessionBanner({ session, className }: LiveSessionBannerProps) {
     const [isVisible, setIsVisible] = useState(true);
 
-    if (!isVisible || session.status !== LiveSessionStatus.LIVE) return null;
+    // Determine if we should show based on status + buffer
+    const shouldShow = () => {
+        if (!isVisible) return false;
+        if (session.status === LiveSessionStatus.LIVE) return true;
+        if (session.status === LiveSessionStatus.SCHEDULED) {
+            const startTime = new Date(session.startTime);
+            const bufferMinutes = session.showBeforeMinutes || 15;
+            const showAfter = subMinutes(startTime, bufferMinutes);
+            return new Date() >= showAfter;
+        }
+        return false;
+    };
 
+    if (!shouldShow()) return null;
+
+    const isLive = session.status === LiveSessionStatus.LIVE;
     const primaryProvider = session.providers.find(p => p.isPrimary) || session.providers[0];
     const joinUrl = primaryProvider?.joinUrl || '#';
 
@@ -31,23 +47,30 @@ export default function LiveSessionBanner({ session, className }: LiveSessionBan
                     transition={{ duration: 0.3 }}
                     className={className}
                 >
-                    <div className="relative w-full bg-gradient-to-r from-red-600 to-red-500 text-white shadow-md rounded-md overflow-hidden">
+                    <div className={cn(
+                        "relative w-full text-white shadow-md rounded-md overflow-hidden",
+                        isLive ? "bg-gradient-to-r from-red-600 to-red-500" : "bg-gradient-to-r from-amber-500 to-orange-400"
+                    )}>
                         <div className="absolute top-0 right-0 h-full w-32 bg-white/5 skew-x-12 -mr-16"></div>
 
                         <div className="container mx-auto flex items-center justify-between px-4 py-3 sm:px-6">
                             <div className="flex flex-1 items-center gap-3 overflow-hidden">
                                 <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white/20">
-                                    <Video className="h-4 w-4 text-white" />
+                                    {isLive ? <Video className="h-4 w-4 text-white" /> : <Clock className="h-4 w-4 text-white" />}
                                 </span>
                                 <div className="flex flex-col gap-0.5 overflow-hidden">
                                     <div className="flex items-center gap-2">
                                         <p className="truncate font-medium text-sm sm:text-base">
-                                            Live Lesson Started: <span className="font-bold">{session.title}</span>
+                                            {isLive ? (
+                                                <>Live Lesson Started: <span className="font-bold">{session.title}</span></>
+                                            ) : (
+                                                <>Live Lesson Starting Soon: <span className="font-bold">{session.title}</span></>
+                                            )}
                                         </p>
-                                        <LiveIndicator className="bg-white/20 text-white border-0" pulse={true} />
+                                        {isLive && <LiveIndicator className="bg-white/20 text-white border-0" pulse={true} />}
                                     </div>
-                                    <p className="truncate text-xs text-red-100/90 sm:text-sm">
-                                        Join now to participate in the live session.
+                                    <p className="truncate text-xs text-white/90 sm:text-sm">
+                                        {isLive ? "Join now to participate." : `Starts in ${formatDistanceToNow(new Date(session.startTime))}. Be ready!`}
                                     </p>
                                 </div>
                             </div>
@@ -56,10 +79,10 @@ export default function LiveSessionBanner({ session, className }: LiveSessionBan
                                 <Button
                                     asChild
                                     size="sm"
-                                    className="hidden shrink-0 bg-white text-red-600 hover:bg-white/90 sm:inline-flex border-0 font-semibold"
+                                    className="hidden shrink-0 bg-white text-black hover:bg-white/90 sm:inline-flex border-0 font-semibold"
                                 >
                                     <Link href={joinUrl} target="_blank">
-                                        Join Now
+                                        {isLive ? "Join Now" : "Join Waiting Room"}
                                     </Link>
                                 </Button>
 
@@ -81,7 +104,7 @@ export default function LiveSessionBanner({ session, className }: LiveSessionBan
                             target="_blank"
                             className="flex w-full items-center justify-center bg-black/10 py-2 text-xs font-medium text-white hover:bg-black/20 sm:hidden"
                         >
-                            Join Session
+                            {isLive ? "Join Session" : "Join Waiting Room"}
                         </a>
                     </div>
                 </motion.div>

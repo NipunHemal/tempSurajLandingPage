@@ -13,6 +13,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { useGetLiveSessions } from '@/service/query/useLiveSession';
 import { LiveSessionStatus } from '@/types/live-session.types';
 import LiveSessionBanner from '@/components/live-session/live-session-banner';
+import { subMinutes } from 'date-fns';
 
 export default function ClassPage() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -27,9 +28,21 @@ export default function ClassPage() {
 
   // Poll for live sessions to show in banner
   const { data: liveSessionResponse } = useGetLiveSessions({ limit: 10 });
-  const activeLiveSession = liveSessionResponse?.data?.items?.find(
-    s => s.status === LiveSessionStatus.LIVE
-  );
+
+  // Find a session to show: Priority to LIVE, then SCHEDULED entering buffer
+  const activeLiveSession = liveSessionResponse?.data?.items?.find(s => {
+    // 1. Check if LIVE
+    if (s.status === LiveSessionStatus.LIVE) return true;
+
+    // 2. Check if UPCOMING and within buffer
+    if (s.status === LiveSessionStatus.SCHEDULED) {
+      const startTime = new Date(s.startTime);
+      const bufferMinutes = s.showBeforeMinutes || 15;
+      const showAfter = subMinutes(startTime, bufferMinutes);
+      return new Date() >= showAfter;
+    }
+    return false;
+  });
 
   const classes = classesResponse?.data ?? [];
 
