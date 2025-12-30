@@ -49,4 +49,9 @@ export const ENDPOINTS = {
     getAll: `/announcements`,
     markViewed: (id: string) => `/announcements/${id}/view`,
   },
+  liveSessions: {
+    getAll: `/live-sessions`,
+    getById: (id: string) => `/live-sessions/${id}`,
+    getMySessions: (classId: string) => `/class/${classId}/my-sessions`,
+  },
 };

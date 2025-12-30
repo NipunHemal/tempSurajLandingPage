@@ -23,6 +23,7 @@ import { useAuthStore } from '@/store/auth.store';
 import { Hourglass } from 'lucide-react';
 import ApprovalBanner from '@/components/alerts/ApprovalBanner';
 import AnnouncementManager from '@/components/announcement/announcement-manager';
+import GlobalLiveAlert from '@/components/live-session/global-live-alert';
 
 export default function DashboardLayout({
   children,
@@ -106,6 +107,7 @@ export default function DashboardLayout({
         </SidebarFooter>
       </Sidebar>
       <SidebarInset className={isMobile ? 'pb-20' : ''}>
+        <GlobalLiveAlert />
         <AnnouncementManager />
         {isPendingApproval && <ApprovalBanner />}
         {children}

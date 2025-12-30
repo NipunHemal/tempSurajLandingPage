@@ -1,4 +1,3 @@
-
 'use client';
 
 import { Search, Loader2 } from 'lucide-react';
@@ -10,6 +9,9 @@ import ContentCard from '@/components/content-card';
 import { Input } from '@/components/ui/input';
 import { useGetClasses } from '@/service/query/useClass';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { useGetLiveSessions } from '@/service/query/useLiveSession';
+import { LiveSessionStatus } from '@/types/live-session.types';
+import LiveSessionBanner from '@/components/live-session/live-session-banner';
 
 export default function MyClassesPage() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -25,6 +27,12 @@ export default function MyClassesPage() {
     enrollmentStatus: 'ENROLLED',
   });
 
+  // Poll for live sessions to show in banner
+  const { data: liveSessionResponse } = useGetLiveSessions({ limit: 10 });
+  const activeLiveSession = liveSessionResponse?.data?.items?.find(
+    s => s.status === LiveSessionStatus.LIVE
+  );
+
   const enrolledClasses = classesResponse?.data ?? [];
 
   return (
@@ -32,13 +40,6 @@ export default function MyClassesPage() {
       <DashboardHeader title="My Classes" />
       <main className="p-6">
         <div className="relative mb-8 h-48 w-full overflow-hidden rounded-lg">
-          {/* <Image
-                    src="https://images.unsplash.com/photo-1519681393784-d1202679a5ca?q=80&w=2070&auto=format&fit=crop"
-                    alt="Search background"
-                    fill
-                    className="object-cover"
-                    data-ai-hint="night sky"
-                  /> */}
           <div className="absolute inset-0 flex items-center justify-center bg-black/50">
             <div className="relative w-full max-w-md">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-white/80" />
@@ -51,6 +52,13 @@ export default function MyClassesPage() {
             </div>
           </div>
         </div>
+
+        {/* Live Session Banner */}
+        {activeLiveSession && (
+          <div className="mb-8">
+            <LiveSessionBanner session={activeLiveSession} />
+          </div>
+        )}
 
         {isLoading ? (
           <div className="flex h-[50vh] items-center justify-center">
