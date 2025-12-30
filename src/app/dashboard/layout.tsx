@@ -67,7 +67,7 @@ export default function DashboardLayout({
                 <path d="M2 9L12 15L22 9" />
               </svg>
             </div>
-            <span className="font-headline text-white drop-shadow-sm group-data-[collapsible=icon]:hidden">ELIGHT LMS</span>
+            <span className="font-headline text-white drop-shadow-sm group-data-[collapsible=icon]:hidden">Suraj S Kumara</span>
           </div>
         </SidebarHeader>
         <SidebarContent className="relative z-10 p-3 pt-6">
