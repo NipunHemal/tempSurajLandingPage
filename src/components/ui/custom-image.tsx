@@ -14,12 +14,12 @@ export default function CustomImage({
     src,
     alt,
     className,
-    fallbackSrc = '/placeholder-image.jpg', // You might need a real placeholder asset
+    fallbackSrc = '/placeholder.jpg', // Default to our new placeholder
     ...props
 }: CustomImageProps) {
     const [isLoading, setIsLoading] = useState(true);
     const [isError, setIsError] = useState(false);
-    const [imgSrc, setImgSrc] = useState(src);
+    const [imgSrc, setImgSrc] = useState(src || fallbackSrc);
 
     return (
         <div className="relative h-full w-full overflow-hidden">

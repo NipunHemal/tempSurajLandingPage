@@ -45,6 +45,7 @@ export default function ContentCard({
         <CardHeader className="relative p-0">
           <CustomImage
             src={imageUrl}
+            fallbackSrc="/placeholder.jpg"
             alt={title}
             width={600}
             height={400}
