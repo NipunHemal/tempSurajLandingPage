@@ -48,65 +48,80 @@ export default function MyClassesPage() {
 
   return (
     <>
-      <DashboardHeader title="My Classes" />
-      <main className="p-6 md:p-8 max-w-7xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight">Your Classes</h1>
-            <p className="text-muted-foreground mt-1">Manage and access your enrolled courses.</p>
-          </div>
-          <div className="relative w-full md:w-96">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground h-4 w-4" />
-            <Input
-              placeholder="Search your classes..."
-              className="h-11 w-full pl-10 rounded-xl bg-background border-border/60 focus-visible:ring-primary/20 transition-all shadow-sm focus:shadow-md"
-              value={searchTerm}
-              onChange={e => setSearchTerm(e.target.value)}
-            />
+      <main className="min-h-screen bg-background pb-12">
+        {/* Personal Hero Header */}
+        <div className="relative w-full bg-slate-900 border-b border-border/50 overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-r from-slate-900 to-slate-800 opacity-90" />
+          <div className="absolute inset-0 opacity-10 bg-[radial-gradient(#4b5563_1px,transparent_1px)] [background-size:16px_16px]" />
+
+          <div className="container mx-auto max-w-7xl px-6 py-8 relative z-10">
+            <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+              <div className="text-center md:text-left space-y-1">
+                <h1 className="text-2xl md:text-3xl font-bold text-white tracking-tight">
+                  Welcome Back
+                </h1>
+                <p className="text-slate-400 text-base">
+                  Track your progress and continue your journey.
+                </p>
+              </div>
+
+              <div className="w-full md:w-[400px] relative">
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 h-4 w-4" />
+                <Input
+                  placeholder="Filter your enrolled classes..."
+                  className="w-full h-11 pl-10 rounded-xl border-slate-700 bg-slate-800/50 text-white placeholder:text-slate-500 focus:bg-slate-800 focus:border-primary transition-all shadow-md text-sm"
+                  value={searchTerm}
+                  onChange={e => setSearchTerm(e.target.value)}
+                />
+              </div>
+            </div>
           </div>
         </div>
 
-        {/* Live Session Banner */}
-        {activeLiveSession && (
-          <div className="mb-8">
-            <LiveSessionBanner session={activeLiveSession} />
-          </div>
-        )}
+        <div className="container mx-auto max-w-7xl px-6 mt-10 animate-in fade-in slide-in-from-bottom-8 duration-700 delay-100">
 
-        {isLoading ? (
-          <div className="flex h-[50vh] items-center justify-center">
-            <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-          </div>
-        ) : isError ? (
-          <Alert variant="destructive">
-            <AlertTitle>Error</AlertTitle>
-            <AlertDescription>
-              {error?.message ||
-                'Failed to load your classes. Please try again later.'}
-            </AlertDescription>
-          </Alert>
-        ) : enrolledClasses.length === 0 ? (
-          <div className="flex h-[50vh] items-center justify-center rounded-md border-2 border-dashed">
-            <p className="text-muted-foreground">
-              You haven&apos;t enrolled in any classes yet.
-            </p>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
-            {enrolledClasses.map(card => (
-              <ContentCard
-                key={card.id}
-                title={card.name}
-                description={card.description}
-                link={`/dashboard/class/${card.id}`}
-                imageUrl={card.image}
-                imageHint="class" // Generic hint for dynamic images
-                price={card.price}
-                enrollmentStatus={card.enrollmentStatus}
-              />
-            ))}
-          </div>
-        )}
+          {/* Live Session Banner */}
+          {activeLiveSession && (
+            <div className="mb-8">
+              <LiveSessionBanner session={activeLiveSession} />
+            </div>
+          )}
+
+          {isLoading ? (
+            <div className="flex h-[50vh] items-center justify-center">
+              <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+            </div>
+          ) : isError ? (
+            <Alert variant="destructive">
+              <AlertTitle>Error</AlertTitle>
+              <AlertDescription>
+                {error?.message ||
+                  'Failed to load your classes. Please try again later.'}
+              </AlertDescription>
+            </Alert>
+          ) : enrolledClasses.length === 0 ? (
+            <div className="flex h-[50vh] items-center justify-center rounded-md border-2 border-dashed">
+              <p className="text-muted-foreground">
+                You haven&apos;t enrolled in any classes yet.
+              </p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
+              {enrolledClasses.map(card => (
+                <ContentCard
+                  key={card.id}
+                  title={card.name}
+                  description={card.description}
+                  link={`/dashboard/class/${card.id}`}
+                  imageUrl={card.image}
+                  imageHint="class" // Generic hint for dynamic images
+                  price={card.price}
+                  enrollmentStatus={card.enrollmentStatus}
+                />
+              ))}
+            </div>
+          )}
+        </div>
       </main>
     </>
   );
