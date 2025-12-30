@@ -4,6 +4,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
+import Image from 'next/image';
 import {
   Sidebar,
   SidebarContent,
@@ -41,21 +42,13 @@ export default function DashboardLayout({
       <Sidebar>
         <SidebarHeader className="h-16 items-center justify-center border-b">
           <div className="flex items-center gap-2 font-headline text-lg font-semibold">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="size-6 text-primary"
-            >
-              <path d="M12 3L2 9L12 15L22 9L12 3Z" />
-              <path d="M2 15L12 21L22 15" />
-              <path d="M2 9L12 15L22 9" />
-            </svg>
-            <span className="font-headline">ELIGHT LMS</span>
+            <Image
+              src="/logo.svg"
+              alt="Elight LMS Logo"
+              width={100}
+              height={40}
+              className="h-10 w-auto"
+            />
           </div>
         </SidebarHeader>
         <SidebarContent className="p-2">

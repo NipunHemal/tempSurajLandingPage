@@ -14,7 +14,7 @@ export default function CustomImage({
     src,
     alt,
     className,
-    fallbackSrc = '/placeholder-image.jpg', // You might need a real placeholder asset
+    fallbackSrc = '/placeholder.png', // Default to our new placeholder
     ...props
 }: CustomImageProps) {
     const [isLoading, setIsLoading] = useState(true);

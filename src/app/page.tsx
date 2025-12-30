@@ -134,7 +134,7 @@ export default function LandingPage() {
                   </SheetClose>
                   <SheetClose asChild>
                     <Button asChild className="w-full">
-                       <Link href="/login">Login</Link>
+                      <Link href="/login">Login</Link>
                     </Button>
                   </SheetClose>
                 </div>
@@ -161,6 +161,16 @@ export default function LandingPage() {
                 <Button size="lg" variant="outline" asChild>
                   <Link href="#">Explore Classes</Link>
                 </Button>
+              </div>
+              <div className="flex items-center gap-2 font-medium">
+                <div className="flex h-8 w-8 items-center justify-center rounded-md bg-transparent text-primary-foreground">
+                  <Image
+                    src="/logo.svg"
+                    alt="Elight LMS Logo"
+                    width={32}
+                    height={32}
+                  />
+                </div>
               </div>
             </div>
             <div className="relative mx-auto w-full max-w-md">
@@ -233,7 +243,7 @@ export default function LandingPage() {
         </Motion>
         <Motion as="section" id="process" className="w-full py-12 md:py-24 lg:py-32">
           <div className="container mx-auto px-4 md:px-6">
-             <div className="mx-auto max-w-3xl text-center">
+            <div className="mx-auto max-w-3xl text-center">
               <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl">
                 How We Build Results
               </h2>
@@ -297,7 +307,7 @@ export default function LandingPage() {
                   <BrainCircuit className="h-5 w-5 text-primary" />
                   <span>Specializes in STEM Subjects</span>
                 </li>
-                 <li className="flex items-center gap-2">
+                <li className="flex items-center gap-2">
                   <TrendingUp className="h-5 w-5 text-primary" />
                   <span>Proven Track Record of Student Success</span>
                 </li>
@@ -452,7 +462,7 @@ export default function LandingPage() {
       <footer className="w-full border-t bg-background">
         <div className="container mx-auto grid grid-cols-1 gap-8 px-4 py-12 text-center md:grid-cols-3 md:px-6 md:text-left">
           <div className="flex flex-col items-center md:items-start">
-             <Link
+            <Link
               href="#"
               className="mb-2 flex items-center gap-2 font-bold"
               prefetch={false}
@@ -465,7 +475,7 @@ export default function LandingPage() {
             </p>
           </div>
           <div className="flex flex-col items-center gap-2 md:items-start">
-             <h4 className="font-semibold">Quick Links</h4>
+            <h4 className="font-semibold">Quick Links</h4>
             <Link href="#" className="text-sm text-muted-foreground hover:underline" prefetch={false}>
               Classes
             </Link>
@@ -477,20 +487,20 @@ export default function LandingPage() {
             </Link>
           </div>
           <div className="flex flex-col items-center gap-2 md:items-start">
-             <h4 className="font-semibold">Connect with Us</h4>
+            <h4 className="font-semibold">Connect with Us</h4>
             <div className="flex gap-4">
-               <Link href="#" className="text-muted-foreground hover:text-foreground" prefetch={false}>
-                  <Facebook className="h-5 w-5" />
-                  <span className="sr-only">Facebook</span>
-               </Link>
-                <Link href="#" className="text-muted-foreground hover:text-foreground" prefetch={false}>
-                  <Twitter className="h-5 w-5" />
-                  <span className="sr-only">Twitter</span>
-               </Link>
-                <Link href="#" className="text-muted-foreground hover:text-foreground" prefetch={false}>
-                  <Linkedin className="h-5 w-5" />
-                  <span className="sr-only">LinkedIn</span>
-               </Link>
+              <Link href="#" className="text-muted-foreground hover:text-foreground" prefetch={false}>
+                <Facebook className="h-5 w-5" />
+                <span className="sr-only">Facebook</span>
+              </Link>
+              <Link href="#" className="text-muted-foreground hover:text-foreground" prefetch={false}>
+                <Twitter className="h-5 w-5" />
+                <span className="sr-only">Twitter</span>
+              </Link>
+              <Link href="#" className="text-muted-foreground hover:text-foreground" prefetch={false}>
+                <Linkedin className="h-5 w-5" />
+                <span className="sr-only">LinkedIn</span>
+              </Link>
             </div>
           </div>
         </div>
