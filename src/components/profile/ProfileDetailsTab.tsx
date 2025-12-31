@@ -1,4 +1,3 @@
-
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -8,19 +7,16 @@ import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Calendar } from '@/components/ui/calendar';
-import { CalendarIcon, Loader2 } from 'lucide-react';
-import { cn } from '@/lib/utils';
-import { format } from 'date-fns';
+import { Loader2 } from 'lucide-react';
 import { useEffect, useMemo } from 'react';
 import { useUpdateStudentProfile } from '@/service/query/useStudent';
 import { useMetaStore } from '@/store/meta.store';
-import { DynamicFormField, profileFormSchema } from './DynamicFormField';
+import { DynamicFormField } from './DynamicFormField';
 import { useAuthStore } from '@/store/auth.store';
+import { createProfileFormSchema, mapSubmissionData } from './utils/form-helpers';
 
-type ProfileFormValues = z.infer<typeof profileFormSchema>;
+type ProfileFormValues = z.infer<ReturnType<typeof createProfileFormSchema>>;
 
 export function ProfileDetailsTab() {
   const { user } = useAuthStore();
@@ -29,7 +25,7 @@ export function ProfileDetailsTab() {
 
   const { personalAndAcademicFields, contactFields, addressFields, guardianFields } = useMemo(() => {
     if (!meta) return { personalAndAcademicFields: [], contactFields: [], addressFields: [], guardianFields: [] };
-    
+
     const permanentFields = ['firstName', 'lastName', 'dob', 'gender', 'phoneNumber'];
     const allDynamicFields = meta.settings.STUDENT_PROFILE.fields.filter(
       (field) => field.isEnabled && !permanentFields.includes(field.fieldName)
@@ -48,9 +44,11 @@ export function ProfileDetailsTab() {
 
     return { personalAndAcademicFields, contactFields, addressFields, guardianFields };
   }, [meta]);
-  
+
+  const formSchema = useMemo(() => createProfileFormSchema(meta), [meta]);
+
   const form = useForm<ProfileFormValues>({
-    resolver: zodResolver(profileFormSchema),
+    resolver: zodResolver(formSchema),
     defaultValues: {
       firstName: '',
       lastName: '',
@@ -66,38 +64,50 @@ export function ProfileDetailsTab() {
   useEffect(() => {
     if (user?.student) {
       form.reset({
+        // Permanent fields
         firstName: user.student.firstName || '',
         lastName: user.student.lastName || '',
-        dob: user.student.dob ? new Date(user.student.dob) : undefined,
+        dob: user.student.dob ? user.student.dob.split('T')[0] : undefined,
         gender: user.student.gender as 'MALE' | 'FEMALE' | 'OTHER' | undefined,
         phoneNumber: user.phoneNumber || '',
-        whatsappNumber: user.whatsappNumber || '',
+
+        // Dynamic Personal & Academic fields
+        profilePicture: user.student.profilePicture || undefined,
         year: user.student.year ? Number(user.student.year) : undefined,
         nic: user.student.nic || '',
+        nicPic: user.student.nicPic || undefined,
+        alYear: user.student.alYear ? Number(user.student.alYear) : undefined,
+        olYear: user.student.olYear ? Number(user.student.olYear) : undefined,
+        stream: user.student.stream || undefined,
+        medium: user.student.medium || undefined,
+        school: user.student.school || '',
+        shySelect: user.student.shySelect ? Number(user.student.shySelect) : undefined,
+        instituteNumber: user.student.instituteNumber || '',
+        instituteCardImage: user.student.instituteCardImage || undefined,
+
+        // Dynamic Contact fields
+        whatsappNumber: user.whatsappNumber || '',
+        telegramNumber: user.student.telegramNumber || '',
+
+        // Dynamic Address fields
         homeAddress: user.student.homeAddress || '',
-        profilePicture: user.student.profilePicture || '',
-        nicPic: user.student.nicPic || '',
-        // Set other fields from the user object as they are added to the schema
+        deliveryAddress: user.student.deliveryAddress || '',
+        postalcode: user.student.postalcode || '',
+        city: user.student.city || '',
+        district: user.student.district || '',
+        province: user.student.province || '',
+        country: user.student.country || '',
+
+        // Dynamic Guardian fields
+        guardianName: user.student.guardianName || '',
+        relationship: user.student.relationship || '',
+        guardianContactNumber: user.student.guardianContactNumber || '',
       });
     }
-  }, [user, form.reset]);
+  }, [user, form]);
 
-  function onProfileSubmit(data: ProfileFormValues) {
-    const payload: Record<string, any> = {};
-    for (const key in data) {
-      const value = data[key as keyof typeof data];
-      
-      // We don't want to submit the preview URL, only the upload ID
-      if (key === 'profilePicture' || key === 'nicPic' || key === 'instituteCardImage') continue;
-
-      if (value !== undefined && value !== null && value !== '') {
-         if (key === 'dob' && value instanceof Date) {
-          payload[key] = format(value, 'yyyy-MM-dd');
-        } else {
-          payload[key] = value;
-        }
-      }
-    }
+  function onProfileSubmit(data: any) {
+    const payload = mapSubmissionData(data);
     updateProfile(payload);
   }
 
@@ -105,7 +115,7 @@ export function ProfileDetailsTab() {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onProfileSubmit)} className="space-y-8">
+      <form onSubmit={form.handleSubmit(onProfileSubmit, (e) => console.log(e))} className="space-y-8">
         <Card>
           <CardHeader>
             <CardTitle>Personal & Academic Information</CardTitle>
@@ -153,30 +163,11 @@ export function ProfileDetailsTab() {
                 control={form.control}
                 name="dob"
                 render={({ field }) => (
-                  <FormItem className="flex flex-col">
+                  <FormItem>
                     <FormLabel>Date of Birth *</FormLabel>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <FormControl>
-                          <Button
-                            variant={'outline'}
-                            className={cn('pl-3 text-left font-normal', !field.value && 'text-muted-foreground')}
-                          >
-                            {field.value ? format(field.value, 'PPP') : <span>Pick a date</span>}
-                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                          </Button>
-                        </FormControl>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0" align="start">
-                        <Calendar
-                          mode="single"
-                          selected={field.value}
-                          onSelect={field.onChange}
-                          disabled={(date) => date > new Date() || date < new Date('1900-01-01')}
-                          initialFocus
-                        />
-                      </PopoverContent>
-                    </Popover>
+                    <FormControl>
+                      <Input placeholder="YYYY-MM-DD" {...field} value={field.value || ''} />
+                    </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -187,7 +178,7 @@ export function ProfileDetailsTab() {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Gender *</FormLabel>
-                    <Select onValueChange={field.onChange} value={field.value} defaultValue={field.value}>
+                    <Select key={field.value} onValueChange={field.onChange} defaultValue={field.value}>
                       <FormControl>
                         <SelectTrigger>
                           <SelectValue placeholder="Select a gender" />

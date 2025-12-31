@@ -1,6 +1,6 @@
 export interface UploadImageParams {
   image: File;
-  type: 'profile' | 'nic' | 'class';
+  type: "profile" | "nic" | "class" | "institute_card_image" | "payment_slip";
 }
 
 export interface UploadImageResponse {

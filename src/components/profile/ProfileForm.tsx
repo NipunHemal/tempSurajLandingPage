@@ -1,4 +1,3 @@
-
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -8,19 +7,15 @@ import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Calendar } from '@/components/ui/calendar';
-import { CalendarIcon, Loader2 } from 'lucide-react';
-import { cn } from '@/lib/utils';
-import { format } from 'date-fns';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { AlertCircle, Loader2 } from 'lucide-react';
 import { useMemo } from 'react';
 import { useUpdateStudentProfile } from '@/service/query/useStudent';
 import { useMetaStore } from '@/store/meta.store';
 import { useRouter } from 'next/navigation';
-import { DynamicFormField, profileFormSchema } from './DynamicFormField';
-
-type ProfileFormValues = z.infer<typeof profileFormSchema>;
+import { DynamicFormField } from './DynamicFormField';
+import { createProfileFormSchema, mapSubmissionData } from './utils/form-helpers';
 
 export function ProfileForm() {
   const router = useRouter();
@@ -31,6 +26,8 @@ export function ProfileForm() {
   });
 
   const { meta } = useMetaStore();
+
+  const formSchema = useMemo(() => createProfileFormSchema(meta), [meta]);
 
   const { personalAndAcademicFields, contactFields, addressFields, guardianFields } = useMemo(() => {
     if (!meta) return { personalAndAcademicFields: [], contactFields: [], addressFields: [], guardianFields: [] };
@@ -54,8 +51,8 @@ export function ProfileForm() {
     return { personalAndAcademicFields, contactFields, addressFields, guardianFields };
   }, [meta]);
 
-  const form = useForm<ProfileFormValues>({
-    resolver: zodResolver(profileFormSchema),
+  const form = useForm<any>({
+    resolver: zodResolver(formSchema),
     defaultValues: {
       firstName: '',
       lastName: '',
@@ -68,26 +65,20 @@ export function ProfileForm() {
     },
   });
 
-  function onProfileSubmit(data: ProfileFormValues) {
-    const payload: Record<string, any> = {};
-    for (const key in data) {
-      const value = data[key as keyof typeof data];
-      if (value !== undefined && value !== null && value !== '') {
-        if (key === 'dob' && value instanceof Date) {
-          payload[key] = format(value, 'yyyy-MM-dd');
-        } else {
-          payload[key] = value;
-        }
-      }
-    }
+  function onProfileSubmit(data: any) {
+    const payload = mapSubmissionData(data);
+    // Explicit debug
+    console.log('Submitting Payload:', payload);
     updateProfile(payload);
   }
 
   const isSubmitting = form.formState.isSubmitting || isUpdatingProfile;
 
+  console.log('Form State Errors:', form.formState.errors);
+
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onProfileSubmit)} className="space-y-8">
+      <form onSubmit={form.handleSubmit(onProfileSubmit, (e) => console.error('Form Submission Error:', e))} className="space-y-8">
         <Card>
           <CardHeader>
             <CardTitle>Personal & Academic Information</CardTitle>
@@ -135,30 +126,11 @@ export function ProfileForm() {
                 control={form.control}
                 name="dob"
                 render={({ field }) => (
-                  <FormItem className="flex flex-col">
+                  <FormItem>
                     <FormLabel>Date of Birth *</FormLabel>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <FormControl>
-                          <Button
-                            variant={'outline'}
-                            className={cn('pl-3 text-left font-normal', !field.value && 'text-muted-foreground')}
-                          >
-                            {field.value ? format(field.value, 'PPP') : <span>Pick a date</span>}
-                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                          </Button>
-                        </FormControl>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0" align="start">
-                        <Calendar
-                          mode="single"
-                          selected={field.value}
-                          onSelect={field.onChange}
-                          disabled={(date) => date > new Date() || date < new Date('1900-01-01')}
-                          initialFocus
-                        />
-                      </PopoverContent>
-                    </Popover>
+                    <FormControl>
+                      <Input placeholder="YYYY-MM-DD" {...field} value={field.value || ''} />
+                    </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -169,7 +141,7 @@ export function ProfileForm() {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Gender *</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
+                    <Select key={field.value} onValueChange={field.onChange} defaultValue={field.value}>
                       <FormControl>
                         <SelectTrigger>
                           <SelectValue placeholder="Select a gender" />
@@ -246,6 +218,23 @@ export function ProfileForm() {
           </Card>
         )}
 
+        {Object.keys(form.formState.errors).length > 0 && (
+          <Alert variant="destructive" className="mt-4">
+            <AlertCircle className="h-4 w-4" />
+            <AlertTitle>Validation Error</AlertTitle>
+            <AlertDescription>
+              Please fix the following errors:
+              <ul className="list-disc pl-4 mt-2">
+                {Object.entries(form.formState.errors).map(([key, error]) => (
+                  <li key={key}>
+                    <span className="font-semibold capitalize">{key.replace(/([A-Z])/g, ' $1').trim()}:</span> {error?.message as string}
+                  </li>
+                ))}
+              </ul>
+            </AlertDescription>
+          </Alert>
+        )}
+
         <Button type="submit" className="w-full" disabled={isSubmitting}>
           {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
           {isSubmitting ? 'Saving...' : 'Save and Continue'}
@@ -254,3 +243,5 @@ export function ProfileForm() {
     </Form>
   );
 }
+
+

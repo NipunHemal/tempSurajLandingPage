@@ -1,5 +1,5 @@
 
-import Image from 'next/image';
+import CustomImage from '@/components/ui/custom-image';
 import Link from 'next/link';
 
 import {
@@ -29,13 +29,13 @@ export default function ModuleCard({
     <Link href={link} className="flex h-full">
       <Card className="flex w-full flex-col overflow-hidden transition-all hover:shadow-lg">
         <CardHeader className="relative p-0">
-          <Image
+          <CustomImage
             src={imageUrl}
             alt={title}
             width={600}
             height={400}
             className="aspect-[3/2] w-full object-cover"
-            data-ai-hint={imageHint}
+          // data-ai-hint={imageHint}
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
         </CardHeader>

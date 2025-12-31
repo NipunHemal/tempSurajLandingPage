@@ -1,4 +1,3 @@
-
 import { Institute } from "./api-institute-types";
 
 export interface LoginData {
@@ -12,17 +11,17 @@ export interface RegisterData {
 }
 
 export interface UpdateProfileData {
-    firstName: string;
-    lastName: string;
-    profilePicture?: string;
+  firstName: string;
+  lastName: string;
+  profilePicture?: string;
 }
 
 export interface EmailChangeData {
-    newEmail: string;
+  newEmail: string;
 }
 
 export interface EmailChangeCodeData {
-    code: string;
+  code: string;
 }
 
 export interface PasswordResetRequestData {
@@ -36,12 +35,13 @@ export interface ResetPasswordData {
 }
 
 export interface StudentData {
+  id: string;
   firstName: string | null;
   lastName: string | null;
   dob: string | null;
   gender: string | null;
   profilePicture: string | null;
-  year: string | null;
+  year: number | string | null;
   nic: string | null;
   nicPic: string | null;
   homeAddress: string | null;
@@ -54,6 +54,26 @@ export interface StudentData {
   createdAt: string;
   updatedAt: string;
   institute: Institute | null;
+  alYear: number | null;
+  olYear: number | null;
+  stream: string | null;
+  medium: string | null;
+  school: string | null;
+  telegramNumber: string | null;
+  shySelect: number | null;
+  instituteNumber: string | null;
+  instituteCardImage: string | null;
+  postalcode: string | null;
+  district: string | null;
+  city: string | null;
+  province: string | null;
+  country: string | null;
+  deliveryAddress: string | null;
+  guardianName: string | null;
+  relationship: string | null;
+  guardianContactNumber: string | null;
+  instituteId: string | null;
+  instituteName: string | null;
 }
 
 export interface UserProfileData {

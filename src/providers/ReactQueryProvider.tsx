@@ -56,9 +56,9 @@ const AuthInitializer = ({ children }: { children: React.ReactNode }) => {
   const isPublicPage = pathname === '/' || isAuthPage;
 
   if (!isClient) {
-    return null; 
+    return null;
   }
-  
+
   if (isLoading && hasToken && !isPublicPage) {
     return (
       <div className="flex h-screen w-full items-center justify-center bg-background">

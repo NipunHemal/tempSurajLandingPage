@@ -4,6 +4,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
+import Image from 'next/image';
 import {
   Sidebar,
   SidebarContent,
@@ -22,6 +23,8 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import { useAuthStore } from '@/store/auth.store';
 import { Hourglass } from 'lucide-react';
 import ApprovalBanner from '@/components/alerts/ApprovalBanner';
+import AnnouncementManager from '@/components/announcement/announcement-manager';
+import GlobalLiveAlert from '@/components/live-session/global-live-alert';
 
 export default function DashboardLayout({
   children,
@@ -39,58 +42,51 @@ export default function DashboardLayout({
       <Sidebar>
         <SidebarHeader className="h-16 items-center justify-center border-b">
           <div className="flex items-center gap-2 font-headline text-lg font-semibold">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="size-6 text-primary"
-            >
-              <path d="M12 3L2 9L12 15L22 9L12 3Z" />
-              <path d="M2 15L12 21L22 15" />
-              <path d="M2 9L12 15L22 9" />
-            </svg>
-            <span className="font-headline">ELIGHT LMS</span>
+            <Image
+              src="/logo.svg"
+              alt="Elight LMS Logo"
+              width={100}
+              height={40}
+              className="h-10 w-auto"
+            />
           </div>
         </SidebarHeader>
         <SidebarContent className="p-2">
           <SidebarMenu>
             {mainNav.map((item, index) => {
               const isActive = item.href === '/dashboard'
-                  ? pathname === item.href
-                  : !!(item.href && pathname.startsWith(item.href));
-              
+                ? pathname === item.href
+                : !!(item.href && pathname.startsWith(item.href));
+
               return (
-              <SidebarMenuItem key={index}>
-                <SidebarMenuButton
-                  asChild
-                  isActive={isActive}
-                  tooltip={item.tooltip}
-                >
-                  <Link href={item.href || '#'}>
-                    <item.icon />
-                    {item.label}
-                  </Link>
-                </SidebarMenuButton>
-                {item.badge && (
-                   <SidebarMenuBadge className="h-5 w-5 justify-center rounded-full bg-destructive text-destructive-foreground">
-                    {item.badge}
-                  </SidebarMenuBadge>
-                )}
-              </SidebarMenuItem>
-            )})}
+                <SidebarMenuItem key={index}>
+                  <SidebarMenuButton
+                    asChild
+                    isActive={isActive}
+                    tooltip={item.tooltip}
+                  >
+                    <Link href={item.href || '#'}>
+                      <item.icon />
+                      {item.label}
+                    </Link>
+                  </SidebarMenuButton>
+                  {item.badge && (
+                    <SidebarMenuBadge className="h-5 w-5 justify-center rounded-full bg-destructive text-destructive-foreground">
+                      {item.badge}
+                    </SidebarMenuBadge>
+                  )}
+                </SidebarMenuItem>
+              )
+            })}
           </SidebarMenu>
         </SidebarContent>
         <SidebarFooter className="p-2">
           <SidebarMenu>
             {footerNav.map((item, index) => (
               <SidebarMenuItem key={index}>
-                 <SidebarMenuButton
+                <SidebarMenuButton
                   asChild
-                  isActive={!!(item.href && pathname.startsWith(item.href))} 
+                  isActive={!!(item.href && pathname.startsWith(item.href))}
                   tooltip={item.tooltip}
                 >
                   <Link href={item.href || '#'}>
@@ -104,6 +100,8 @@ export default function DashboardLayout({
         </SidebarFooter>
       </Sidebar>
       <SidebarInset className={isMobile ? 'pb-20' : ''}>
+        <GlobalLiveAlert />
+        <AnnouncementManager />
         {isPendingApproval && <ApprovalBanner />}
         {children}
       </SidebarInset>

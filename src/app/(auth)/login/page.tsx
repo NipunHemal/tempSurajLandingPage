@@ -1,3 +1,4 @@
+
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -5,6 +6,7 @@ import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 import Link from 'next/link';
 import { useLogin } from '@/service/query/useAuth';
+import { useState } from 'react';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -17,7 +19,7 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Eye, EyeOff } from 'lucide-react';
 
 const formSchema = z.object({
   email: z.string().email({ message: 'Invalid email address.' }),
@@ -26,6 +28,7 @@ const formSchema = z.object({
 
 export default function LoginPage() {
   const { mutate: login, isPending } = useLogin();
+  const [showPassword, setShowPassword] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -38,7 +41,7 @@ export default function LoginPage() {
   function onSubmit(values: z.infer<typeof formSchema>) {
     login(values);
   }
-  
+
   const GoogleIcon = () => (
     <svg className="mr-2 h-4 w-4" viewBox="0 0 48 48">
       <path
@@ -69,10 +72,13 @@ export default function LoginPage() {
         </p>
       </div>
 
-      <Button variant="outline" className="w-full">
-        <GoogleIcon />
-        Login with Google
-      </Button>
+      <Link href={`${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/google/initiate?role=STUDENT`} className="mb-8 text-center">
+        <Button variant="outline" className="w-full">
+          <GoogleIcon />
+          Login with Google
+        </Button>
+      </Link>
+
 
       <div className="my-4 flex items-center">
         <Separator className="flex-1" />
@@ -111,7 +117,21 @@ export default function LoginPage() {
                   </Link>
                 </div>
                 <FormControl>
-                  <Input type="password" {...field} />
+                  <div className="relative">
+                    <Input
+                      type={showPassword ? 'text' : 'password'}
+                      {...field}
+                    />
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      className="absolute right-1 top-1/2 h-7 w-7 -translate-y-1/2 text-muted-foreground"
+                      onClick={() => setShowPassword(prev => !prev)}
+                    >
+                      {showPassword ? <EyeOff /> : <Eye />}
+                    </Button>
+                  </div>
                 </FormControl>
                 <FormMessage />
               </FormItem>

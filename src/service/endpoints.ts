@@ -29,11 +29,29 @@ export const ENDPOINTS = {
   },
   modules: {
     getByClass: `/modules`,
+    getById: (moduleId: string) => `/modules/${moduleId}`,
+    resources: (moduleId: string) => `/resources/module/${moduleId}`,
+  },
+  resources: {
+    getByClassAndMonth: (classId: string, month: string) =>
+      `/resources/class/${classId}/months/${month}`,
   },
   payments: {
     create: `/payments`,
+    getAll: `/payments`,
+    history: (studentId: string, classId: string) =>
+      `/payments/history/${studentId}/${classId}`,
   },
   enrollments: {
     enroll: `/enrollments`,
-  }
+  },
+  announcements: {
+    getAll: `/announcements`,
+    markViewed: (id: string) => `/announcements/${id}/view`,
+  },
+  liveSessions: {
+    getAll: `/live-sessions`,
+    getById: (id: string) => `/live-sessions/${id}`,
+    getMySessions: (classId: string) => `/class/${classId}/my-sessions`,
+  },
 };
