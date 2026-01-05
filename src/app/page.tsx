@@ -53,13 +53,27 @@ import {
 import Image from 'next/image';
 import Link from 'next/link';
 import { Motion } from '@/components/animation/motion';
-import SurajImg from '@/assets/Suraj.png';
+import { HeroAlbum } from '@/components/sections/hero-album';
 
 export default function LandingPage() {
     return (
         <div className="flex min-h-screen flex-col bg-background text-foreground selection:bg-primary selection:text-primary-foreground">
+            {/* Global Background Elements */}
+            <div className="fixed inset-0 -z-20 overflow-hidden pointer-events-none">
+                {/* Radial Dot Pattern - Refined: Denser and slightly larger dots */}
+                <div className="absolute inset-0 opacity-[0.08] bg-[radial-gradient(hsl(var(--primary))_1.5px,transparent_1.5px)] [background-size:16px_16px]" />
+
+                {/* Subtle Vector Icons (Dashboard Style) */}
+                <svg className="absolute -right-20 top-[10%] text-primary/5 h-[600px] w-[600px] rotate-12" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="0.5" strokeLinecap="round" strokeLinejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z" /><path d="M6 12v5c3 3 9 3 12 0v-5" /></svg>
+                <svg className="absolute -left-20 top-[40%] text-primary/5 h-[600px] w-[600px] -rotate-12" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="0.5" strokeLinecap="round" strokeLinejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20" /></svg>
+                <svg className="absolute right-[10%] bottom-[5%] text-primary/5 h-[500px] w-[500px] rotate-45" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="0.5" strokeLinecap="round" strokeLinejoin="round"><path d="m18 16 4-4-4-4" /><path d="m6 8-4 4 4 4" /><path d="m14.5 4-5 16" /></svg>
+            </div>
+
             {/* Dynamic Glass Header */}
-            <header className="sticky top-0 z-[100] w-full border-b bg-background/80 px-4 backdrop-blur-md md:px-6">
+            <header className="sticky top-0 z-[100] w-full border-b bg-background/80 backdrop-blur-md px-4 md:px-6 overflow-hidden">
+                {/* Header Branding Dots - Refined Sync */}
+                <div className="absolute inset-0 -z-10 opacity-[0.06] bg-[radial-gradient(hsl(var(--primary))_1.5px,transparent_1.5px)] [background-size:16px_16px]" />
+
                 <div className="container mx-auto flex h-20 items-center justify-between">
                     <Link
                         href="/"
@@ -118,12 +132,10 @@ export default function LandingPage() {
             <main className="flex-1">
                 {/* Premium Hero Section */}
                 <section className="relative overflow-hidden pt-10 pb-20 md:pt-14 md:pb-40 lg:pt-16 lg:pb-52">
-                    {/* Main Background with Tech Grid & Dashboard Circles */}
+                    {/* Main Background with Tech Grid */}
                     <div className="absolute inset-0 -z-10 overflow-hidden">
                         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-[1000px] w-[1000px] bg-primary/5 rounded-full blur-3xl opacity-50" />
                         <div className="absolute inset-0 tech-grid opacity-20" />
-                        {/* Dashboard-style Circle Pattern */}
-                        <div className="absolute inset-0 opacity-[0.12] bg-[radial-gradient(hsl(var(--primary))_1.25px,transparent_1.25px)] [background-size:24px_24px]" />
                         <div className="absolute -top-24 -right-24 h-96 w-96 bg-primary/10 rounded-full blur-3xl text-primary" />
                     </div>
 
@@ -140,7 +152,17 @@ export default function LandingPage() {
 
                                 <h1 className="text-5xl font-extrabold tracking-tight sm:text-6xl md:text-7xl lg:text-8xl bg-clip-text text-transparent bg-gradient-to-b from-foreground to-foreground/60 leading-[1.1]">
                                     Master ICT <br />
-                                    <span className="text-primary italic relative underline underline-offset-8 decoration-primary/40">Properly.</span>
+                                    <span className="text-primary italic relative inline-block group/text">
+                                        Properly.
+                                        <div className="absolute -bottom-3 left-0 w-full h-[6px]">
+                                            <svg className="w-full h-full text-primary" viewBox="0 0 100 10" preserveAspectRatio="none">
+                                                {/* Main bold stroke */}
+                                                <path d="M0,5 Q50,8 100,5" stroke="currentColor" strokeWidth="4" fill="transparent" strokeLinecap="round" />
+                                                {/* Tapered secondary stroke for depth */}
+                                                <path d="M5,9 Q50,12 95,9" stroke="currentColor" strokeWidth="1.5" fill="transparent" strokeLinecap="round" opacity="0.3" />
+                                            </svg>
+                                        </div>
+                                    </span>
                                 </h1>
 
                                 <p className="max-w-[600px] text-lg text-muted-foreground md:text-xl leading-relaxed">
@@ -186,22 +208,9 @@ export default function LandingPage() {
                                     delay: 0.3,
                                     ease: [0.16, 1, 0.3, 1]
                                 }}
-                                className="relative mx-auto mt-12 lg:mt-0 w-full max-w-2xl group flex justify-center items-center"
+                                className="relative mx-auto mt-12 lg:mt-0 w-full max-w-2xl group flex justify-center items-center h-[600px]" // Added fixed height for stability
                             >
-                                {/* Background Glow & Rings */}
-                                <div className="absolute h-[90%] w-[90%] bg-primary/20 rounded-full blur-[120px] opacity-40 animate-pulse-slow" />
-                                <div className="absolute h-[110%] w-[110%] border-2 border-primary/5 rounded-full animate-[spin_20s_linear_infinite]" />
-                                <div className="absolute h-[80%] w-[80%] border border-primary/10 rounded-full animate-[spin_15s_linear_infinite_reverse]" />
-
-                                <div className="relative z-10 w-[95%] md:w-[85%] aspect-[3/4]">
-                                    <Image
-                                        src={SurajImg}
-                                        alt="Suraj S Kumara"
-                                        fill
-                                        className="object-contain transition-transform duration-1000 group-hover:scale-[1.02] drop-shadow-[0_0_50px_rgba(250,187,9,0.2)]"
-                                        priority
-                                    />
-                                </div>
+                                <HeroAlbum />
 
                                 {/* HUD Elements */}
                                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-full w-full pointer-events-none z-20">
@@ -431,10 +440,10 @@ export default function LandingPage() {
                                 Enroll now for the 2026 Batch and secure your path to a top university. Limited seats available for physical & online sessions.
                             </p>
                             <div className="flex flex-col sm:flex-row gap-6 justify-center pt-8">
-                                <Button size="lg" className="h-16 px-12 text-xl font-black bg-background text-primary hover:bg-background/90 rounded-3xl" asChild>
+                                <Button size="lg" className="h-16 px-12 text-xl font-black bg-background text-primary hover:bg-background/90 rounded-3xl shadow-xl shadow-black/10 transition-transform hover:scale-105" asChild>
                                     <Link href="/register">Create Your Account</Link>
                                 </Button>
-                                <Button size="lg" variant="outline" className="h-16 px-12 text-xl font-black border-4 border-primary-foreground/20 hover:bg-primary-foreground/10 text-primary-foreground rounded-3xl" asChild>
+                                <Button size="lg" className="h-16 px-12 text-xl font-black bg-background/20 backdrop-blur-md border-2 border-background text-background hover:bg-background hover:text-primary rounded-3xl transition-all hover:scale-105" asChild>
                                     <Link href="/contact">Speak with a Consultant</Link>
                                 </Button>
                             </div>

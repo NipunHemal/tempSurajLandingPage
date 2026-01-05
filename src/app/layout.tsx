@@ -5,7 +5,7 @@ import { Toaster } from 'sonner';
 import { ThemeProvider } from '@/components/theme-provider';
 import { ReactQueryProvider } from '@/providers/ReactQueryProvider';
 
-const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
+const inter = Inter({ subsets: ['latin'], variable: '--font-inter', preload: false });
 
 export const metadata: Metadata = {
   title: 'Suraj S Kumara | ICT Academy',
