@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -12,8 +12,6 @@ import {
     Users,
     Award,
     Code2,
-    Cpu,
-    Globe,
     ChevronRight,
     ArrowRight,
     CheckCircle2

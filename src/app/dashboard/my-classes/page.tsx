@@ -1,19 +1,18 @@
 'use client';
 
-import { Search, Loader2 } from 'lucide-react';
-import React, { useState } from 'react';
-import { useDebounce } from 'use-debounce';
-
 import DashboardHeader from '@/components/dashboard-header';
 import ContentCard from '@/components/content-card';
-import { Input } from '@/components/ui/input';
-import { useGetClasses } from '@/service/query/useClass';
+import { useGetClasses } from '@/service/query/useGetClasses';
+import { useGetLiveSessions } from '@/service/query/useGetLiveSessions';
+import { useAuthStore } from '@/store/auth.store';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { useGetLiveSessions } from '@/service/query/useLiveSession';
+import { Loader2, Search } from 'lucide-react';
+import { useDebounce } from 'use-debounce';
+import React, { useState } from 'react';
 import { LiveSessionStatus } from '@/types/live-session.types';
 import LiveSessionBanner from '@/components/live-session/live-session-banner';
 import { subMinutes } from 'date-fns';
-import { useAuthStore } from '@/store/auth.store';
+import { Input } from '@/components/ui/input';
 
 export default function MyClassesPage() {
   const { user } = useAuthStore();
