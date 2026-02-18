@@ -1,0 +1,22 @@
+
+> nextn@0.1.0 typecheck
+> tsc --noEmit
+
+src/app/dashboard/class/[id]/lesson/[lessonId]/page.tsx(189,16): error TS2741: Property 'href' is missing in type '{ children: Element; asChild: true; }' but required in type '{ asChild?: boolean | undefined; href: string; }'.
+src/app/dashboard/class/[id]/lesson/[lessonId]/page.tsx(196,16): error TS2741: Property 'href' is missing in type '{ children: Element; asChild: true; }' but required in type '{ asChild?: boolean | undefined; href: string; }'.
+src/components/animation/motion.tsx(15,19): error TS2344: Type 'T' does not satisfy the constraint 'keyof HTMLElements'.
+  Type 'ElementType' is not assignable to type 'keyof HTMLElements'.
+    Type '"symbol"' is not assignable to type 'keyof HTMLElements'.
+src/components/animation/motion.tsx(35,37): error TS2344: Type 'T' does not satisfy the constraint 'keyof HTMLElements'.
+  Type 'ElementType' is not assignable to type 'keyof HTMLElements'.
+    Type '"symbol"' is not assignable to type 'keyof HTMLElements'.
+src/components/animation/motion.tsx(38,21): error TS2352: Conversion of type 'ComponentType<MotionComponentProps<any>>' to type 'MotionComponent<T>' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
+  Type 'FunctionComponent<MotionComponentProps<any>>' is not comparable to type 'MotionComponent<T>'.
+    Property '$$typeof' is missing in type 'FunctionComponent<MotionComponentProps<any>>' but required in type '{ readonly $$typeof: symbol; }'.
+src/components/animation/motion.tsx(41,6): error TS2322: Type '{ initial?: boolean | MakeCustomValueType<TargetProperties> | VariantLabels | undefined; animate: boolean | VariantLabels | AnimationControls | TargetAndTransition; ... 4 more ...; className: string | undefined; } & Omit<...> & { ...; }' is not assignable to type 'IntrinsicAttributes & PropsWithoutRef<HTMLMotionProps<T>> & RefAttributes<HTMLElement>'.
+  Type '{ initial?: boolean | MakeCustomValueType<TargetProperties> | VariantLabels | undefined; animate: boolean | VariantLabels | AnimationControls | TargetAndTransition; ... 4 more ...; className: string | undefined; } & Omit<...> & { ...; }' is not assignable to type 'PropsWithoutRef<HTMLMotionProps<T>>'.
+src/lib/placeholder-images.ts(10,14): error TS2322: Type '({ id: string; description: string; imageUrl: string; imageHint: string; } | { id: string; imageUrl: string; imageHint: string; description?: undefined; })[]' is not assignable to type 'ImagePlaceholder[]'.
+  Type '{ id: string; description: string; imageUrl: string; imageHint: string; } | { id: string; imageUrl: string; imageHint: string; description?: undefined; }' is not assignable to type 'ImagePlaceholder'.
+    Type '{ id: string; imageUrl: string; imageHint: string; description?: undefined; }' is not assignable to type 'ImagePlaceholder'.
+      Types of property 'description' are incompatible.
+        Type 'undefined' is not assignable to type 'string'.

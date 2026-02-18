@@ -20,7 +20,7 @@ export function middleware(request: NextRequest) {
   );
 
   // Allow access to complete-profile page even if profile is not complete
-  if (pathname.startsWith('/complete-profile')) {
+  if (pathname.startsWith('/complete-profile')) { 
     if (!accessToken) {
        return NextResponse.redirect(new URL("/login", request.url));
     }

@@ -8,6 +8,7 @@ import Image from 'next/image';
 import DashboardHeader from '@/components/dashboard-header';
 import ContentCard from '@/components/content-card';
 import { Input } from '@/components/ui/input';
+import { useAuthStore } from '@/store/auth.store';
 import { useGetClasses } from '@/service/query/useClass';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { useGetLiveSessions } from '@/service/query/useLiveSession';
@@ -16,6 +17,7 @@ import LiveSessionBanner from '@/components/live-session/live-session-banner';
 import { subMinutes } from 'date-fns';
 
 export default function ClassPage() {
+  const { user } = useAuthStore();
   const [searchTerm, setSearchTerm] = useState('');
   const [debouncedSearchTerm] = useDebounce(searchTerm, 300);
 

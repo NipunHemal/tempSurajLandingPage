@@ -33,27 +33,31 @@ import { useGetClassById } from '@/service/query/useClass';
 
 // Mock data, to be replaced by API calls
 const mockLessonData = {
-    '1-1': {
-        id: '1-1',
-        title: 'The Fertile Crescent', 
-        longDescription: 'This lesson explores the geographical and environmental factors of the Fertile Crescent that gave rise to the world\'s first agricultural societies. We will examine how the domestication of plants and animals transformed human life and led to the establishment of permanent settlements.',
-        bannerImage: 'https://images.unsplash.com/photo-1600023062179-6c6b954698cd?ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxhbmNpZW50JTIwcnVpbnN8ZW58MHx8fHwxNzYyMzIxNzI5fDA&w=1080&q=80',
-        bannerImageHint: 'babylon ruins',
-        content: [
-          { week: '1st Week', progress: 75, items: [
-            { type: 'video', title: 'Lecture: The Neolithic Revolution', duration: '15:23', link: '#' },
-            { type: 'reading', title: 'Chapter 1: Dawn of Agriculture', duration: '25 min read', link: '#' },
-            { type: 'exam', title: 'Exam 1: Early Settlements', duration: '10 Questions', link: '#' }
-          ]},
-          { week: '2nd Week', progress: 25, items: [
-            { type: 'video', title: 'Video: Cuneiform and Early Writing', duration: '12:45', link: '#'},
-            { type: 'reading', title: 'Article: The Code of Ur-Nammu', duration: '15 min read', link: '#'}
-          ]},
-          { week: '3rd Week', progress: 0, items: [] },
-          { week: '4th Week', progress: 0, items: [] },
+  '1-1': {
+    id: '1-1',
+    title: 'The Fertile Crescent',
+    longDescription: 'This lesson explores the geographical and environmental factors of the Fertile Crescent that gave rise to the world\'s first agricultural societies. We will examine how the domestication of plants and animals transformed human life and led to the establishment of permanent settlements.',
+    bannerImage: 'https://images.unsplash.com/photo-1600023062179-6c6b954698cd?ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxhbmNpZW50JTIwcnVpbnN8ZW58MHx8fHwxNzYyMzIxNzI5fDA&w=1080&q=80',
+    bannerImageHint: 'babylon ruins',
+    content: [
+      {
+        week: '1st Week', progress: 75, items: [
+          { type: 'video', title: 'Lecture: The Neolithic Revolution', duration: '15:23', link: '#' },
+          { type: 'reading', title: 'Chapter 1: Dawn of Agriculture', duration: '25 min read', link: '#' },
+          { type: 'exam', title: 'Exam 1: Early Settlements', duration: '10 Questions', link: '#' }
         ]
-    }
-    // Add other lesson details here...
+      },
+      {
+        week: '2nd Week', progress: 25, items: [
+          { type: 'video', title: 'Video: Cuneiform and Early Writing', duration: '12:45', link: '#' },
+          { type: 'reading', title: 'Article: The Code of Ur-Nammu', duration: '15 min read', link: '#' }
+        ]
+      },
+      { week: '3rd Week', progress: 0, items: [] },
+      { week: '4th Week', progress: 0, items: [] },
+    ]
+  }
+  // Add other lesson details here...
 }
 
 
@@ -71,12 +75,12 @@ export default function LessonDetailPage() {
 
   if (!details || !lesson) {
     return (
-        <>
-            <DashboardHeader title="Lesson Not Found" />
-            <main className="flex flex-1 items-center justify-center">
-                <p>The lesson you are looking for does not exist.</p>
-            </main>
-        </>
+      <>
+        <DashboardHeader title="Lesson Not Found" />
+        <main className="flex flex-1 items-center justify-center">
+          <p>The lesson you are looking for does not exist.</p>
+        </main>
+      </>
     );
   }
 
@@ -101,7 +105,7 @@ export default function LessonDetailPage() {
   const handleFilter = (type: string) => {
     setFilter(prevFilter => (prevFilter === type ? null : type));
   };
-  
+
   const weeklyContent = useMemo(() => {
     const baseContent = lesson.content;
 
@@ -127,57 +131,57 @@ export default function LessonDetailPage() {
   const needsToPay = details.enrollmentStatus === 'ENROLLED' && details.price > 0 && !hasPaid;
 
   const renderContentItem = (item: any, itemIndex: number) => {
-     const isFreeItem = itemIndex === 0; // Let's assume the first item of each week is free
+    const isFreeItem = itemIndex === 0; // Let's assume the first item of each week is free
 
-     if (needsToPay && !isFreeItem) {
-        return (
-             <li key={itemIndex} className="flex items-center justify-between rounded-md border p-4 opacity-50">
-                <div className="flex items-center gap-4">
-                    {getContentTypeIcon(item.type)}
-                    <div>
-                        <p className="font-semibold">{item.title}</p>
-                        <p className="text-sm text-muted-foreground">{item.type.charAt(0).toUpperCase() + item.type.slice(1)}</p>
-                    </div>
-                </div>
-                <div className="flex items-center gap-4">
-                    <span className="text-sm text-muted-foreground">{item.duration}</span>
-                     <PaymentDialog classId={details.id} amount={details.price}>
-                        <Button size="sm">Pay to Unlock</Button>
-                    </PaymentDialog>
-                </div>
-            </li>
-        )
-     }
-
-     return (
-        <li key={itemIndex} className="flex items-center justify-between rounded-md border p-4">
-            <div className="flex items-center gap-4">
+    if (needsToPay && !isFreeItem) {
+      return (
+        <li key={itemIndex} className="flex items-center justify-between rounded-md border p-4 opacity-50">
+          <div className="flex items-center gap-4">
             {getContentTypeIcon(item.type)}
             <div>
-                <p className="font-semibold">{item.title}</p>
-                <p className="text-sm text-muted-foreground">{item.type.charAt(0).toUpperCase() + item.type.slice(1)}</p>
+              <p className="font-semibold">{item.title}</p>
+              <p className="text-sm text-muted-foreground">{item.type.charAt(0).toUpperCase() + item.type.slice(1)}</p>
             </div>
-            </div>
-            <div className="flex items-center gap-4">
+          </div>
+          <div className="flex items-center gap-4">
             <span className="text-sm text-muted-foreground">{item.duration}</span>
-            {item.type === 'video' ? (
-                <Button asChild variant="ghost" size="sm">
-                <Link href={item.link}>
-                    <PlayCircle className="mr-2" />
-                    Watch
-                </Link>
-                </Button>
-            ) : (
-                <Button asChild variant="ghost" size="sm">
-                <Link href={item.link}>
-                    <Download className="mr-2" />
-                    Download
-                </Link>
-                </Button>
-            )}
-            </div>
+            <PaymentDialog classId={details.id} amount={details.price}>
+              <Button size="sm">Pay to Unlock</Button>
+            </PaymentDialog>
+          </div>
         </li>
-     )
+      )
+    }
+
+    return (
+      <li key={itemIndex} className="flex items-center justify-between rounded-md border p-4">
+        <div className="flex items-center gap-4">
+          {getContentTypeIcon(item.type)}
+          <div>
+            <p className="font-semibold">{item.title}</p>
+            <p className="text-sm text-muted-foreground">{item.type.charAt(0).toUpperCase() + item.type.slice(1)}</p>
+          </div>
+        </div>
+        <div className="flex items-center gap-4">
+          <span className="text-sm text-muted-foreground">{item.duration}</span>
+          {item.type === 'video' ? (
+            <Button asChild variant="ghost" size="sm">
+              <Link href={item.link}>
+                <PlayCircle className="mr-2" />
+                Watch
+              </Link>
+            </Button>
+          ) : (
+            <Button asChild variant="ghost" size="sm">
+              <Link href={item.link}>
+                <Download className="mr-2" />
+                Download
+              </Link>
+            </Button>
+          )}
+        </div>
+      </li>
+    )
   }
 
   return (
@@ -186,14 +190,14 @@ export default function LessonDetailPage() {
         <Breadcrumb>
           <BreadcrumbList>
             <BreadcrumbItem>
-              <BreadcrumbLink asChild>
+              <BreadcrumbLink asChild href="/dashboard/class">
                 <Link href="/dashboard/class">Classes</Link>
               </BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
-               {/* This should eventually link to the module page */}
-              <BreadcrumbLink asChild>
+              {/* This should eventually link to the module page */}
+              <BreadcrumbLink asChild href={`/dashboard/class/${classId}`}>
                 <Link href={`/dashboard/class/${classId}`}>{details.name}</Link>
               </BreadcrumbLink>
             </BreadcrumbItem>
@@ -226,28 +230,28 @@ export default function LessonDetailPage() {
             </p>
 
             <div className="mb-8 flex gap-2">
-               <Button 
+              <Button
                 variant={filter === 'video' ? 'default' : 'outline'}
                 className={filter !== 'video' ? 'bg-background' : ''}
                 onClick={() => handleFilter('video')}>
                 <PlayCircle className="mr-2" />
                 Videos
               </Button>
-              <Button 
+              <Button
                 variant={filter === 'resource' ? 'default' : 'outline'}
                 className={filter !== 'resource' ? 'bg-background' : ''}
                 onClick={() => handleFilter('resource')}>
                 <FileText className="mr-2" />
                 Resources
               </Button>
-              <Button 
+              <Button
                 variant={filter === 'assignment' ? 'default' : 'outline'}
                 className={filter !== 'assignment' ? 'bg-background' : ''}
                 onClick={() => handleFilter('assignment')}>
                 <BookCheck className="mr-2" />
                 Assignments
               </Button>
-              <Button 
+              <Button
                 variant={filter === 'exam' ? 'default' : 'outline'}
                 className={filter !== 'exam' ? 'bg-background' : ''}
                 onClick={() => handleFilter('exam')}>
@@ -262,11 +266,11 @@ export default function LessonDetailPage() {
                   <AccordionTrigger className="px-4 text-lg font-semibold text-green-900 hover:no-underline">
                     <div className="flex w-full items-center gap-4">
                       <div className="relative h-10 w-10">
-                          <svg className="size-full" width="36" height="36" viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg">
-                              <circle cx="18" cy="18" r="16" fill="none" className="stroke-current text-green-200" strokeWidth="2"></circle>
-                              <circle cx="18" cy="18" r="16" fill="none" className="stroke-current text-green-600" strokeWidth="2" strokeDasharray={`${week.progress * 100.5 / 100} 100.5`}  strokeDashoffset="0" transform="rotate(-90 18 18)"></circle>
-                          </svg>
-                          <span className="absolute inset-0 flex items-center justify-center text-xs font-bold">{week.progress}%</span>
+                        <svg className="size-full" width="36" height="36" viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg">
+                          <circle cx="18" cy="18" r="16" fill="none" className="stroke-current text-green-200" strokeWidth="2"></circle>
+                          <circle cx="18" cy="18" r="16" fill="none" className="stroke-current text-green-600" strokeWidth="2" strokeDasharray={`${week.progress * 100.5 / 100} 100.5`} strokeDashoffset="0" transform="rotate(-90 18 18)"></circle>
+                        </svg>
+                        <span className="absolute inset-0 flex items-center justify-center text-xs font-bold">{week.progress}%</span>
                       </div>
                       <span className="flex-1 text-left">{week.week}</span>
                     </div>

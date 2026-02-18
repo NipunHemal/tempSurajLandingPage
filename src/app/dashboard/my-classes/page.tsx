@@ -13,8 +13,10 @@ import { useGetLiveSessions } from '@/service/query/useLiveSession';
 import { LiveSessionStatus } from '@/types/live-session.types';
 import LiveSessionBanner from '@/components/live-session/live-session-banner';
 import { subMinutes } from 'date-fns';
+import { useAuthStore } from '@/store/auth.store';
 
 export default function MyClassesPage() {
+  const { user } = useAuthStore();
   const [searchTerm, setSearchTerm] = useState('');
   const [debouncedSearchTerm] = useDebounce(searchTerm, 300);
 
