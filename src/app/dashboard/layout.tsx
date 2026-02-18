@@ -1,9 +1,7 @@
-
 'use client';
 
-import Link from 'next/link';
+import { useAuthStore } from '@/store/auth.store';
 import { usePathname } from 'next/navigation';
-
 import {
   Sidebar,
   SidebarContent,
@@ -11,19 +9,17 @@ import {
   SidebarHeader,
   SidebarInset,
   SidebarMenu,
-  SidebarMenuBadge,
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarProvider,
+  useSidebar,
 } from '@/components/ui/sidebar';
-import { mainNav, footerNav } from '@/constants/dashboard-nav';
-import BottomNavBar from '@/components/BottomNavBar';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { useAuthStore } from '@/store/auth.store';
-import { Hourglass } from 'lucide-react';
-import ApprovalBanner from '@/components/alerts/ApprovalBanner';
+import { mainNav, footerNav } from '@/constants/dashboard-nav';
+import { BottomNavBar } from '@/components/BottomNavBar';
 import AnnouncementManager from '@/components/announcement/announcement-manager';
-import GlobalLiveAlert from '@/components/live-session/global-live-alert';
+import { GlobalLiveAlert } from '@/components/live-session/global-live-alert';
+import ApprovalBanner from '@/components/alerts/ApprovalBanner';
 
 export default function DashboardLayout({
   children,
@@ -85,15 +81,16 @@ export default function DashboardLayout({
                     tooltip={item.tooltip}
                     className="text-zinc-400 hover:bg-white/10 hover:text-white data-[active=true]:bg-primary data-[active=true]:text-primary-foreground data-[active=true]:font-semibold transition-all duration-200"
                   >
-                    <Link href={item.href || '#'}>
-                      <item.icon className="h-5 w-5" />
-                      <span className="group-data-[collapsible=icon]:hidden">{item.label}</span>
-                    </Link>
+                    <a href={item.href}>
+                      <item.icon className="h-4 w-4" />
+                      <span>{item.title}</span>
+                    </a>
                   </SidebarMenuButton>
                   {item.badge && (
-                    <SidebarMenuBadge className="h-5 w-5 justify-center rounded-full bg-primary/20 text-primary border border-primary/50 text-[10px] group-data-[collapsible=icon]:hidden">
-                      {item.badge}
-                    </SidebarMenuBadge>
+                    <span className="absolute right-2 top-2 flex h-2 w-2">
+                       <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-75"></span>
+                       <span className="relative inline-flex h-2 w-2 rounded-full bg-primary"></span>
+                    </span>
                   )}
                 </SidebarMenuItem>
               )
@@ -110,10 +107,10 @@ export default function DashboardLayout({
                   tooltip={item.tooltip}
                   className="text-zinc-500 hover:bg-white/5 hover:text-white"
                 >
-                  <Link href={item.href || '#'}>
+                  <a href={item.href}>
                     <item.icon className="h-4 w-4" />
-                    <span className="group-data-[collapsible=icon]:hidden">{item.label}</span>
-                  </Link>
+                    <span>{item.title}</span>
+                  </a>
                 </SidebarMenuButton>
               </SidebarMenuItem>
             ))}

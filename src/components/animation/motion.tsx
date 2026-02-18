@@ -12,7 +12,7 @@ import { ElementType, useRef } from 'react';
 
 type MotionComponent<T extends ElementType> = ForwardRefComponent<
   HTMLElement,
-  HTMLMotionProps<T>
+  HTMLMotionProps<any>
 >;
 
 type MotionProps<T extends ElementType> = {
@@ -32,7 +32,7 @@ export const Motion = <T extends ElementType = 'div'>({
   className,
   children,
   ...rest
-}: MotionProps<T> & HTMLMotionProps<T>) => {
+}: MotionProps<T> & HTMLMotionProps<any>) => {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, amount: 0.2 });
   const Component = motion(as || 'div') as MotionComponent<T>;

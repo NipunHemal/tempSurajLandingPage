@@ -26,7 +26,9 @@ export default function BottomNavBar() {
     <div className="fixed bottom-0 left-0 right-0 z-50 border-t border-primary/20 bg-background/80 shadow-[0_-4px_20px_-5px_rgba(0,0,0,0.1)] backdrop-blur-lg md:hidden pb-safe">
       <div className="grid h-16 grid-cols-5 items-center justify-items-center">
         {mobileNavItems.map(item => {
-          const isActive = !!(item.href && pathname.startsWith(item.href));
+          const isActive = item.href === '/dashboard'
+            ? pathname === item.href
+            : !!(item.href && pathname.startsWith(item.href));
           return (
             <Link
               key={item.label}
