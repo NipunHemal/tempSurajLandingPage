@@ -3,7 +3,6 @@ import { Inter } from 'next/font/google';
 import './globals.css';
 import { Toaster } from 'sonner';
 import { ThemeProvider } from '@/components/theme-provider';
-import { ReactQueryProvider } from '@/providers/ReactQueryProvider';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter', preload: false });
 
@@ -19,18 +18,16 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${inter.variable} font-sans antialiased`}>
-        <ReactQueryProvider>
-          <ThemeProvider
-            attribute="class"
-            forcedTheme="light"
-            enableSystem={false}
-            disableTransitionOnChange
-          >
-            {children}
-            <Toaster richColors />
-          </ThemeProvider>
-        </ReactQueryProvider>
+      <body className={`${inter.variable} font-sans antialiased text-foreground bg-background`}>
+        <ThemeProvider
+          attribute="class"
+          forcedTheme="light"
+          enableSystem={false}
+          disableTransitionOnChange
+        >
+          {children}
+          <Toaster richColors />
+        </ThemeProvider>
       </body>
     </html>
   );

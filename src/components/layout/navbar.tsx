@@ -54,7 +54,7 @@ export function Navbar() {
                         </Link>
                     ))}
                     <Button asChild className="rounded-full px-6 font-bold shadow-lg shadow-primary/20 hover:shadow-primary/40 transition-all">
-                        <Link href="/login">Target Login</Link>
+                        <Link href="#contact">Contact Us</Link>
                     </Button>
                 </nav>
 
@@ -92,7 +92,7 @@ export function Navbar() {
                                 </SheetClose>
                                 <SheetClose asChild>
                                     <Button asChild className="mt-4 w-full h-12 text-lg">
-                                        <Link href="/login">Target Login</Link>
+                                        <Link href="#contact">Contact Us</Link>
                                     </Button>
                                 </SheetClose>
                             </div>

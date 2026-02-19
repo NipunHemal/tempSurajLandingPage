@@ -31,7 +31,7 @@ export default function LandingPage() {
             <main className="flex-1 pt-20">
                 {/* Hero Section */}
                 <section className="relative w-full overflow-hidden min-h-[90vh] flex items-center pt-20 pb-20 lg:pt-0 lg:pb-0">
-                    
+
                     {/* Background Hero Image - Absolute positioned on the right half */}
                     <div className="absolute top-0 right-0 bottom-0 w-full lg:w-[60%] h-full z-0 overflow-hidden">
                         <HeroAlbum />
@@ -63,7 +63,7 @@ export default function LandingPage() {
 
                                 <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto pt-2">
                                     <Button size="lg" className="h-14 px-8 text-lg font-bold shadow-xl shadow-primary/20 hover:scale-105 transition-all w-full sm:w-auto" asChild>
-                                        <Link href="/register">
+                                        <Link href="#classes">
                                             Start Learning <ArrowRight className="ml-2 h-5 w-5" />
                                         </Link>
                                     </Button>
@@ -183,7 +183,7 @@ export default function LandingPage() {
                                 Join thousands of successful students who trusted us for their A/L ICT journey.
                             </p>
                             <Button size="lg" className="h-12 px-8 text-lg font-bold shadow-lg" asChild>
-                                <Link href="/register">
+                                <Link href="#contact">
                                     Enroll Now
                                 </Link>
                             </Button>
