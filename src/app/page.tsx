@@ -63,7 +63,7 @@ export default function LandingPage() {
 
                                 <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto pt-2">
                                     <Button size="lg" className="h-14 px-8 text-lg font-bold shadow-xl shadow-primary/20 hover:scale-105 transition-all w-full sm:w-auto" asChild>
-                                        <Link href="#classes">
+                                        <Link href="https://web.surajskumara.lk">
                                             Start Learning <ArrowRight className="ml-2 h-5 w-5" />
                                         </Link>
                                     </Button>
@@ -183,7 +183,7 @@ export default function LandingPage() {
                                 Join thousands of successful students who trusted us for their A/L ICT journey.
                             </p>
                             <Button size="lg" className="h-12 px-8 text-lg font-bold shadow-lg" asChild>
-                                <Link href="#contact">
+                                <Link href="https://web.surajskumara.lk">
                                     Enroll Now
                                 </Link>
                             </Button>
