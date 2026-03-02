@@ -10,6 +10,8 @@
   "include": [
     "src/index.ts",
     "src/templates/Modern/**/*",
+    "src/templates/ClassicView/**/*",
+    "src/templates/Natural/**/*",
     "src/components/beatsbud/**/*",
     "src/components/Hi.tsx",
     "src/components/ui/button.tsx",
