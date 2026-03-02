@@ -1,12 +1,12 @@
-// import ModernTemplate from '@/templates/Modern';
-import { EditorProvider } from '../context/EditorContext';
-import { NaturalTemplate } from '@/templates/Natural';
-// import { NaturalView } from '@/index';
+import { EdiflixLandingTemplate } from '@/index';
 
 export default function LandingPage() {
   return (
-    <EditorProvider>
-      <NaturalTemplate isEditable={true} />
-    </EditorProvider>
+    <EdiflixLandingTemplate
+      template="Natural"
+      data={undefined}
+      isEditable={true}
+      onSave={(data) => console.log('Saved:', data)}
+    />
   );
 }

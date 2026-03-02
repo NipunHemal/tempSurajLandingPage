@@ -1,8 +1,6 @@
 import React from 'react';
 import { z } from 'zod';
 
-declare function Hi(): React.JSX.Element;
-
 declare const ModernTemplateSchema: z.ZodObject<{
     hero: z.ZodObject<{
         badge: z.ZodString;
@@ -54,13 +52,6 @@ declare const ModernTemplateSchema: z.ZodObject<{
     };
 }>;
 type ModernTemplateSchemaType = z.infer<typeof ModernTemplateSchema>;
-
-interface ModernTemplateProps {
-    data?: Partial<ModernTemplateSchemaType>;
-    isEditable?: boolean;
-    onSave?: (data: ModernTemplateSchemaType) => void;
-}
-declare function ModernTemplate({ data, isEditable, onSave }: ModernTemplateProps): React.JSX.Element;
 
 declare const ClassicViewSchema: z.ZodObject<{
     navbar: z.ZodObject<{
@@ -196,13 +187,6 @@ declare const ClassicViewSchema: z.ZodObject<{
 }>;
 type ClassicViewSchemaType = z.infer<typeof ClassicViewSchema>;
 
-interface ClassicTemplateProps {
-    data?: Partial<ClassicViewSchemaType>;
-    isEditable?: boolean;
-    onSave?: (data: ClassicViewSchemaType) => void;
-}
-declare function ClassicTemplate({ data: initialData, isEditable, onSave }: ClassicTemplateProps): React.JSX.Element;
-
 declare const NaturalTemplateSchema: z.ZodObject<{
     navbar: z.ZodObject<{
         logoText: z.ZodString;
@@ -229,11 +213,11 @@ declare const NaturalTemplateSchema: z.ZodObject<{
             label: z.ZodString;
             value: z.ZodString;
         }, "strip", z.ZodTypeAny, {
-            value: string;
             label: string;
+            value: string;
         }, {
-            value: string;
             label: string;
+            value: string;
         }>, "many">;
         image: z.ZodString;
         imageBadgeTitle: z.ZodString;
@@ -245,8 +229,8 @@ declare const NaturalTemplateSchema: z.ZodObject<{
         ctaPrimaryText: string;
         ctaSecondaryText: string;
         stats: {
-            value: string;
             label: string;
+            value: string;
         }[];
         imageBadgeTitle: string;
         imageBadgeDesc: string;
@@ -257,8 +241,8 @@ declare const NaturalTemplateSchema: z.ZodObject<{
         ctaPrimaryText: string;
         ctaSecondaryText: string;
         stats: {
-            value: string;
             label: string;
+            value: string;
         }[];
         imageBadgeTitle: string;
         imageBadgeDesc: string;
@@ -295,25 +279,25 @@ declare const NaturalTemplateSchema: z.ZodObject<{
             name: z.ZodString;
             img: z.ZodString;
         }, "strip", z.ZodTypeAny, {
-            name: string;
             img: string;
+            name: string;
         }, {
-            name: string;
             img: string;
+            name: string;
         }>, "many">;
     }, "strip", z.ZodTypeAny, {
         ctaText: string;
         sectionTitle: string;
         items: {
-            name: string;
             img: string;
+            name: string;
         }[];
     }, {
         ctaText: string;
         sectionTitle: string;
         items: {
-            name: string;
             img: string;
+            name: string;
         }[];
     }>;
     reviews: z.ZodObject<{
@@ -371,8 +355,8 @@ declare const NaturalTemplateSchema: z.ZodObject<{
         ctaPrimaryText: string;
         ctaSecondaryText: string;
         stats: {
-            value: string;
             label: string;
+            value: string;
         }[];
         imageBadgeTitle: string;
         imageBadgeDesc: string;
@@ -394,8 +378,8 @@ declare const NaturalTemplateSchema: z.ZodObject<{
         ctaText: string;
         sectionTitle: string;
         items: {
-            name: string;
             img: string;
+            name: string;
         }[];
     };
     reviews: {
@@ -421,8 +405,8 @@ declare const NaturalTemplateSchema: z.ZodObject<{
         ctaPrimaryText: string;
         ctaSecondaryText: string;
         stats: {
-            value: string;
             label: string;
+            value: string;
         }[];
         imageBadgeTitle: string;
         imageBadgeDesc: string;
@@ -444,8 +428,8 @@ declare const NaturalTemplateSchema: z.ZodObject<{
         ctaText: string;
         sectionTitle: string;
         items: {
-            name: string;
             img: string;
+            name: string;
         }[];
     };
     reviews: {
@@ -465,6 +449,31 @@ declare const NaturalTemplateSchema: z.ZodObject<{
     };
 }>;
 type NaturalTemplateSchemaType = z.infer<typeof NaturalTemplateSchema>;
+
+type TemplateType = 'Modern' | 'ClassicView' | 'Natural';
+interface EdiflixLandingTemplateProps {
+    template: TemplateType;
+    data?: ModernTemplateSchemaType | ClassicViewSchemaType | NaturalTemplateSchemaType | any;
+    isEditable?: boolean;
+    onSave?: (data: any) => void;
+}
+declare function EdiflixLandingTemplate({ template, data, isEditable, onSave, }: EdiflixLandingTemplateProps): React.JSX.Element;
+
+declare function Hi(): React.JSX.Element;
+
+interface ModernTemplateProps {
+    data?: Partial<ModernTemplateSchemaType>;
+    isEditable?: boolean;
+    onSave?: (data: ModernTemplateSchemaType) => void;
+}
+declare function ModernTemplate({ data, isEditable, onSave }: ModernTemplateProps): React.JSX.Element;
+
+interface ClassicTemplateProps {
+    data?: Partial<ClassicViewSchemaType>;
+    isEditable?: boolean;
+    onSave?: (data: ClassicViewSchemaType) => void;
+}
+declare function ClassicTemplate({ data: initialData, isEditable, onSave }: ClassicTemplateProps): React.JSX.Element;
 
 interface NaturalTemplateProps {
     data?: Partial<NaturalTemplateSchemaType>;
@@ -488,4 +497,4 @@ declare const EditorProvider: React.FC<{
 }>;
 declare const useEditor: () => EditorContextType;
 
-export { ClassicTemplate as ClassicView, ClassicViewSchema, type ClassicViewSchemaType, EditorProvider, Hi, ModernTemplate, ModernTemplateSchema, type ModernTemplateSchemaType, NaturalTemplateSchema, type NaturalTemplateSchemaType, NaturalTemplate as NaturalView, useEditor };
+export { ClassicTemplate as ClassicView, ClassicViewSchema, type ClassicViewSchemaType, EdiflixLandingTemplate, EditorProvider, Hi, ModernTemplate, ModernTemplateSchema, type ModernTemplateSchemaType, NaturalTemplateSchema, type NaturalTemplateSchemaType, NaturalTemplate as NaturalView, useEditor };

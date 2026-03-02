@@ -9,6 +9,7 @@
   },
   "include": [
     "src/index.ts",
+    "src/EdiflixLandingTemplate.tsx",
     "src/templates/Modern/**/*",
     "src/templates/ClassicView/**/*",
     "src/templates/Natural/**/*",
