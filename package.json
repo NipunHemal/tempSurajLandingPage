@@ -1,6 +1,6 @@
 {
   "name": "ediflix-template",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
@@ -10,12 +10,12 @@
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",
-    "build:package": "tsup ./src/index.ts --dts",
+    "build:lib": "tsup",
+    "build:css": "tailwindcss -i ./src/app/globals.css -o ./dist/styles.css --minify",
+    "build:package": "npm run build:lib && npm run build:css",
     "env": "node src/scripts/env-manager.cjs",
     "start": "next start",
-    "lint": "next lint",
-    "typecheck": "tsc --noEmit",
-    "build:css": "tailwindcss -i ./src/app/globals.css -o ./dist/styles.css --minify"
+    "typecheck": "tsc --noEmit"
   },
   "peerDependencies": {
     "react": "^18.3.1",

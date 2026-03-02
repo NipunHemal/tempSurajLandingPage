@@ -1,4 +1,4 @@
-export { default as Hi } from 'src/components/Hi';
-export { ModernTemplate } from 'src/templates/Modern/Template';
-export { ModernTemplateSchema, type ModernTemplateSchemaType } from 'src/templates/Modern/schema';
-export { EditorProvider, useEditor } from 'src/context/EditorContext';
+export { default as Hi } from './components/Hi';
+export { ModernTemplate } from './templates/Modern/Template';
+export { ModernTemplateSchema, type ModernTemplateSchemaType } from './templates/Modern/schema';
+export { EditorProvider, useEditor } from './context/EditorContext';
