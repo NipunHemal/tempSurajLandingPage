@@ -1,0 +1,23 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noEmit": false,
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "outDir": "dist",
+    "incremental": false
+  },
+  "include": [
+    "src/index.ts",
+    "src/templates/Modern/**/*",
+    "src/components/beatsbud/**/*",
+    "src/components/Hi.tsx",
+    "src/components/ui/button.tsx",
+    "src/lib/utils.ts",
+    "src/utils/**/*"
+  ],
+  "exclude": [
+    "src/components/ui/sidebar.tsx",
+    "src/app/**/*"
+  ]
+}

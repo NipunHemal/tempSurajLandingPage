@@ -1,0 +1,24 @@
+import { defineConfig } from 'tsup';
+
+export default defineConfig({
+  entry: ['src/index.ts'],
+  format: ['cjs', 'esm'],
+  dts: true,
+  splitting: false,
+  sourcemap: true,
+  clean: true,
+  treeshake: false,
+  external: [
+    'react',
+    'react-dom',
+    'next',
+    'framer-motion',
+    'lucide-react',
+    'zod',
+    'clsx',
+    'tailwind-merge',
+    'class-variance-authority'
+  ],
+  minify: true,
+  tsconfig: 'tsconfig.package.json',
+});
